@@ -33,56 +33,15 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 横幅 Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-brand-700">
-        {/* 装饰光斑 */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-brand-500/30 blur-3xl" />
-          <div className="absolute -right-10 top-8 h-96 w-96 rounded-full bg-pink-500/20 blur-3xl" />
-          <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-violet-500/25 blur-3xl" />
-        </div>
-        {/* 星星点缀 */}
-        <div className="pointer-events-none absolute inset-0 opacity-70">
-          {Array.from({ length: 16 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-1 w-1 rounded-full bg-white/80"
-              style={{
-                left: `${(i * 61 + 7) % 100}%`,
-                top: `${(i * 37 + 13) % 100}%`,
-                opacity: 0.3 + ((i * 13) % 5) * 0.12,
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="relative mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-medium text-white backdrop-blur">
-            🔥 鬼点子创作季 · 火热征稿中
-          </span>
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            鬼点子
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">
-            一个开放的原创小说投稿与阅读平台
-            <br />
-            你的故事，值得被更多人看见
-          </p>
-          <div className="mt-9 flex items-center justify-center gap-4">
-            <Link
-              href="/dashboard/works/new"
-              className="rounded-lg bg-white px-7 py-3 text-base font-semibold text-slate-900 shadow-lg transition hover:bg-brand-50 active:scale-[0.98]"
-            >
-              开始投稿
-            </Link>
-            <Link
-              href="/works"
-              className="rounded-lg border border-white/40 bg-white/10 px-7 py-3 text-base font-semibold text-white backdrop-blur transition hover:bg-white/20 active:scale-[0.98]"
-            >
-              浏览书库
-            </Link>
-          </div>
-        </div>
+      {/* 横幅 Banner（海报图） */}
+      <section className="relative overflow-hidden bg-slate-900">
+        <Link href="/works" className="block">
+          <img
+            src="/banner.png"
+            alt="鬼点子 - 好故事从这里开始"
+            className="mx-auto h-auto w-full max-w-6xl"
+          />
+        </Link>
       </section>
 
       {/* 分类导航（彩色卡片） */}
