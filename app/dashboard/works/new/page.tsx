@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
+import { TagPicker } from "@/components/tag-picker";
 
 export default function NewWorkPage() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function NewWorkPage() {
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +38,7 @@ export default function NewWorkPage() {
       description: description.trim() || null,
       category,
       cover_url: coverUrl.trim() || null,
+      tags,
       status: "pending",
     });
 
@@ -114,6 +117,15 @@ export default function NewWorkPage() {
           <p className="mt-1 text-xs text-slate-400">
             可先不填，后续编辑作品时再补充
           </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作品标签 <span className="text-slate-400">（选填，最多 12 个）</span>
+          </label>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+            <TagPicker value={tags} onChange={setTags} />
+          </div>
         </div>
 
         {error && (

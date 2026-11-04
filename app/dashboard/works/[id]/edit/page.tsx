@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
 import { Work } from "@/lib/types";
+import { TagPicker } from "@/components/tag-picker";
 
 export default function EditWorkPage() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function EditWorkPage() {
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export default function EditWorkPage() {
           setCategory(work.category);
           setDescription(work.description ?? "");
           setCoverUrl(work.cover_url ?? "");
+          setTags(work.tags ?? []);
         }
         setLoading(false);
       });
@@ -54,6 +57,7 @@ export default function EditWorkPage() {
         description: description.trim() || null,
         category,
         cover_url: coverUrl.trim() || null,
+        tags,
       })
       .eq("id", workId);
 
@@ -131,6 +135,15 @@ export default function EditWorkPage() {
             placeholder="https://…"
             className="input-base"
           />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作品标签 <span className="text-slate-400">（选填，最多 12 个）</span>
+          </label>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+            <TagPicker value={tags} onChange={setTags} />
+          </div>
         </div>
 
         {error && (

@@ -20,6 +20,8 @@ export interface Work {
   view_count: number;
   created_at: string;
   updated_at: string;
+  // 作品标签（四大类中挑选）
+  tags?: string[];
   // 联表查询时附带
   author?: { username: string | null } | null;
   // 章节数（联表聚合时附带）

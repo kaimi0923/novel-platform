@@ -91,6 +91,19 @@ export default async function WorkDetailPage({
               {work.description ?? "作者还没有写简介。"}
             </p>
 
+            {work.tags && work.tags.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {work.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {work.status !== "approved" && (
               <div className="mt-4">
                 <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">

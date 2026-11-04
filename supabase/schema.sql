@@ -25,6 +25,7 @@ create table if not exists public.works (
     check (status in ('pending', 'approved', 'rejected')),
   reject_reason text,
   view_count bigint not null default 0,
+  tags text[] not null default '{}',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
