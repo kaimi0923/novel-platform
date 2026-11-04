@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 export default async function WorksPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; tag?: string }>;
 }) {
-  const { category } = await searchParams;
-  const works = await getApprovedWorks(category, 60);
+  const { category, tag } = await searchParams;
+  const works = await getApprovedWorks(category, 60, "latest", tag);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -23,9 +23,9 @@ export default async function WorksPage({
       </div>
 
       {/* 分类筛选 */}
-      <div className="mb-8 flex flex-wrap items-center gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link
-          href="/works"
+          href={tag ? `/works?tag=${encodeURIComponent(tag)}` : "/works"}
           className={`rounded-full px-4 py-1.5 text-sm transition ${
             !category
               ? "bg-brand-600 text-white"
@@ -37,7 +37,7 @@ export default async function WorksPage({
         {CATEGORIES.map((c) => (
           <Link
             key={c}
-            href={`/works?category=${encodeURIComponent(c)}`}
+            href={`/works?category=${encodeURIComponent(c)}${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`}
             className={`rounded-full px-4 py-1.5 text-sm transition ${
               category === c
                 ? "bg-brand-600 text-white"
@@ -49,10 +49,30 @@ export default async function WorksPage({
         ))}
       </div>
 
+      {/* 当前标签筛选 */}
+      {tag && (
+        <div className="mb-4 flex items-center gap-2 text-sm">
+          <span className="text-slate-400">正在筛选标签：</span>
+          <span className="rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-700">
+            #{tag}
+          </span>
+          <Link
+            href={category ? `/works?category=${encodeURIComponent(category)}` : "/works"}
+            className="text-xs text-slate-400 underline transition hover:text-brand-600"
+          >
+            清除标签筛选
+          </Link>
+        </div>
+      )}
+
       {works.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <p className="text-slate-500">
-            {category ? `「${category}」分类下还没有作品` : "还没有作品上架"}
+            {tag
+              ? `没有带「${tag}」标签的作品`
+              : category
+                ? `「${category}」分类下还没有作品`
+                : "还没有作品上架"}
           </p>
         </div>
       ) : (

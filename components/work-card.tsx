@@ -51,6 +51,18 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
           <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-500">
             {work.description ?? "（暂无简介）"}
           </p>
+          {work.tags && work.tags.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {work.tags.slice(0, 2).map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-medium text-brand-700"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-between text-xs text-slate-400">
           <span>作者：{work.author?.username ?? "佚名"}</span>

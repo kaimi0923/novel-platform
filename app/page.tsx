@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getApprovedWorks } from "@/lib/supabase/queries";
 import { WorkCard } from "@/components/work-card";
+import { PopularCard } from "@/components/popular-card";
 import { CATEGORIES } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -20,8 +21,15 @@ const CATEGORY_STYLES: Record<string, { bg: string; text: string; icon: string }
   其他: { bg: "bg-slate-100", text: "text-slate-600", icon: "📚" },
 };
 
+// 首页热门标签（精选，点击进入书库按标签筛选）
+const HOT_TAGS = [
+  "甜宠", "爽文", "轻松", "豪门总裁", "赘婿", "女总裁",
+  "穿越", "逆袭", "无敌流", "都市", "玄幻", "仙侠",
+];
+
 export default async function HomePage() {
   const latestWorks = await getApprovedWorks(undefined, 12);
+  const popularWorks = await getApprovedWorks(undefined, 6, "popular");
 
   return (
     <div>
@@ -94,6 +102,51 @@ export default async function HomePage() {
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      {/* 人气榜（畅销风格，封面卡片） */}
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-slate-900">
+            🔥 人气榜
+          </h2>
+          <Link href="/works" className="text-sm text-brand-600 transition hover:text-brand-700">
+            查看全部 →
+          </Link>
+        </div>
+
+        {popularWorks.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+            还没有上榜作品，快去投稿吧
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {popularWorks.map((work, i) => (
+              <PopularCard key={work.id} work={work} index={i} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 热门标签 */}
+      <section className="mx-auto max-w-6xl px-4 pb-12">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-slate-900">热门标签</h2>
+          <Link href="/works" className="text-sm text-brand-600 transition hover:text-brand-700">
+            全部标签 →
+          </Link>
+        </div>
+        <div className="flex flex-wrap gap-2.5">
+          {HOT_TAGS.map((tag) => (
+            <Link
+              key={tag}
+              href={`/works?tag=${encodeURIComponent(tag)}`}
+              className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-600 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700"
+            >
+              #{tag}
+            </Link>
+          ))}
         </div>
       </section>
 

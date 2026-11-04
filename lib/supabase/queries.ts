@@ -11,19 +11,33 @@ function normalizeWork(row: WorkRow): Work {
   } as Work;
 }
 
-/** 获取已通过审核的作品列表（可选按分类筛选） */
-export async function getApprovedWorks(category?: string, limit = 20) {
+/** 获取已通过审核的作品列表（可选按分类/标签筛选、按阅读量排序） */
+export async function getApprovedWorks(
+  category?: string,
+  limit = 20,
+  sortBy: "latest" | "popular" = "latest",
+  tag?: string
+) {
   const supabase = await createClient();
   let query = supabase
     .from("works")
     .select("*, author:profiles!works_author_id_fkey(username), chapters(count), favorites(count)")
-    .eq("status", "approved")
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    .eq("status", "approved");
+
+  if (sortBy === "popular") {
+    query = query.order("view_count", { ascending: false });
+  } else {
+    query = query.order("created_at", { ascending: false });
+  }
 
   if (category) {
     query = query.eq("category", category);
   }
+  if (tag) {
+    query = query.contains("tags", [tag]);
+  }
+
+  query = query.limit(limit);
 
   const { data, error } = await query;
   if (error) throw error;
