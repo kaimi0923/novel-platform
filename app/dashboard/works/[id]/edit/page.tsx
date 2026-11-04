@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
 import { Work } from "@/lib/types";
 import { TagPicker } from "@/components/tag-picker";
+import VerifyGate from "@/components/verify-gate";
 
 export default function EditWorkPage() {
   const router = useRouter();
@@ -76,8 +77,9 @@ export default function EditWorkPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">编辑作品</h1>
+    <VerifyGate>
+      <div className="mx-auto max-w-2xl px-4 py-10">
+        <h1 className="mb-6 text-2xl font-bold text-slate-900">编辑作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
@@ -168,6 +170,7 @@ export default function EditWorkPage() {
           * 已通过审核的作品修改信息后，状态保持不变
         </p>
       </form>
-    </div>
+      </div>
+    </VerifyGate>
   );
 }
