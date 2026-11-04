@@ -61,7 +61,7 @@ export default async function ReadPage({
             key={`img-${i}`}
             src={images[idx - 1]}
             alt={`插图${idx}`}
-            className="mx-auto my-4 max-h-[70vh] rounded-lg object-contain"
+            className="mx-auto my-4 w-full max-w-xl rounded-lg object-contain"
           />
         );
       }
@@ -107,7 +107,7 @@ export default async function ReadPage({
                 key={i}
                 src={url}
                 alt={`${chapter.title}插图${i + 1}`}
-                className="mx-auto max-h-[70vh] rounded-lg object-contain"
+                className="mx-auto w-full max-w-xl rounded-lg object-contain"
               />
             ))}
           </div>
@@ -124,7 +124,7 @@ export default async function ReadPage({
                   key={`leftover-${idx}`}
                   src={url}
                   alt={`${chapter.title}插图${idx}`}
-                  className="mx-auto max-h-[70vh] rounded-lg object-contain"
+                  className="mx-auto w-full max-w-xl rounded-lg object-contain"
                 />
               ))}
             </div>
