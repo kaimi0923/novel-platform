@@ -250,7 +250,7 @@ create policy "favorites_delete" on public.favorites
 create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
   work_id uuid references public.works (id) on delete cascade not null,
-  user_id uuid references auth.users (id) on delete cascade not null,
+  user_id uuid references public.profiles (id) on delete cascade not null,
   content text not null check (char_length(content) between 1 and 500),
   created_at timestamptz not null default now()
 );
