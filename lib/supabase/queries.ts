@@ -1,12 +1,13 @@
-import { Work, Chapter } from "@/lib/types";
+import { Work, Chapter, Comment } from "@/lib/types";
 import { createClient } from "./server";
 
-type WorkRow = Work & { chapters?: { count: number }[] };
+type WorkRow = Work & { chapters?: { count: number }[]; favorites?: { count: number }[] };
 
 function normalizeWork(row: WorkRow): Work {
   return {
     ...row,
     chapter_count: row.chapters?.[0]?.count ?? 0,
+    favorite_count: row.favorites?.[0]?.count ?? 0,
   } as Work;
 }
 
@@ -15,7 +16,7 @@ export async function getApprovedWorks(category?: string, limit = 20) {
   const supabase = await createClient();
   let query = supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username), chapters(count)")
+    .select("*, author:profiles!works_author_id_fkey(username), chapters(count), favorites(count)")
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -54,11 +55,69 @@ export async function getMyWorks(userId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("works")
-    .select("*, chapters(count)")
+    .select("*, chapters(count), favorites(count)")
     .eq("author_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map(normalizeWork);
+}
+
+/** 获取单个作品的收藏数 */
+export async function getFavoriteCount(workId: string) {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("favorites")
+    .select("id", { count: "exact", head: true })
+    .eq("work_id", workId);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+/** 判断某用户是否已收藏该作品 */
+export async function getIsFavorited(workId: string, userId: string | null) {
+  if (!userId) return false;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("favorites")
+    .select("id")
+    .eq("work_id", workId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data;
+}
+
+/** 获取作品的留言列表（带用户名） */
+export async function getWorkComments(workId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("comments")
+    .select("*, profile:profiles!comments_user_id_fkey(username)")
+    .eq("work_id", workId)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as Comment[];
+}
+
+/** 获取作者自己作品收到的全部留言（留言管理） */
+export async function getMyWorksComments(userId: string) {
+  const supabase = await createClient();
+  const { data: myWorks } = await supabase
+    .from("works")
+    .select("id")
+    .eq("author_id", userId);
+  const workIds = (myWorks ?? []).map((w) => w.id);
+  if (workIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("comments")
+    .select("*, profile:profiles!comments_user_id_fkey(username), work:works!comments_work_id_fkey(title)")
+    .in("work_id", workIds)
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return (data ?? []) as (Comment & { work?: { title: string } | null })[];
 }
 
 /** 获取待审核作品列表（管理员） */

@@ -214,3 +214,89 @@ create policy "chapters_delete" on public.chapters
 
 -- ---------- 8. 设置管理员（替换成你的邮箱后执行） ----------
 -- update public.profiles set role = 'admin' where email = '你的邮箱@example.com';
+
+-- ============================================================
+-- 以下为收藏与留言功能（2026-11-04 新增）
+-- ============================================================
+
+-- ---------- 9. 收藏表 ----------
+create table if not exists public.favorites (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users (id) on delete cascade not null,
+  work_id uuid references public.works (id) on delete cascade not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, work_id)
+);
+
+create index if not exists favorites_work_idx on public.favorites (work_id);
+create index if not exists favorites_user_idx on public.favorites (user_id);
+
+alter table public.favorites enable row level security;
+
+-- 所有人可读收藏记录（用于展示收藏数）；仅本人可收藏/取消
+drop policy if exists "favorites_select" on public.favorites;
+create policy "favorites_select" on public.favorites
+  for select using (true);
+
+drop policy if exists "favorites_insert" on public.favorites;
+create policy "favorites_insert" on public.favorites
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "favorites_delete" on public.favorites;
+create policy "favorites_delete" on public.favorites
+  for delete using (auth.uid() = user_id);
+
+-- ---------- 10. 留言表 ----------
+create table if not exists public.comments (
+  id uuid primary key default gen_random_uuid(),
+  work_id uuid references public.works (id) on delete cascade not null,
+  user_id uuid references auth.users (id) on delete cascade not null,
+  content text not null check (char_length(content) between 1 and 500),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists comments_work_idx on public.comments (work_id);
+
+alter table public.comments enable row level security;
+
+-- 作品可见则留言可见；登录用户可留言；作者/管理员可删除留言
+drop policy if exists "comments_select" on public.comments;
+create policy "comments_select" on public.comments
+  for select using (
+    exists (
+      select 1 from public.works w
+      where w.id = comments.work_id
+        and (
+          w.status = 'approved'
+          or w.author_id = auth.uid()
+          or exists (
+            select 1 from public.profiles p
+            where p.id = auth.uid() and p.role = 'admin'
+          )
+        )
+    )
+  );
+
+drop policy if exists "comments_insert" on public.comments;
+create policy "comments_insert" on public.comments
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "comments_delete" on public.comments;
+create policy "comments_delete" on public.comments
+  for delete using (
+    exists (
+      select 1 from public.works w
+      where w.id = comments.work_id
+        and (
+          w.author_id = auth.uid()
+          or exists (
+            select 1 from public.profiles p
+            where p.id = auth.uid() and p.role = 'admin'
+          )
+        )
+    )
+  );
+
+-- ---------- 11. 新表授权 ----------
+grant select, insert, delete on table public.favorites to anon, authenticated;
+grant select, insert, delete on table public.comments to anon, authenticated;

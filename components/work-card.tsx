@@ -54,7 +54,7 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
         </div>
         <div className="flex items-center justify-between text-xs text-slate-400">
           <span>作者：{work.author?.username ?? "佚名"}</span>
-          <span>{work.view_count} 阅读</span>
+          <span>{work.view_count} 阅读 · {work.favorite_count ?? 0} 收藏</span>
         </div>
       </div>
     </Link>

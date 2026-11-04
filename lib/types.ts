@@ -24,6 +24,25 @@ export interface Work {
   author?: { username: string | null } | null;
   // 章节数（联表聚合时附带）
   chapter_count?: number;
+  // 收藏数（联表聚合时附带）
+  favorite_count?: number;
+}
+
+export interface Favorite {
+  id: string;
+  user_id: string;
+  work_id: string;
+  created_at: string;
+}
+
+export interface Comment {
+  id: string;
+  work_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  // 联表查询时附带
+  profile?: { username: string | null } | null;
 }
 
 export interface Chapter {

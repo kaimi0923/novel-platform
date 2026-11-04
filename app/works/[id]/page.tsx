@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getWorkWithChapters } from "@/lib/supabase/queries";
+import {
+  getWorkWithChapters,
+  getFavoriteCount,
+  getIsFavorited,
+  getWorkComments,
+} from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
+import { FavoriteButton } from "@/components/favorite-button";
+import { CommentSection } from "@/components/comment-section";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +24,12 @@ export default async function WorkDetailPage({
   } = await supabase.auth.getUser();
 
   const { work, chapters } = await getWorkWithChapters(id);
+  const favoriteCount = await getFavoriteCount(id);
+  const isFavorited = await getIsFavorited(id, user?.id ?? null);
+  const comments = await getWorkComments(id);
 
   // 未通过审核的作品：仅作者和管理员可见
+  let isAdmin = false;
   if (work.status !== "approved") {
     let canView = false;
     if (user) {
@@ -27,10 +38,20 @@ export default async function WorkDetailPage({
         .select("role")
         .eq("id", user.id)
         .single();
-      canView = user.id === work.author_id || profile?.role === "admin";
+      isAdmin = profile?.role === "admin";
+      canView = user.id === work.author_id || isAdmin;
     }
     if (!canView) notFound();
+  } else if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    isAdmin = profile?.role === "admin";
   }
+
+  const canManage = user?.id === work.author_id || isAdmin;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -59,7 +80,7 @@ export default async function WorkDetailPage({
                 {work.category}
               </span>
               <span className="text-xs text-slate-400">
-                {chapters.length} 章 · {work.view_count} 阅读
+                {chapters.length} 章 · {work.view_count} 阅读 · {favoriteCount} 收藏
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900">{work.title}</h1>
@@ -78,7 +99,7 @@ export default async function WorkDetailPage({
               </div>
             )}
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               {chapters.length > 0 ? (
                 <Link
                   href={`/read/${work.id}/${chapters[0].id}`}
@@ -88,6 +109,14 @@ export default async function WorkDetailPage({
                 </Link>
               ) : (
                 <span className="text-sm text-slate-400">还没有章节</span>
+              )}
+              {work.status === "approved" && (
+                <FavoriteButton
+                  workId={work.id}
+                  initialCount={favoriteCount}
+                  initialFavorited={isFavorited}
+                  loggedIn={!!user}
+                />
               )}
               {user?.id === work.author_id && (
                 <Link
@@ -127,6 +156,14 @@ export default async function WorkDetailPage({
           </div>
         )}
       </div>
+
+      {/* 留言区 */}
+      <CommentSection
+        workId={work.id}
+        initialComments={comments}
+        loggedIn={!!user}
+        canManage={canManage}
+      />
     </div>
   );
 }

@@ -16,6 +16,11 @@ export default async function DashboardPage() {
 
   const works = await getMyWorks(user.id);
 
+  // 数据中心统计
+  const totalChapters = works.reduce((s, w) => s + (w.chapter_count ?? 0), 0);
+  const totalViews = works.reduce((s, w) => s + (w.view_count ?? 0), 0);
+  const totalFavorites = works.reduce((s, w) => s + (w.favorite_count ?? 0), 0);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="mb-8 flex items-center justify-between">
@@ -25,10 +30,33 @@ export default async function DashboardPage() {
             投稿后需经管理员审核，审核通过即可在书库展示
           </p>
         </div>
-        <Link href="/dashboard/works/new" className="btn-primary">
-          ＋ 发布新作品
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard/comments" className="btn-secondary">
+            留言管理
+          </Link>
+          <Link href="/dashboard/works/new" className="btn-primary">
+            ＋ 发布新作品
+          </Link>
+        </div>
       </div>
+
+      {/* 数据中心：作品数据统计 */}
+      {works.length > 0 && (
+        <div className="mb-8 grid grid-cols-3 gap-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+            <p className="text-2xl font-bold text-slate-900">{totalChapters}</p>
+            <p className="mt-1 text-xs text-slate-500">总章节数</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+            <p className="text-2xl font-bold text-slate-900">{totalViews}</p>
+            <p className="mt-1 text-xs text-slate-500">总阅读数</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+            <p className="text-2xl font-bold text-slate-900">{totalFavorites}</p>
+            <p className="mt-1 text-xs text-slate-500">总收藏数</p>
+          </div>
+        </div>
+      )}
 
       {works.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
@@ -56,7 +84,8 @@ export default async function DashboardPage() {
                       {work.category}
                     </span>
                     <span className="text-xs text-slate-400">
-                      {work.chapter_count ?? 0} 章
+                      {work.chapter_count ?? 0} 章 · {work.view_count} 阅读 ·{" "}
+                      {work.favorite_count ?? 0} 收藏
                     </span>
                   </div>
                   <Link
