@@ -69,6 +69,8 @@ export interface Chapter {
   title: string;
   content: string;
   chapter_order: number;
+  /** 章节插图（图片 URL 列表，可选） */
+  images?: string[];
   created_at: string;
 }
 

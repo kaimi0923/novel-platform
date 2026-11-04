@@ -14,6 +14,7 @@ export default function NewChapterPage() {
   const [work, setWork] = useState<Work | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [images, setImages] = useState<string[]>([""]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -55,6 +56,7 @@ export default function NewChapterPage() {
       title: title.trim(),
       content: content.trim(),
       chapter_order: nextOrder,
+      images: images.map((u) => u.trim()).filter((u) => u.length > 0),
     });
 
     if (error) {
@@ -112,6 +114,50 @@ export default function NewChapterPage() {
             placeholder={"在这里写正文……\n\n段落之间请空一行，方便阅读。"}
             className="input-base resize-y font-serif leading-7"
           />
+        </div>
+
+        {/* 章节插图（可选） */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            章节插图 <span className="font-normal text-slate-400">（选填，可加多张）</span>
+          </label>
+          <div className="space-y-2">
+            {images.map((url, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => {
+                    const next = [...images];
+                    next[i] = e.target.value;
+                    setImages(next);
+                  }}
+                  placeholder="粘贴图片链接，如 https://…（上传到图床后复制地址）"
+                  className="input-base flex-1"
+                />
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setImages(images.filter((_, j) => j !== i))}
+                    className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-2 text-sm text-slate-400 transition hover:border-rose-300 hover:text-rose-600"
+                    aria-label="删除该插图"
+                  >
+                    删除
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setImages([...images, ""])}
+            className="mt-2 text-sm font-medium text-brand-600 transition hover:text-brand-700"
+          >
+            + 添加一张插图
+          </button>
+          <p className="mt-1.5 text-xs text-slate-400">
+            插图会显示在章节正文开头。图片需要先上传到图床（如阿里云 OSS、sm.ms），拿到链接后粘贴到这里。
+          </p>
         </div>
 
         {error && (

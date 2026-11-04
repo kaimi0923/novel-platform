@@ -70,6 +70,21 @@ export default async function ReadPage({
           </p>
         </header>
 
+        {/* 章节插图 */}
+        {chapter.images && chapter.images.length > 0 && (
+          <div className="mb-8 space-y-4">
+            {chapter.images.map((url, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={url}
+                alt={`${chapter.title}插图${i + 1}`}
+                className="mx-auto max-h-[70vh] rounded-lg object-contain"
+              />
+            ))}
+          </div>
+        )}
+
         <div className="prose-novel">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
