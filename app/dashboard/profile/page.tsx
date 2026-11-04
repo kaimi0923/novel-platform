@@ -21,6 +21,12 @@ export default function ProfilePage() {
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  // 联系方式
+  const [qq, setQq] = useState("");
+  const [wechat, setWechat] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
   // 待上传的新文件（选了但还没保存）
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [newCover, setNewCover] = useState<File | null>(null);
@@ -50,6 +56,11 @@ export default function ProfilePage() {
         setUsername(p.username ?? "");
         setAvatarUrl(p.avatar_url ?? null);
         setCoverUrl(p.cover_url ?? null);
+        setQq(p.qq ?? "");
+        setWechat(p.wechat ?? "");
+        setContactEmail(p.contact_email ?? "");
+        setContactPhone(p.contact_phone ?? "");
+        setShippingAddress(p.shipping_address ?? "");
       }
       setLoading(false);
     })();
@@ -133,7 +144,16 @@ export default function ProfilePage() {
       // 保存档案
       const { error } = await supabase
         .from("profiles")
-        .update({ username: name, avatar_url: finalAvatar, cover_url: finalCover })
+        .update({
+          username: name,
+          avatar_url: finalAvatar,
+          cover_url: finalCover,
+          qq: qq.trim() || null,
+          wechat: wechat.trim() || null,
+          contact_email: contactEmail.trim() || null,
+          contact_phone: contactPhone.trim() || null,
+          shipping_address: shippingAddress.trim() || null,
+        })
         .eq("id", user.id);
       if (error) throw new Error(error.message);
 
@@ -259,6 +279,68 @@ export default function ProfilePage() {
           />
           <p className="mt-1.5 text-xs text-slate-400">
             昵称会显示在作品详情页、留言区和人气榜上
+          </p>
+        </div>
+
+        {/* 联系方式（仅自己可见） */}
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <label className="mb-3 block text-sm font-medium text-slate-700">
+            联系方式
+          </label>
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm text-slate-600">QQ 号码</label>
+              <input
+                type="text"
+                value={qq}
+                onChange={(e) => setQq(e.target.value)}
+                placeholder="你的 QQ 号码"
+                className="input-base"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-600">微信号码</label>
+              <input
+                type="text"
+                value={wechat}
+                onChange={(e) => setWechat(e.target.value)}
+                placeholder="你的微信号"
+                className="input-base"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-600">电子邮箱</label>
+              <input
+                type="email"
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                placeholder="用于接收通知的邮箱"
+                className="input-base"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-600">紧急联系方式</label>
+              <input
+                type="text"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="手机号码"
+                className="input-base"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-600">我的收货地址</label>
+              <input
+                type="text"
+                value={shippingAddress}
+                onChange={(e) => setShippingAddress(e.target.value)}
+                placeholder="用于接收实体礼物/奖品"
+                className="input-base"
+              />
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-slate-400">
+            联系方式仅保存在你自己账号下，不会公开展示
           </p>
         </div>
 

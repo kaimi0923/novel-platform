@@ -12,6 +12,17 @@ create table if not exists public.profiles (
     check (role in ('reader', 'author', 'admin')),
   avatar_url text,
   cover_url text,
+  -- 实名认证信息（仅本人/管理员可见）
+  real_name text,
+  id_number text,
+  id_address text,
+  id_photo_url text,
+  -- 联系方式
+  qq text,
+  wechat text,
+  contact_email text,
+  contact_phone text,
+  shipping_address text,
   created_at timestamptz not null default now()
 );
 
@@ -324,3 +335,33 @@ create policy "author_images_update" on storage.objects
 drop policy if exists "author_images_delete" on storage.objects;
 create policy "author_images_delete" on storage.objects
   for delete using (bucket_id = 'author-images' and auth.uid() = owner);
+
+-- ---------- 13. 实名认证证件存储桶（私有，仅本人/管理员可读） ----------
+insert into storage.buckets (id, name, public)
+values ('verify-docs', 'verify-docs', false)
+on conflict (id) do nothing;
+
+drop policy if exists "verify_docs_read" on storage.objects;
+create policy "verify_docs_read" on storage.objects
+  for select using (
+    bucket_id = 'verify-docs'
+    and (
+      auth.uid() = owner
+      or exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid() and p.role = 'admin'
+      )
+    )
+  );
+
+drop policy if exists "verify_docs_insert" on storage.objects;
+create policy "verify_docs_insert" on storage.objects
+  for insert with check (bucket_id = 'verify-docs' and auth.uid() = owner);
+
+drop policy if exists "verify_docs_update" on storage.objects;
+create policy "verify_docs_update" on storage.objects
+  for update using (bucket_id = 'verify-docs' and auth.uid() = owner);
+
+drop policy if exists "verify_docs_delete" on storage.objects;
+create policy "verify_docs_delete" on storage.objects
+  for delete using (bucket_id = 'verify-docs' and auth.uid() = owner);

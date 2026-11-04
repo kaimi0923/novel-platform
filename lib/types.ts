@@ -7,6 +7,17 @@ export interface Profile {
   role: "reader" | "author" | "admin";
   avatar_url?: string | null;
   cover_url?: string | null;
+  // 实名认证信息
+  real_name?: string | null;
+  id_number?: string | null;
+  id_address?: string | null;
+  id_photo_url?: string | null;
+  // 联系方式
+  qq?: string | null;
+  wechat?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  shipping_address?: string | null;
   created_at: string;
 }
 

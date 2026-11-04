@@ -14,10 +14,10 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  // 当前用户档案（头像/封面/昵称）
+  // 当前用户档案（头像/封面/昵称/实名状态）
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, avatar_url, cover_url")
+    .select("username, avatar_url, cover_url, real_name")
     .eq("id", user.id)
     .single();
 
@@ -78,9 +78,20 @@ export default async function DashboardPage() {
           <p className="text-xs text-slate-400">
             作者专区 · 管理你的作品与个人资料
           </p>
-          <Link href="/dashboard/profile" className="btn-secondary !px-4 !py-1.5 !text-xs">
-            编辑个人资料
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/verify"
+              className="btn-secondary !px-4 !py-1.5 !text-xs"
+            >
+              {profile?.real_name ? "已实名认证 ✓" : "实名认证"}
+            </Link>
+            <Link
+              href="/dashboard/profile"
+              className="btn-secondary !px-4 !py-1.5 !text-xs"
+            >
+              编辑个人资料
+            </Link>
+          </div>
         </div>
       </div>
 
