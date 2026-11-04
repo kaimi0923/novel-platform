@@ -25,15 +25,15 @@ export default async function AdminRejectedPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-stone-900">已驳回的作品</h1>
-      <p className="mt-1 text-sm text-stone-500">共 {works.length} 本</p>
+      <h1 className="text-2xl font-bold text-slate-900">已驳回的作品</h1>
+      <p className="mt-1 text-sm text-slate-500">共 {works.length} 本</p>
 
       <div className="mt-8">
-        <div className="mb-4 flex items-center gap-3 border-b border-stone-200 pb-3">
-          <Link href="/admin" className="text-sm text-stone-500 transition hover:text-brand-600">
+        <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-3">
+          <Link href="/admin" className="text-sm text-slate-500 transition hover:text-brand-600">
             待审核
           </Link>
-          <Link href="/admin/approved" className="text-sm text-stone-500 transition hover:text-brand-600">
+          <Link href="/admin/approved" className="text-sm text-slate-500 transition hover:text-brand-600">
             已通过
           </Link>
           <span className="rounded bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-800">
@@ -45,17 +45,17 @@ export default async function AdminRejectedPage() {
           {works.map((work) => (
             <div
               key={work.id}
-              className="rounded-xl border border-stone-200 bg-white p-4"
+              className="rounded-xl border border-slate-200 bg-white p-4"
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <Link
                     href={`/works/${work.id}`}
-                    className="font-semibold text-stone-900 transition hover:text-brand-600"
+                    className="font-semibold text-slate-900 transition hover:text-brand-600"
                   >
                     {work.title}
                   </Link>
-                  <p className="mt-0.5 text-xs text-stone-500">
+                  <p className="mt-0.5 text-xs text-slate-500">
                     {work.category} · 作者：{work.author?.username ?? "佚名"}
                   </p>
                 </div>
@@ -71,7 +71,7 @@ export default async function AdminRejectedPage() {
             </div>
           ))}
           {works.length === 0 && (
-            <p className="rounded-xl border border-dashed border-stone-300 bg-white p-10 text-center text-sm text-stone-500">
+            <p className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
               还没有被驳回的作品
             </p>
           )}

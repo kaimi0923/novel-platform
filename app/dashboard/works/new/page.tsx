@@ -51,11 +51,11 @@ export default function NewWorkPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold text-stone-900">发布新作品</h1>
+      <h1 className="mb-6 text-2xl font-bold text-slate-900">发布新作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品名称 <span className="text-rose-500">*</span>
           </label>
           <input
@@ -70,7 +70,7 @@ export default function NewWorkPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             分类 <span className="text-rose-500">*</span>
           </label>
           <select
@@ -87,7 +87,7 @@ export default function NewWorkPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品简介
           </label>
           <textarea
@@ -101,7 +101,7 @@ export default function NewWorkPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             封面图片链接（选填）
           </label>
           <input
@@ -111,7 +111,7 @@ export default function NewWorkPage() {
             placeholder="https://…（不填则自动用文字封面）"
             className="input-base"
           />
-          <p className="mt-1 text-xs text-stone-400">
+          <p className="mt-1 text-xs text-slate-400">
             可先不填，后续编辑作品时再补充
           </p>
         </div>
@@ -134,7 +134,7 @@ export default function NewWorkPage() {
             取消
           </button>
         </div>
-        <p className="text-xs text-stone-400">
+        <p className="text-xs text-slate-400">
           * 提交后作品进入审核队列，通过后才会在书库展示
         </p>
       </form>

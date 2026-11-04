@@ -16,8 +16,8 @@ export default async function WorksPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-stone-900">书库</h1>
-        <p className="mt-1 text-sm text-stone-500">
+        <h1 className="text-2xl font-bold text-slate-900">书库</h1>
+        <p className="mt-1 text-sm text-slate-500">
           全部已通过审核的原创作品
         </p>
       </div>
@@ -29,7 +29,7 @@ export default async function WorksPage({
           className={`rounded-full px-4 py-1.5 text-sm transition ${
             !category
               ? "bg-brand-600 text-white"
-              : "border border-stone-300 bg-white text-stone-600 hover:border-brand-400 hover:text-brand-600"
+              : "border border-slate-300 bg-white text-slate-600 hover:border-brand-400 hover:text-brand-600"
           }`}
         >
           全部
@@ -41,7 +41,7 @@ export default async function WorksPage({
             className={`rounded-full px-4 py-1.5 text-sm transition ${
               category === c
                 ? "bg-brand-600 text-white"
-                : "border border-stone-300 bg-white text-stone-600 hover:border-brand-400 hover:text-brand-600"
+                : "border border-slate-300 bg-white text-slate-600 hover:border-brand-400 hover:text-brand-600"
             }`}
           >
             {c}
@@ -50,8 +50,8 @@ export default async function WorksPage({
       </div>
 
       {works.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-stone-300 bg-white p-12 text-center">
-          <p className="text-stone-500">
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+          <p className="text-slate-500">
             {category ? `「${category}」分类下还没有作品` : "还没有作品上架"}
           </p>
         </div>

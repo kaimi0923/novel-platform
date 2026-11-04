@@ -11,12 +11,12 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero 区 */}
-      <section className="bg-gradient-to-b from-brand-50 to-stone-50">
+      <section className="bg-gradient-to-b from-brand-50 to-white">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             拾笔小说
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-600 sm:text-base">
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
             一个开放的原创小说投稿与阅读平台
             <br />
             你的故事，值得被更多人看见
@@ -39,7 +39,7 @@ export default async function HomePage() {
             <Link
               key={c}
               href={`/works?category=${encodeURIComponent(c)}`}
-              className="rounded-full border border-stone-200 bg-white px-4 py-1.5 text-sm text-stone-600 transition hover:border-brand-400 hover:text-brand-600"
+              className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-600 transition hover:border-brand-400 hover:text-brand-600"
             >
               {c}
             </Link>
@@ -50,15 +50,15 @@ export default async function HomePage() {
       {/* 最新作品 */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-stone-900">最新上架</h2>
+          <h2 className="text-xl font-semibold text-slate-900">最新上架</h2>
           <Link href="/works" className="text-sm text-brand-600 transition hover:text-brand-700">
             查看全部 →
           </Link>
         </div>
 
         {latestWorks.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-stone-300 bg-white p-12 text-center">
-            <p className="text-stone-500">还没有作品上架，来发布第一本吧</p>
+          <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+            <p className="text-slate-500">还没有作品上架，来发布第一本吧</p>
             <Link href="/dashboard/works/new" className="btn-primary mt-4">
               立即投稿
             </Link>

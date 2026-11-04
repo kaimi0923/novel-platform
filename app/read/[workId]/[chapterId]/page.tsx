@@ -52,20 +52,20 @@ export default async function ReadPage({
       <div className="mb-6 flex items-center justify-between text-sm">
         <Link
           href={`/works/${work.id}`}
-          className="flex items-center gap-1 text-stone-500 transition hover:text-brand-600"
+          className="flex items-center gap-1 text-slate-500 transition hover:text-brand-600"
         >
           <span>←</span> {work.title}
         </Link>
-        <span className="text-stone-400">
+        <span className="text-slate-400">
           {chapters.length} 章 · 第 {chapter.chapter_order} 章
         </span>
       </div>
 
       {/* 正文 */}
-      <article className="rounded-2xl border border-stone-200 bg-white px-6 py-10 shadow-sm sm:px-10">
+      <article className="rounded-2xl border border-slate-200 bg-white px-6 py-10 shadow-sm sm:px-10">
         <header className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-stone-900">{chapter.title}</h1>
-          <p className="mt-2 text-sm text-stone-400">
+          <h1 className="text-2xl font-bold text-slate-900">{chapter.title}</h1>
+          <p className="mt-2 text-sm text-slate-400">
             《{work.title}》 · {work.author?.username ?? "佚名"}
           </p>
         </header>
@@ -77,7 +77,7 @@ export default async function ReadPage({
         </div>
 
         {/* 章节切换 */}
-        <nav className="mt-10 flex items-center justify-between border-t border-stone-100 pt-6">
+        <nav className="mt-10 flex items-center justify-between border-t border-slate-100 pt-6">
           {prevChapter ? (
             <Link
               href={`/read/${work.id}/${prevChapter.id}`}
@@ -88,7 +88,7 @@ export default async function ReadPage({
           ) : (
             <span />
           )}
-          <Link href={`/works/${work.id}`} className="text-sm text-stone-400 transition hover:text-brand-600">
+          <Link href={`/works/${work.id}`} className="text-sm text-slate-400 transition hover:text-brand-600">
             目录
           </Link>
           {nextChapter ? (
@@ -104,7 +104,7 @@ export default async function ReadPage({
         </nav>
       </article>
 
-      <p className="mt-8 text-center text-xs text-stone-400">
+      <p className="mt-8 text-center text-xs text-slate-400">
         本章节由作者原创投稿，未经授权禁止转载
       </p>
     </div>

@@ -20,8 +20,8 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">我的作品</h1>
-          <p className="mt-1 text-sm text-stone-500">
+          <h1 className="text-2xl font-bold text-slate-900">我的作品</h1>
+          <p className="mt-1 text-sm text-slate-500">
             投稿后需经管理员审核，审核通过即可在书库展示
           </p>
         </div>
@@ -31,8 +31,8 @@ export default async function DashboardPage() {
       </div>
 
       {works.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-stone-300 bg-white p-12 text-center">
-          <p className="text-stone-500">你还没有投稿作品</p>
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+          <p className="text-slate-500">你还没有投稿作品</p>
           <Link href="/dashboard/works/new" className="btn-primary mt-4">
             发布第一本作品
           </Link>
@@ -42,7 +42,7 @@ export default async function DashboardPage() {
           {works.map((work) => (
             <div
               key={work.id}
-              className="rounded-xl border border-stone-200 bg-white p-5"
+              className="rounded-xl border border-slate-200 bg-white p-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -52,16 +52,16 @@ export default async function DashboardPage() {
                     >
                       {STATUS_LABEL[work.status]}
                     </span>
-                    <span className="rounded bg-stone-100 px-1.5 py-0.5 text-xs text-stone-500">
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">
                       {work.category}
                     </span>
-                    <span className="text-xs text-stone-400">
+                    <span className="text-xs text-slate-400">
                       {work.chapter_count ?? 0} 章
                     </span>
                   </div>
                   <Link
                     href={`/works/${work.id}`}
-                    className="text-lg font-semibold text-stone-900 transition hover:text-brand-600"
+                    className="text-lg font-semibold text-slate-900 transition hover:text-brand-600"
                   >
                     {work.title}
                   </Link>
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2 border-t border-stone-100 pt-4">
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
                 <Link
                   href={`/dashboard/works/${work.id}/chapters/new`}
                   className="btn-primary !px-3 !py-1.5 !text-xs"

@@ -72,13 +72,13 @@ export default function NewChapterPage() {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="text-sm text-stone-500 transition hover:text-brand-600"
+          className="text-sm text-slate-500 transition hover:text-brand-600"
         >
           ← 返回我的作品
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-stone-900">添加章节</h1>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900">添加章节</h1>
         {work && (
-          <p className="mt-1 text-sm text-stone-500">
+          <p className="mt-1 text-sm text-slate-500">
             作品：《{work.title}》
           </p>
         )}
@@ -86,7 +86,7 @@ export default function NewChapterPage() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             章节标题 <span className="text-rose-500">*</span>
           </label>
           <input
@@ -101,7 +101,7 @@ export default function NewChapterPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             正文 <span className="text-rose-500">*</span>
           </label>
           <textarea

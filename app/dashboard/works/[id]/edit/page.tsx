@@ -68,16 +68,16 @@ export default function EditWorkPage() {
   }
 
   if (loading) {
-    return <p className="px-4 py-20 text-center text-sm text-stone-400">加载中…</p>;
+    return <p className="px-4 py-20 text-center text-sm text-slate-400">加载中…</p>;
   }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold text-stone-900">编辑作品</h1>
+      <h1 className="mb-6 text-2xl font-bold text-slate-900">编辑作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品名称 <span className="text-rose-500">*</span>
           </label>
           <input
@@ -91,7 +91,7 @@ export default function EditWorkPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             分类 <span className="text-rose-500">*</span>
           </label>
           <select
@@ -108,7 +108,7 @@ export default function EditWorkPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品简介
           </label>
           <textarea
@@ -121,7 +121,7 @@ export default function EditWorkPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
             封面图片链接
           </label>
           <input
@@ -151,7 +151,7 @@ export default function EditWorkPage() {
             取消
           </button>
         </div>
-        <p className="text-xs text-stone-400">
+        <p className="text-xs text-slate-400">
           * 已通过审核的作品修改信息后，状态保持不变
         </p>
       </form>

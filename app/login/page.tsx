@@ -42,7 +42,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-stone-700">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
           邮箱
         </label>
         <input
@@ -55,7 +55,7 @@ function LoginForm() {
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-stone-700">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
           密码
         </label>
         <input
@@ -78,7 +78,7 @@ function LoginForm() {
         {loading ? "登录中…" : "登录"}
       </button>
 
-      <p className="text-center text-sm text-stone-500">
+      <p className="text-center text-sm text-slate-500">
         还没有账号？{" "}
         <Link href="/signup" className="font-medium text-brand-600 hover:underline">
           立即注册
@@ -91,11 +91,11 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
-      <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-center text-xl font-bold text-stone-900">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
           登录拾笔小说
         </h1>
-        <Suspense fallback={<p className="text-center text-sm text-stone-400">加载中…</p>}>
+        <Suspense fallback={<p className="text-center text-sm text-slate-400">加载中…</p>}>
           <LoginForm />
         </Suspense>
       </div>

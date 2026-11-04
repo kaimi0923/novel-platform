@@ -53,14 +53,14 @@ export default function SignupPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
-      <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-center text-xl font-bold text-stone-900">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
           注册拾笔小说
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-stone-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
               笔名 / 用户名
             </label>
             <input
@@ -73,7 +73,7 @@ export default function SignupPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-stone-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
               邮箱
             </label>
             <input
@@ -86,7 +86,7 @@ export default function SignupPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-stone-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
               密码
             </label>
             <input
@@ -115,7 +115,7 @@ export default function SignupPage() {
             {loading ? "注册中…" : "注册"}
           </button>
 
-          <p className="text-center text-sm text-stone-500">
+          <p className="text-center text-sm text-slate-500">
             已有账号？{" "}
             <Link href="/login" className="font-medium text-brand-600 hover:underline">
               直接登录

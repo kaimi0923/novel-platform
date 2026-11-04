@@ -50,7 +50,7 @@ export function AdminWorkActions({
   }
 
   return (
-    <div className="mt-3 border-t border-stone-100 pt-3">
+    <div className="mt-3 border-t border-slate-100 pt-3">
       {showRejectInput ? (
         <div className="space-y-2">
           <textarea
@@ -74,7 +74,7 @@ export function AdminWorkActions({
                 setRejectReason("");
                 setError(null);
               }}
-              className="rounded-lg border border-stone-300 px-3 py-1.5 text-xs text-stone-600"
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-600"
             >
               取消
             </button>
@@ -101,7 +101,7 @@ export function AdminWorkActions({
       {error && (
         <p className="mt-2 text-xs text-rose-600">{error}</p>
       )}
-      <p className="mt-2 hidden text-xs text-stone-400">《{title}》</p>
+      <p className="mt-2 hidden text-xs text-slate-400">《{title}》</p>
     </div>
   );
 }

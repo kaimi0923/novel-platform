@@ -34,10 +34,10 @@ export default async function WorkDetailPage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="flex flex-col gap-6 sm:flex-row">
           {/* 封面 */}
-          <div className="mx-auto flex h-48 w-36 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-400 to-rose-500 px-2 text-center sm:mx-0">
+          <div className="mx-auto flex h-48 w-36 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 px-2 text-center sm:mx-0">
             {work.cover_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -58,15 +58,15 @@ export default async function WorkDetailPage({
               <span className="rounded bg-brand-50 px-2 py-0.5 text-xs text-brand-700">
                 {work.category}
               </span>
-              <span className="text-xs text-stone-400">
+              <span className="text-xs text-slate-400">
                 {chapters.length} 章 · {work.view_count} 阅读
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-stone-900">{work.title}</h1>
-            <p className="mt-1 text-sm text-stone-500">
+            <h1 className="text-2xl font-bold text-slate-900">{work.title}</h1>
+            <p className="mt-1 text-sm text-slate-500">
               作者：{work.author?.username ?? "佚名"}
             </p>
-            <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-stone-600">
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
               {work.description ?? "作者还没有写简介。"}
             </p>
 
@@ -87,7 +87,7 @@ export default async function WorkDetailPage({
                   {work.status === "approved" ? "开始阅读" : "预览阅读"}
                 </Link>
               ) : (
-                <span className="text-sm text-stone-400">还没有章节</span>
+                <span className="text-sm text-slate-400">还没有章节</span>
               )}
               {user?.id === work.author_id && (
                 <Link
@@ -104,9 +104,9 @@ export default async function WorkDetailPage({
 
       {/* 章节列表 */}
       <div className="mt-8">
-        <h2 className="mb-4 text-lg font-semibold text-stone-900">章节列表</h2>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">章节列表</h2>
         {chapters.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-stone-300 bg-white p-8 text-center text-sm text-stone-500">
+          <p className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
             这本书还没有章节，作者正在努力码字中…
           </p>
         ) : (
@@ -115,13 +115,13 @@ export default async function WorkDetailPage({
               <Link
                 key={ch.id}
                 href={`/read/${work.id}/${ch.id}`}
-                className="flex items-center justify-between rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm transition hover:border-brand-400 hover:text-brand-600"
+                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm transition hover:border-brand-400 hover:text-brand-600"
               >
                 <span className="truncate">
-                  <span className="mr-2 text-stone-400">{ch.chapter_order}.</span>
+                  <span className="mr-2 text-slate-400">{ch.chapter_order}.</span>
                   {ch.title}
                 </span>
-                <span className="shrink-0 text-xs text-stone-400">阅读 →</span>
+                <span className="shrink-0 text-xs text-slate-400">阅读 →</span>
               </Link>
             ))}
           </div>

@@ -27,55 +27,55 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-stone-900">审核后台</h1>
-      <p className="mt-1 text-sm text-stone-500">
+      <h1 className="text-2xl font-bold text-slate-900">审核后台</h1>
+      <p className="mt-1 text-sm text-slate-500">
         待审核作品 {pendingWorks.length} 本，请先审后发
       </p>
 
       <div className="mt-8">
-        <div className="mb-4 flex items-center gap-3 border-b border-stone-200 pb-3">
+        <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-3">
           <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
             待审核
           </span>
-          <Link href="/admin/approved" className="text-sm text-stone-500 transition hover:text-brand-600">
+          <Link href="/admin/approved" className="text-sm text-slate-500 transition hover:text-brand-600">
             已通过
           </Link>
-          <Link href="/admin/rejected" className="text-sm text-stone-500 transition hover:text-brand-600">
+          <Link href="/admin/rejected" className="text-sm text-slate-500 transition hover:text-brand-600">
             已驳回
           </Link>
         </div>
 
         {pendingWorks.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-stone-300 bg-white p-12 text-center">
-            <p className="text-stone-500">暂无待审核作品，全部处理完了</p>
+          <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+            <p className="text-slate-500">暂无待审核作品，全部处理完了</p>
           </div>
         ) : (
           <div className="space-y-4">
             {pendingWorks.map((work) => (
               <div
                 key={work.id}
-                className="rounded-xl border border-stone-200 bg-white p-5"
+                className="rounded-xl border border-slate-200 bg-white p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="rounded bg-stone-100 px-1.5 py-0.5 text-xs text-stone-500">
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">
                         {work.category}
                       </span>
-                      <span className="text-xs text-stone-400">
+                      <span className="text-xs text-slate-400">
                         投稿于 {new Date(work.created_at).toLocaleString("zh-CN")}
                       </span>
                     </div>
                     <Link
                       href={`/works/${work.id}`}
-                      className="text-lg font-semibold text-stone-900 transition hover:text-brand-600"
+                      className="text-lg font-semibold text-slate-900 transition hover:text-brand-600"
                     >
                       {work.title}
                     </Link>
-                    <p className="mt-0.5 text-xs text-stone-500">
+                    <p className="mt-0.5 text-xs text-slate-500">
                       作者：{work.author?.username ?? "佚名"} · {work.chapter_count ?? 0} 章
                     </p>
-                    <p className="mt-2 line-clamp-2 text-sm text-stone-600">
+                    <p className="mt-2 line-clamp-2 text-sm text-slate-600">
                       {work.description ?? "（无简介）"}
                     </p>
                   </div>
