@@ -11,12 +11,13 @@ function normalizeWork(row: WorkRow): Work {
   } as Work;
 }
 
-/** 获取已通过审核的作品列表（可选按分类/标签筛选、按阅读量排序） */
+/** 获取已通过审核的作品列表（可选按分类/标签/类型筛选、按阅读量排序） */
 export async function getApprovedWorks(
   category?: string,
   limit = 20,
   sortBy: "latest" | "popular" = "latest",
-  tag?: string
+  tag?: string,
+  type?: "novel" | "art" | "comic"
 ) {
   const supabase = await createClient();
   let query = supabase
@@ -35,6 +36,9 @@ export async function getApprovedWorks(
   }
   if (tag) {
     query = query.contains("tags", [tag]);
+  }
+  if (type) {
+    query = query.eq("type", type);
   }
 
   query = query.limit(limit);

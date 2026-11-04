@@ -38,6 +38,11 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
       <div className="flex min-w-0 flex-col justify-between py-1">
         <div>
           <div className="mb-1.5 flex items-center gap-2">
+            {work.type && work.type !== "novel" && (
+              <span className="rounded bg-violet-50 px-1.5 py-0.5 text-xs text-violet-700">
+                {work.type === "art" ? "插画" : "漫画"}
+              </span>
+            )}
             <span className="rounded bg-brand-50 px-1.5 py-0.5 text-xs text-brand-700">
               {work.category}
             </span>

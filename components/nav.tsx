@@ -24,14 +24,20 @@ export function Nav({ user, role }: NavProps) {
             <Link href="/" className="transition hover:text-brand-600">
               首页
             </Link>
+            <Link href="/art" className="transition hover:text-brand-600">
+              插画
+            </Link>
+            <Link href="/comic" className="transition hover:text-brand-600">
+              漫画
+            </Link>
             <Link href="/works" className="transition hover:text-brand-600">
-              书库
+              小说
             </Link>
             <Link
               href="/dashboard/works/new"
-              className="transition hover:text-brand-600"
+              className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-700"
             >
-              投稿
+              + 创作
             </Link>
             {role === "admin" && (
               <Link href="/admin" className="transition hover:text-brand-600">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
+import { BottomNav } from "@/components/bottom-nav";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -41,8 +42,9 @@ export default async function RootLayout({
     <html lang="zh-CN">
       <body className="flex min-h-screen flex-col">
         <Nav user={user} role={role} />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-16">{children}</main>
         <Footer />
+        <BottomNav />
       </body>
     </html>
   );

@@ -9,6 +9,7 @@ import VerifyGate from "@/components/verify-gate";
 
 export default function NewWorkPage() {
   const router = useRouter();
+  const [workType, setWorkType] = useState<"novel" | "art" | "comic">("novel");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
@@ -40,6 +41,7 @@ export default function NewWorkPage() {
       category,
       cover_url: coverUrl.trim() || null,
       tags,
+      type: workType,
       status: "pending",
     });
 
@@ -59,6 +61,42 @@ export default function NewWorkPage() {
         <h1 className="mb-6 text-2xl font-bold text-slate-900">发布新作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作品类型 <span className="text-rose-500">*</span>
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {(
+              [
+                { key: "novel", label: "小说", desc: "文字作品" },
+                { key: "art", label: "插画", desc: "单张图片" },
+                { key: "comic", label: "漫画", desc: "图片作品" },
+              ] as const
+            ).map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setWorkType(t.key)}
+                className={`rounded-xl border p-3 text-left transition ${
+                  workType === t.key
+                    ? "border-brand-600 bg-brand-50"
+                    : "border-slate-200 bg-white hover:border-brand-300"
+                }`}
+              >
+                <span className={`block text-sm font-semibold ${workType === t.key ? "text-brand-700" : "text-slate-700"}`}>
+                  {t.label}
+                </span>
+                <span className="mt-0.5 block text-xs text-slate-400">{t.desc}</span>
+              </button>
+            ))}
+          </div>
+          {workType !== "novel" && (
+            <p className="mt-2 text-xs text-amber-600">
+              插画/漫画作品请务必填写封面图片链接（作品图），读者以图片形式浏览
+            </p>
+          )}
+        </div>
+
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品名称 <span className="text-rose-500">*</span>

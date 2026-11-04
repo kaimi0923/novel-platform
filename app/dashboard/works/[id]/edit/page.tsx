@@ -15,6 +15,7 @@ export default function EditWorkPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [workType, setWorkType] = useState<"novel" | "art" | "comic">("novel");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
@@ -34,6 +35,7 @@ export default function EditWorkPage() {
           setError("作品不存在或无权访问");
         } else {
           const work = data as Work;
+          setWorkType(work.type ?? "novel");
           setTitle(work.title);
           setCategory(work.category);
           setDescription(work.description ?? "");
@@ -59,6 +61,7 @@ export default function EditWorkPage() {
         category,
         cover_url: coverUrl.trim() || null,
         tags,
+        type: workType,
       })
       .eq("id", workId);
 
@@ -82,6 +85,37 @@ export default function EditWorkPage() {
         <h1 className="mb-6 text-2xl font-bold text-slate-900">编辑作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作品类型 <span className="text-rose-500">*</span>
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {(
+              [
+                { key: "novel", label: "小说", desc: "文字作品" },
+                { key: "art", label: "插画", desc: "单张图片" },
+                { key: "comic", label: "漫画", desc: "图片作品" },
+              ] as const
+            ).map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setWorkType(t.key)}
+                className={`rounded-xl border p-3 text-left transition ${
+                  workType === t.key
+                    ? "border-brand-600 bg-brand-50"
+                    : "border-slate-200 bg-white hover:border-brand-300"
+                }`}
+              >
+                <span className={`block text-sm font-semibold ${workType === t.key ? "text-brand-700" : "text-slate-700"}`}>
+                  {t.label}
+                </span>
+                <span className="mt-0.5 block text-xs text-slate-400">{t.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品名称 <span className="text-rose-500">*</span>

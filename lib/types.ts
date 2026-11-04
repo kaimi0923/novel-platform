@@ -29,6 +29,8 @@ export interface Work {
   description: string | null;
   cover_url: string | null;
   category: string;
+  /** 作品类型：novel 小说 / art 插画 / comic 漫画 */
+  type?: "novel" | "art" | "comic";
   status: "pending" | "approved" | "rejected";
   reject_reason: string | null;
   view_count: number;
