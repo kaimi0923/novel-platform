@@ -4,19 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Profile } from "@/lib/types";
+import { isValidIdNumber, maskName, maskId } from "@/lib/id-validator";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
-
-// 脱敏显示：姓名保留首字，证件号保留前3后4
-function maskName(name: string) {
-  if (name.length <= 1) return name + "**";
-  return name.slice(0, 1) + "*".repeat(name.length - 1);
-}
-function maskId(id: string) {
-  if (id.length <= 7) return id;
-  return id.slice(0, 3) + "*".repeat(id.length - 7) + id.slice(-4);
-}
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -27,13 +18,16 @@ export default function VerifyPage() {
   const [idNumber, setIdNumber] = useState("");
   const [idAddress, setIdAddress] = useState("");
   const [idPhotoUrl, setIdPhotoUrl] = useState<string | null>(null);
+  const [verifyStatus, setVerifyStatus] = useState<Profile["verify_status"]>(null);
   const [idPhotoPreview, setIdPhotoPreview] = useState<string | null>(null);
   const [newIdPhoto, setNewIdPhoto] = useState<File | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [editing, setEditing] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
 
-  const verified = !!realName && !!idNumber;
+  const submitted = verifyStatus === "pending" || verifyStatus === "approved";
+  // 已提交且未编辑 → 只看；驳回/未提交/点编辑 → 表单
+  const showForm = !submitted || editing;
 
   useEffect(() => {
     const supabase = createClient();
@@ -56,6 +50,7 @@ export default function VerifyPage() {
         setIdNumber(p.id_number ?? "");
         setIdAddress(p.id_address ?? "");
         setIdPhotoUrl(p.id_photo_url ?? null);
+        setVerifyStatus(p.verify_status ?? null);
       }
       setLoading(false);
     })();
@@ -87,8 +82,11 @@ export default function VerifyPage() {
       setMessage({ type: "err", text: "请填写真实姓名" });
       return;
     }
-    if (idNo.length < 6) {
-      setMessage({ type: "err", text: "请填写正确的证件号码" });
+    if (!isValidIdNumber(idNo)) {
+      setMessage({
+        type: "err",
+        text: "证件号码格式不正确，请填写 18 位身份证 / 台湾居民居住证号码",
+      });
       return;
     }
 
@@ -115,7 +113,7 @@ export default function VerifyPage() {
         finalPhoto = photoPath; // 私有桶存路径，展示时用签名 URL
       }
 
-      // 保存认证信息
+      // 保存认证信息并提交审核
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -123,6 +121,7 @@ export default function VerifyPage() {
           id_number: idNo,
           id_address: idAddress.trim() || null,
           id_photo_url: finalPhoto,
+          verify_status: "pending",
         })
         .eq("id", user.id);
       if (error) throw new Error(error.message);
@@ -130,10 +129,11 @@ export default function VerifyPage() {
       setRealName(name);
       setIdNumber(idNo);
       setIdPhotoUrl(finalPhoto);
+      setVerifyStatus("pending");
       setNewIdPhoto(null);
       setIdPhotoPreview(null);
       setEditing(false);
-      setMessage({ type: "ok", text: "实名认证信息已保存！" });
+      setMessage({ type: "ok", text: "已提交，等待管理员审核…" });
       router.refresh();
     } catch (err) {
       setMessage({ type: "err", text: err instanceof Error ? err.message : "保存失败" });
@@ -150,60 +150,49 @@ export default function VerifyPage() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="mb-6 text-2xl font-bold text-slate-900">实名认证</h1>
 
-      {verified && !editing ? (
-        /* 已认证展示 */
-        <div className="space-y-5">
-          <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white">
-              ✓
-            </span>
-            <div>
-              <p className="font-semibold text-emerald-800">已完成实名认证</p>
-              <p className="text-xs text-emerald-600">
-                认证信息仅你自己和管理员可见，请放心
-              </p>
-            </div>
+      {/* 状态提示 */}
+      {verifyStatus === "approved" && !editing && (
+        <div className="mb-5 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+            ✓
+          </span>
+          <div>
+            <p className="font-semibold text-emerald-800">已完成实名认证</p>
+            <p className="text-xs text-emerald-600">
+              认证信息仅你自己和管理员可见，请放心
+            </p>
           </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-5">
-            <dl className="space-y-4">
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-slate-500">真实姓名</dt>
-                <dd className="text-sm font-medium text-slate-900">
-                  {maskName(realName)}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-slate-500">证件号码</dt>
-                <dd className="text-sm font-medium text-slate-900">
-                  {maskId(idNumber)}
-                </dd>
-              </div>
-              {idAddress && (
-                <div className="flex items-center justify-between gap-6">
-                  <dt className="shrink-0 text-sm text-slate-500">证件地址</dt>
-                  <dd className="text-right text-sm font-medium text-slate-900">
-                    {idAddress}
-                  </dd>
-                </div>
-              )}
-              {idPhotoUrl && <IdPhoto url={idPhotoUrl} />}
-            </dl>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              setEditing(true);
-              setMessage(null);
-            }}
-            className="btn-secondary"
-          >
-            修改认证信息
-          </button>
         </div>
-      ) : (
-        /* 填写表单 */
+      )}
+      {verifyStatus === "pending" && !editing && (
+        <div className="mb-5 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white">
+            ⏳
+          </span>
+          <div>
+            <p className="font-semibold text-amber-800">实名认证审核中</p>
+            <p className="text-xs text-amber-600">
+              已提交，管理员核实后会尽快处理，请耐心等待
+            </p>
+          </div>
+        </div>
+      )}
+      {verifyStatus === "rejected" && (
+        <div className="mb-5 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-500 text-white">
+            !
+          </span>
+          <div>
+            <p className="font-semibold text-rose-800">实名认证未通过</p>
+            <p className="text-xs text-rose-600">
+              管理员未能核实提交的信息，请检查后重新提交
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showForm ? (
+        /* 填写/重新提交表单 */
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
@@ -226,9 +215,12 @@ export default function VerifyPage() {
               type="text"
               value={idNumber}
               onChange={(e) => setIdNumber(e.target.value)}
-              placeholder="身份证 / 台湾居民居住证号码"
+              placeholder="18 位身份证 / 台湾居民居住证号码"
               className="input-base"
             />
+            <p className="mt-1.5 text-xs text-slate-400">
+              将校验号码格式，且需管理员审核通过后方算认证成功
+            </p>
           </div>
 
           <div>
@@ -246,13 +238,18 @@ export default function VerifyPage() {
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              证件照片 <span className="text-slate-400">（选填，仅自己可见）</span>
+              证件照片 <span className="text-slate-400">（选填，仅管理员可见）</span>
             </label>
             <div
               className="flex h-36 w-full items-center justify-center overflow-hidden rounded-lg border border-dashed border-slate-300 bg-slate-50 text-center"
               style={
                 idPhotoPreview
-                  ? { backgroundImage: `url(${idPhotoPreview})`, backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
+                  ? {
+                      backgroundImage: `url(${idPhotoPreview})`,
+                      backgroundSize: "contain",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }
                   : undefined
               }
             >
@@ -292,20 +289,65 @@ export default function VerifyPage() {
 
           <div className="flex items-center gap-3">
             <button type="submit" disabled={saving} className="btn-primary">
-              {saving ? "保存中…" : verified ? "保存修改" : "提交认证"}
+              {saving ? "保存中…" : verifyStatus === "rejected" ? "重新提交" : "提交认证"}
             </button>
             <button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => {
+                if (submitted) setEditing(false);
+                else router.back();
+              }}
               className="btn-secondary"
             >
               返回
             </button>
           </div>
           <p className="text-xs text-slate-400">
-            * 实名认证信息仅保存于你自己账号下，不会公开展示
+            * 提交后需管理员人工审核，通过后才会显示"已完成实名认证"
           </p>
         </form>
+      ) : (
+        /* 已提交展示（待审核/已通过） */
+        <div className="space-y-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5">
+            <dl className="space-y-4">
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-slate-500">真实姓名</dt>
+                <dd className="text-sm font-medium text-slate-900">
+                  {maskName(realName)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-slate-500">证件号码</dt>
+                <dd className="text-sm font-medium text-slate-900">
+                  {maskId(idNumber)}
+                </dd>
+              </div>
+              {idAddress && (
+                <div className="flex items-center justify-between gap-6">
+                  <dt className="shrink-0 text-sm text-slate-500">证件地址</dt>
+                  <dd className="text-right text-sm font-medium text-slate-900">
+                    {idAddress}
+                  </dd>
+                </div>
+              )}
+              {idPhotoUrl && <IdPhoto url={idPhotoUrl} />}
+            </dl>
+          </div>
+
+          {verifyStatus === "pending" && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(true);
+                setMessage(null);
+              }}
+              className="btn-secondary"
+            >
+              修改后重新提交
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

@@ -12,6 +12,7 @@ export interface Profile {
   id_number?: string | null;
   id_address?: string | null;
   id_photo_url?: string | null;
+  verify_status?: "pending" | "approved" | "rejected" | null;
   // 联系方式
   qq?: string | null;
   wechat?: string | null;

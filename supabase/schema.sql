@@ -17,6 +17,8 @@ create table if not exists public.profiles (
   id_number text,
   id_address text,
   id_photo_url text,
+  verify_status text
+    check (verify_status in ('pending', 'approved', 'rejected')),
   -- 联系方式
   qq text,
   wechat text,

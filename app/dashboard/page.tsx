@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   // 当前用户档案（头像/封面/昵称/实名状态）
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, avatar_url, cover_url, real_name")
+    .select("username, avatar_url, cover_url, real_name, verify_status")
     .eq("id", user.id)
     .single();
 
@@ -83,7 +83,13 @@ export default async function DashboardPage() {
               href="/dashboard/verify"
               className="btn-secondary !px-4 !py-1.5 !text-xs"
             >
-              {profile?.real_name ? "已实名认证 ✓" : "实名认证"}
+              {profile?.verify_status === "approved"
+                ? "已实名认证 ✓"
+                : profile?.verify_status === "pending"
+                  ? "实名审核中"
+                  : profile?.verify_status === "rejected"
+                    ? "实名未通过，重试"
+                    : "实名认证"}
             </Link>
             <Link
               href="/dashboard/profile"

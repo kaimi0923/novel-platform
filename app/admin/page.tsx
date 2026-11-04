@@ -43,6 +43,9 @@ export default async function AdminPage() {
           <Link href="/admin/rejected" className="text-sm text-slate-500 transition hover:text-brand-600">
             已驳回
           </Link>
+          <Link href="/admin/verify" className="text-sm text-slate-500 transition hover:text-brand-600">
+            实名认证
+          </Link>
         </div>
 
         {pendingWorks.length === 0 ? (
