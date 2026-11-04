@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
@@ -20,8 +20,11 @@ export default function EditWorkPage() {
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -46,12 +49,63 @@ export default function EditWorkPage() {
       });
   }, [workId]);
 
+  function onPickCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setError("封面只支持 JPG / PNG / WebP 格式");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("封面图片超过 5MB，请压缩后重试");
+      e.target.value = "";
+      return;
+    }
+    setError(null);
+    setCoverFile(file);
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setCoverPreview(URL.createObjectURL(file));
+    e.target.value = "";
+  }
+
+  function removeCover() {
+    setCoverFile(null);
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setCoverPreview(null);
+    setCoverUrl("");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSaving(true);
 
     const supabase = createClient();
+
+    // 上传新封面（文件名带时间戳，避免浏览器缓存旧图）
+    let finalCover: string | null = coverUrl || null;
+    try {
+      if (coverFile) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) throw new Error("请先登录");
+        const coverPath = `covers/${user.id}-${Date.now()}`;
+        const { error: upErr } = await supabase.storage
+          .from("author-images")
+          .upload(coverPath, coverFile, { upsert: false, cacheControl: "3600" });
+        if (upErr) throw new Error(upErr.message);
+        finalCover = supabase.storage
+          .from("author-images")
+          .getPublicUrl(coverPath).data.publicUrl;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "封面上传失败");
+      setSaving(false);
+      return;
+    }
+
     // 只更新信息字段，不动审核状态
     const { error } = await supabase
       .from("works")
@@ -59,7 +113,7 @@ export default function EditWorkPage() {
         title: title.trim(),
         description: description.trim() || null,
         category,
-        cover_url: coverUrl.trim() || null,
+        cover_url: finalCover,
         tags,
         type: workType,
       })
@@ -162,15 +216,56 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            封面图片链接
+            封面图片 <span className="font-normal text-slate-400">（可从相簿选择）</span>
           </label>
           <input
-            type="url"
-            value={coverUrl}
-            onChange={(e) => setCoverUrl(e.target.value)}
-            placeholder="https://…"
-            className="input-base"
+            ref={coverInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={onPickCover}
           />
+          {coverPreview || coverUrl ? (
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverPreview ?? coverUrl}
+                alt="封面预览"
+                className="mx-auto max-h-64 rounded-xl border border-slate-200 object-contain"
+              />
+              <div className="mt-2 flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  className="btn-secondary !py-1.5 text-xs"
+                >
+                  {coverFile ? "重新选择" : "更换图片"}
+                </button>
+                <button
+                  type="button"
+                  onClick={removeCover}
+                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-400 transition hover:border-rose-300 hover:text-rose-600"
+                >
+                  移除封面
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-8 text-slate-400 transition hover:border-brand-400 hover:text-brand-600"
+            >
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.5-3.5L11 18" />
+                <path d="M12 8v6M9 11h6" />
+              </svg>
+              <span className="text-sm">点击从相簿选择封面</span>
+              <span className="text-xs text-slate-400">JPG / PNG / WebP，≤5MB</span>
+            </button>
+          )}
         </div>
 
         <div>
