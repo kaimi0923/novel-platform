@@ -89,6 +89,11 @@ export default function VerifyPage() {
       });
       return;
     }
+    // 证件照片必填：已有照片或本次新上传均可
+    if (!idPhotoUrl && !newIdPhoto) {
+      setMessage({ type: "err", text: "请上传证件照片，实名认证必须附证件照片" });
+      return;
+    }
 
     setSaving(true);
     const supabase = createClient();
@@ -238,7 +243,8 @@ export default function VerifyPage() {
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              证件照片 <span className="text-slate-400">（选填，仅管理员可见）</span>
+              证件照片 <span className="text-rose-500">*</span>
+              <span className="text-slate-400">（仅管理员可见）</span>
             </label>
             <div
               className="flex h-36 w-full items-center justify-center overflow-hidden rounded-lg border border-dashed border-slate-300 bg-slate-50 text-center"
@@ -255,7 +261,7 @@ export default function VerifyPage() {
             >
               {!idPhotoPreview && (
                 <span className="text-xs text-slate-400">
-                  上传证件正面照片（JPG/PNG，≤5MB）
+                  请上传证件正面照片（JPG/PNG，≤5MB）
                 </span>
               )}
             </div>
