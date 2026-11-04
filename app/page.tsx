@@ -14,7 +14,7 @@ export default async function HomePage() {
       <section className="bg-gradient-to-b from-brand-50 to-white">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            拾笔小说
+            鬼点子
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
             一个开放的原创小说投稿与阅读平台

@@ -93,7 +93,7 @@ export default function LoginPage() {
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
-          登录拾笔小说
+          登录鬼点子
         </h1>
         <Suspense fallback={<p className="text-center text-sm text-slate-400">加载中…</p>}>
           <LoginForm />

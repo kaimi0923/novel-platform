@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "拾笔小说 · 原创小说投稿与阅读平台",
+  title: "鬼点子 · 原创小说投稿与阅读平台",
   description: "一个开放的原创小说投稿与阅读平台：作者自由投稿，读者在线阅读。",
 };
 

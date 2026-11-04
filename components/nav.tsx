@@ -17,7 +17,7 @@ export function Nav({ user, role }: NavProps) {
               拾
             </span>
             <span className="text-lg font-bold tracking-wide text-slate-900">
-              拾笔小说
+              鬼点子
             </span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-slate-600 sm:flex">

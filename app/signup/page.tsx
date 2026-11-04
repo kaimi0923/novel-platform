@@ -55,7 +55,7 @@ export default function SignupPage() {
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
-          注册拾笔小说
+          注册鬼点子
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
