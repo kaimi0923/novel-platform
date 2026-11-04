@@ -118,13 +118,6 @@ export default function NewChapterPage() {
       return;
     }
 
-    // 插画作品必须至少上传一张图片
-    if (work?.type === "art" && uploadedImages.length === 0) {
-      setError("插画作品请至少上传一张图片");
-      setLoading(false);
-      return;
-    }
-
     // 查询当前最大章节序号
     const { data: last } = await supabase
       .from("chapters")
@@ -136,9 +129,18 @@ export default function NewChapterPage() {
     const nextOrder = last && last.length > 0 ? last[0].chapter_order + 1 : 1;
 
     const isArt = work?.type === "art";
-    // 插画：标题选填，默认"插图 N"；正文留空
+    const isVisual = work?.type === "art" || work?.type === "comic";
+
+    // 插画/漫画作品必须至少上传一张图片
+    if (isVisual && uploadedImages.length === 0) {
+      setError("请至少上传一张作品图片");
+      setLoading(false);
+      return;
+    }
+
+    // 插画：标题选填，默认"插图 N"；插画/漫画正文都留空（只放图片）
     const finalTitle = title.trim() || (isArt ? `插图 ${nextOrder}` : "");
-    const finalContent = isArt ? "" : content.trim();
+    const finalContent = isVisual ? "" : content.trim();
 
     const { error } = await supabase.from("chapters").insert({
       work_id: workId,
@@ -200,32 +202,25 @@ export default function NewChapterPage() {
           />
         </div>
 
-        {/* 插画作品：只放图片，不输入文字 */}
-        {work?.type === "art" ? (
+        {/* 插画/漫画作品：只放图片，不出现文字框；小说保留正文 */}
+        {work?.type === "art" || work?.type === "comic" ? (
           <div className="rounded-xl border border-sky-100 bg-sky-50/60 px-4 py-3 text-xs text-sky-700">
-            插画作品以图片为主，直接上传下方图片即可，无需输入文字。每张图保存为一个内容条目。
+            {work?.type === "art"
+              ? "插画作品只放图片：直接上传下方图片即可，无需输入文字。"
+              : "漫画作品只放图片：直接上传下方图片即可（多张图按顺序阅读），无需输入文字。"}
           </div>
         ) : (
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              正文{" "}
-              {work?.type === "comic" ? (
-                <span className="font-normal text-slate-400">（选填，可留空）</span>
-              ) : (
-                <span className="text-rose-500">*</span>
-              )}
+              正文 <span className="text-rose-500">*</span>
             </label>
             <textarea
               ref={contentRef}
-              required={work?.type !== "comic"}
+              required
               rows={16}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={
-                work?.type === "comic"
-                  ? "漫画可以写对话或剧情说明（选填），留空则只显示图片\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）"
-                  : "在这里写正文……\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）\n段落之间请空一行，方便阅读。"
-              }
+              placeholder={"在这里写正文……\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）\n段落之间请空一行，方便阅读。"}
               className="input-base resize-y font-serif leading-7"
             />
           </div>
@@ -234,13 +229,15 @@ export default function NewChapterPage() {
         {/* 章节插图（可选） */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            {work?.type === "art"
-              ? "插画图片 " + (
-                  <span className="font-normal text-slate-400">（必传，可从相簿选择）</span>
-                )
-              : "章节插图 " + (
-                  <span className="font-normal text-slate-400">（选填，可从相簿选择多张）</span>
-                )}
+            {work?.type === "art" || work?.type === "comic" ? (
+              <>
+                作品图片 <span className="font-normal text-slate-400">（必传，可从相簿选择）</span>
+              </>
+            ) : (
+              <>
+                章节插图 <span className="font-normal text-slate-400">（选填，可从相簿选择多张）</span>
+              </>
+            )}
           </label>
           <input
             ref={fileInputRef}
