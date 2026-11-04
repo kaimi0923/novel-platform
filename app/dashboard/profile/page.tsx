@@ -106,12 +106,12 @@ export default function ProfilePage() {
     let finalCover = coverUrl;
 
     try {
-      // 上传新头像（覆盖同名文件）
+      // 上传新头像（文件名带时间戳，避免浏览器缓存旧图）
       if (newAvatar) {
-        const avatarPath = `avatars/${user.id}`;
+        const avatarPath = `avatars/${user.id}-${Date.now()}`;
         const { error: upErr } = await supabase.storage
           .from("author-images")
-          .upload(avatarPath, newAvatar, { upsert: true, cacheControl: "3600" });
+          .upload(avatarPath, newAvatar, { upsert: false, cacheControl: "3600" });
         if (upErr) throw new Error(upErr.message);
         finalAvatar = supabase.storage
           .from("author-images")
@@ -120,10 +120,10 @@ export default function ProfilePage() {
 
       // 上传新封面
       if (newCover) {
-        const coverPath = `covers/${user.id}`;
+        const coverPath = `covers/${user.id}-${Date.now()}`;
         const { error: upErr } = await supabase.storage
           .from("author-images")
-          .upload(coverPath, newCover, { upsert: true, cacheControl: "3600" });
+          .upload(coverPath, newCover, { upsert: false, cacheControl: "3600" });
         if (upErr) throw new Error(upErr.message);
         finalCover = supabase.storage
           .from("author-images")
