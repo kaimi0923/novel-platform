@@ -20,6 +20,7 @@ export default function NewChapterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -67,6 +68,21 @@ export default function NewChapterPage() {
     setImagePreviews((prev) => {
       URL.revokeObjectURL(prev[i]);
       return prev.filter((_, j) => j !== i);
+    });
+  }
+
+  /** 在正文光标位置插入 [插图N] 标记 */
+  function insertImageMarker(i: number) {
+    const marker = `[插图${i + 1}]`;
+    const ta = contentRef.current;
+    const start = ta?.selectionStart ?? content.length;
+    const end = ta?.selectionEnd ?? content.length;
+    const next = content.slice(0, start) + marker + content.slice(end);
+    setContent(next);
+    requestAnimationFrame(() => {
+      ta?.focus();
+      const pos = start + marker.length;
+      ta?.setSelectionRange(pos, pos);
     });
   }
 
@@ -168,11 +184,12 @@ export default function NewChapterPage() {
             正文 <span className="text-rose-500">*</span>
           </label>
           <textarea
+            ref={contentRef}
             required
             rows={16}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder={"在这里写正文……\n\n段落之间请空一行，方便阅读。"}
+            placeholder={"在这里写正文……\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）\n段落之间请空一行，方便阅读。"}
             className="input-base resize-y font-serif leading-7"
           />
         </div>
@@ -230,6 +247,14 @@ export default function NewChapterPage() {
                     <span className="absolute bottom-1.5 left-1.5 rounded bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
                       插图 {i + 1}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => insertImageMarker(i)}
+                      className="absolute bottom-1.5 right-1.5 rounded bg-brand-600 px-1.5 py-0.5 text-[10px] font-medium text-white transition hover:bg-brand-700"
+                      aria-label="插入到正文"
+                    >
+                      插入正文
+                    </button>
                   </div>
                 ))}
                 <button
@@ -244,7 +269,7 @@ export default function NewChapterPage() {
                 </button>
               </div>
               <p className="mt-2 text-xs text-slate-400">
-                共 {imageFiles.length} 张 · 保存章节时自动上传，读者阅读时显示在正文开头
+                共 {imageFiles.length} 张 · 点「插入正文」把标记放进正文（或自己写 [插图1] [插图2]…），保存后图片会显示在对应位置
               </p>
             </>
           )}

@@ -45,6 +45,34 @@ export default async function ReadPage({
   const nextChapter = idx < chapters.length - 1 ? chapters[idx + 1] : null;
 
   const paragraphs = chapter.content.split(/\n+/).filter((p) => p.trim());
+  const images = chapter.images ?? [];
+
+  // 解析正文中的 [插图N] 标记，替换为对应图片
+  const usedImageIndexes = new Set<number>();
+  const body = paragraphs.map((p, i) => {
+    const m = p.match(/^\[插图(\d+)\]$/);
+    if (m) {
+      const idx = parseInt(m[1], 10);
+      if (idx >= 1 && idx <= images.length) {
+        usedImageIndexes.add(idx);
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={`img-${i}`}
+            src={images[idx - 1]}
+            alt={`插图${idx}`}
+            className="mx-auto my-4 max-h-[70vh] rounded-lg object-contain"
+          />
+        );
+      }
+      return null;
+    }
+    return <p key={i}>{p}</p>;
+  });
+  // 未被引用的插图显示在正文末尾
+  const leftoverImages = images
+    .map((url, idx) => ({ url, idx: idx + 1 }))
+    .filter(({ idx }) => !usedImageIndexes.has(idx));
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
@@ -70,10 +98,10 @@ export default async function ReadPage({
           </p>
         </header>
 
-        {/* 章节插图 */}
-        {chapter.images && chapter.images.length > 0 && (
+        {/* 章节插图（正文开头） */}
+        {images.length > 0 && leftoverImages.length === images.length && (
           <div className="mb-8 space-y-4">
-            {chapter.images.map((url, i) => (
+            {images.map((url, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={i}
@@ -86,9 +114,21 @@ export default async function ReadPage({
         )}
 
         <div className="prose-novel">
-          {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          {body}
+          {/* 正文中未被引用的插图（兼容旧章节，排在末尾） */}
+          {leftoverImages.length > 0 && (
+            <div className="mt-8 space-y-4">
+              {leftoverImages.map(({ url, idx }) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={`leftover-${idx}`}
+                  src={url}
+                  alt={`${chapter.title}插图${idx}`}
+                  className="mx-auto max-h-[70vh] rounded-lg object-contain"
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 章节切换 */}
