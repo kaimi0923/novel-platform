@@ -36,6 +36,8 @@ create table if not exists public.works (
   description text,
   cover_url text,
   category text not null default '其他',
+  type text not null default 'novel'
+    check (type in ('novel', 'art', 'comic')),
   status text not null default 'pending'
     check (status in ('pending', 'approved', 'rejected')),
   reject_reason text,
@@ -54,10 +56,14 @@ create table if not exists public.chapters (
   id uuid primary key default gen_random_uuid(),
   work_id uuid references public.works (id) on delete cascade not null,
   title text not null check (char_length(title) between 1 and 80),
-  content text not null check (char_length(content) > 0),
+  content text not null default '',
+  images text[] not null default '{}',
   chapter_order integer not null,
   created_at timestamptz not null default now(),
-  unique (work_id, chapter_order)
+  unique (work_id, chapter_order),
+  -- 允许插画/漫画章节只放图片：正文为空时必须有图片
+  constraint chapters_content_check
+    check (char_length(content) > 0 or coalesce(array_length(images, 1), 0) > 0)
 );
 
 create index if not exists chapters_work_idx on public.chapters (work_id, chapter_order);
