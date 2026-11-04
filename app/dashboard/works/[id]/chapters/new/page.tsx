@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -14,9 +14,12 @@ export default function NewChapterPage() {
   const [work, setWork] = useState<Work | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [images, setImages] = useState<string[]>([""]);
+  // 章节插图：本地待上传文件 + 预览地址
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -34,12 +37,70 @@ export default function NewChapterPage() {
       });
   }, [workId]);
 
+  function onPickImages(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    // 校验类型与大小（JPG/PNG/WebP，单张 ≤5MB）
+    for (const f of files) {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
+        setError("只支持 JPG / PNG / WebP 格式的图片");
+        e.target.value = "";
+        return;
+      }
+      if (f.size > 5 * 1024 * 1024) {
+        setError(`图片「${f.name}」超过 5MB，请压缩后重试`);
+        e.target.value = "";
+        return;
+      }
+    }
+    setError(null);
+    setImageFiles((prev) => [...prev, ...files]);
+    setImagePreviews((prev) => [
+      ...prev,
+      ...files.map((f) => URL.createObjectURL(f)),
+    ]);
+    e.target.value = "";
+  }
+
+  function removeImage(i: number) {
+    setImageFiles((prev) => prev.filter((_, j) => j !== i));
+    setImagePreviews((prev) => {
+      URL.revokeObjectURL(prev[i]);
+      return prev.filter((_, j) => j !== i);
+    });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     const supabase = createClient();
+
+    // 上传插图到存储（文件名带时间戳，避免浏览器缓存旧图）
+    let uploadedImages: string[] = [];
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("请先登录");
+
+      for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
+        const path = `chapter-images/${user.id}-${Date.now()}-${i}`;
+        const { error: upErr } = await supabase.storage
+          .from("author-images")
+          .upload(path, file, { upsert: false, cacheControl: "3600" });
+        if (upErr) throw new Error(upErr.message);
+        uploadedImages.push(
+          supabase.storage.from("author-images").getPublicUrl(path).data.publicUrl
+        );
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "图片上传失败");
+      setLoading(false);
+      return;
+    }
 
     // 查询当前最大章节序号
     const { data: last } = await supabase
@@ -56,7 +117,7 @@ export default function NewChapterPage() {
       title: title.trim(),
       content: content.trim(),
       chapter_order: nextOrder,
-      images: images.map((u) => u.trim()).filter((u) => u.length > 0),
+      images: uploadedImages,
     });
 
     if (error) {
@@ -119,45 +180,74 @@ export default function NewChapterPage() {
         {/* 章节插图（可选） */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            章节插图 <span className="font-normal text-slate-400">（选填，可加多张）</span>
+            章节插图 <span className="font-normal text-slate-400">（选填，可从相簿选择多张）</span>
           </label>
-          <div className="space-y-2">
-            {images.map((url, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => {
-                    const next = [...images];
-                    next[i] = e.target.value;
-                    setImages(next);
-                  }}
-                  placeholder="粘贴图片链接，如 https://…（上传到图床后复制地址）"
-                  className="input-base flex-1"
-                />
-                {images.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setImages(images.filter((_, j) => j !== i))}
-                    className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-2 text-sm text-slate-400 transition hover:border-rose-300 hover:text-rose-600"
-                    aria-label="删除该插图"
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            className="hidden"
+            onChange={onPickImages}
+          />
+          {imagePreviews.length === 0 ? (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-8 text-slate-400 transition hover:border-brand-400 hover:text-brand-600"
+            >
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.5-3.5L11 18" />
+                <path d="M12 8v6M9 11h6" />
+              </svg>
+              <span className="text-sm">点击从相簿选择图片（支持多选）</span>
+              <span className="text-xs text-slate-400">JPG / PNG / WebP，单张不超过 5MB</span>
+            </button>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {imagePreviews.map((url, i) => (
+                  <div
+                    key={i}
+                    className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-slate-200 bg-slate-100"
                   >
-                    删除
-                  </button>
-                )}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={`插图${i + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(i)}
+                      className="absolute right-1.5 top-1.5 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white transition hover:bg-rose-600"
+                      aria-label="删除该插图"
+                    >
+                      删除
+                    </button>
+                    <span className="absolute bottom-1.5 left-1.5 rounded bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
+                      插图 {i + 1}
+                    </span>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex aspect-[4/3] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400 transition hover:border-brand-400 hover:text-brand-600"
+                >
+                  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  <span className="text-xs">继续添加</span>
+                </button>
               </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => setImages([...images, ""])}
-            className="mt-2 text-sm font-medium text-brand-600 transition hover:text-brand-700"
-          >
-            + 添加一张插图
-          </button>
-          <p className="mt-1.5 text-xs text-slate-400">
-            插图会显示在章节正文开头。图片需要先上传到图床（如阿里云 OSS、sm.ms），拿到链接后粘贴到这里。
-          </p>
+              <p className="mt-2 text-xs text-slate-400">
+                共 {imageFiles.length} 张 · 保存章节时自动上传，读者阅读时显示在正文开头
+              </p>
+            </>
+          )}
         </div>
 
         {error && (
