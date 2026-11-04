@@ -5,6 +5,8 @@ export interface Profile {
   email: string;
   username: string | null;
   role: "reader" | "author" | "admin";
+  avatar_url?: string | null;
+  cover_url?: string | null;
   created_at: string;
 }
 
@@ -23,7 +25,7 @@ export interface Work {
   // 作品标签（四大类中挑选）
   tags?: string[];
   // 联表查询时附带
-  author?: { username: string | null } | null;
+  author?: { username: string | null; avatar_url?: string | null } | null;
   // 章节数（联表聚合时附带）
   chapter_count?: number;
   // 收藏数（联表聚合时附带）

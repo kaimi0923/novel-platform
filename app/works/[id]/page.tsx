@@ -84,8 +84,16 @@ export default async function WorkDetailPage({
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900">{work.title}</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              作者：{work.author?.username ?? "佚名"}
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
+              {work.author?.avatar_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={work.author.avatar_url}
+                  alt="作者头像"
+                  className="h-5 w-5 rounded-full object-cover"
+                />
+              )}
+              <span>作者：{work.author?.username ?? "佚名"}</span>
             </p>
             <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
               {work.description ?? "作者还没有写简介。"}

@@ -10,6 +10,8 @@ create table if not exists public.profiles (
   username text unique,
   role text not null default 'reader'
     check (role in ('reader', 'author', 'admin')),
+  avatar_url text,
+  cover_url text,
   created_at timestamptz not null default now()
 );
 
@@ -301,3 +303,24 @@ create policy "comments_delete" on public.comments
 -- ---------- 11. 新表授权 ----------
 grant select, insert, delete on table public.favorites to anon, authenticated;
 grant select, insert, delete on table public.comments to anon, authenticated;
+
+-- ---------- 12. 作者图片存储桶（头像 / 个人封面） ----------
+insert into storage.buckets (id, name, public)
+values ('author-images', 'author-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "author_images_read" on storage.objects;
+create policy "author_images_read" on storage.objects
+  for select using (bucket_id = 'author-images');
+
+drop policy if exists "author_images_insert" on storage.objects;
+create policy "author_images_insert" on storage.objects
+  for insert with check (bucket_id = 'author-images' and auth.uid() = owner);
+
+drop policy if exists "author_images_update" on storage.objects;
+create policy "author_images_update" on storage.objects
+  for update using (bucket_id = 'author-images' and auth.uid() = owner);
+
+drop policy if exists "author_images_delete" on storage.objects;
+create policy "author_images_delete" on storage.objects
+  for delete using (bucket_id = 'author-images' and auth.uid() = owner);

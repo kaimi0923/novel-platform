@@ -14,6 +14,13 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
+  // 当前用户档案（头像/封面/昵称）
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username, avatar_url, cover_url")
+    .eq("id", user.id)
+    .single();
+
   const works = await getMyWorks(user.id);
 
   // 数据中心统计
@@ -23,6 +30,60 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
+      {/* 作者横幅（头像 + 封面 + 昵称） */}
+      <div className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        {/* 封面背景 */}
+        <div
+          className="flex h-36 items-end justify-start bg-gradient-to-br from-slate-800 via-indigo-800 to-brand-700 p-6 sm:h-44"
+          style={
+            profile?.cover_url
+              ? {
+                  backgroundImage: `url(${profile.cover_url})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : undefined
+          }
+        >
+          <div className="flex items-end gap-4">
+            <div
+              className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white shadow"
+              style={
+                profile?.avatar_url
+                  ? {
+                      backgroundImage: `url(${profile.avatar_url})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }
+                  : undefined
+              }
+            >
+              {!profile?.avatar_url && (
+                <span className="text-xl">
+                  {(profile?.username ?? "作").slice(0, 1).toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="pb-1">
+              <p className="text-lg font-bold text-white drop-shadow">
+                {profile?.username ?? "作者"}
+              </p>
+              <p className="text-xs text-white/80">
+                共 {works.length} 部作品 · {totalChapters} 章 · {totalViews} 阅读
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-6 py-3">
+          <p className="text-xs text-slate-400">
+            作者专区 · 管理你的作品与个人资料
+          </p>
+          <Link href="/dashboard/profile" className="btn-secondary !px-4 !py-1.5 !text-xs">
+            编辑个人资料
+          </Link>
+        </div>
+      </div>
+
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">我的作品</h1>

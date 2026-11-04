@@ -21,7 +21,7 @@ export async function getApprovedWorks(
   const supabase = await createClient();
   let query = supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username), chapters(count), favorites(count)")
+    .select("*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count), favorites(count)")
     .eq("status", "approved");
 
   if (sortBy === "popular") {
@@ -49,7 +49,7 @@ export async function getWorkWithChapters(id: string) {
   const supabase = await createClient();
   const { data: work, error: workError } = await supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username)")
+    .select("*, author:profiles!works_author_id_fkey(username, avatar_url)")
     .eq("id", id)
     .single();
   if (workError) throw workError;
@@ -139,7 +139,7 @@ export async function getPendingWorks() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username), chapters(count)")
+    .select("*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count)")
     .eq("status", "pending")
     .order("created_at", { ascending: true });
   if (error) throw error;
@@ -151,7 +151,7 @@ export async function getWorksByStatus(status: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username), chapters(count)")
+    .select("*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count)")
     .eq("status", status)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -167,7 +167,7 @@ export async function getChapterWithContext(
   const supabase = await createClient();
   const { data: work, error: workError } = await supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username)")
+    .select("*, author:profiles!works_author_id_fkey(username, avatar_url)")
     .eq("id", workId)
     .single();
   if (workError) throw workError;
