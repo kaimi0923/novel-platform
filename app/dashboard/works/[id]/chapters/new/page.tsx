@@ -118,6 +118,13 @@ export default function NewChapterPage() {
       return;
     }
 
+    // 插画作品必须至少上传一张图片
+    if (work?.type === "art" && uploadedImages.length === 0) {
+      setError("插画作品请至少上传一张图片");
+      setLoading(false);
+      return;
+    }
+
     // 查询当前最大章节序号
     const { data: last } = await supabase
       .from("chapters")
@@ -128,10 +135,15 @@ export default function NewChapterPage() {
 
     const nextOrder = last && last.length > 0 ? last[0].chapter_order + 1 : 1;
 
+    const isArt = work?.type === "art";
+    // 插画：标题选填，默认"插图 N"；正文留空
+    const finalTitle = title.trim() || (isArt ? `插图 ${nextOrder}` : "");
+    const finalContent = isArt ? "" : content.trim();
+
     const { error } = await supabase.from("chapters").insert({
       work_id: workId,
-      title: title.trim(),
-      content: content.trim(),
+      title: finalTitle,
+      content: finalContent,
       chapter_order: nextOrder,
       images: uploadedImages,
     });
@@ -166,38 +178,69 @@ export default function NewChapterPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            章节标题 <span className="text-rose-500">*</span>
+            章节标题{" "}
+            {work?.type === "art" ? (
+              <span className="font-normal text-slate-400">（选填，可不填）</span>
+            ) : (
+              <span className="text-rose-500">*</span>
+            )}
           </label>
           <input
             type="text"
-            required
+            required={work?.type !== "art"}
             maxLength={80}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="如：第一章 相遇"
+            placeholder={
+              work?.type === "art"
+                ? "如：月光下的少女（插画名，可不填）"
+                : "如：第一章 相遇"
+            }
             className="input-base"
           />
         </div>
 
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            正文 <span className="text-rose-500">*</span>
-          </label>
-          <textarea
-            ref={contentRef}
-            required
-            rows={16}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={"在这里写正文……\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）\n段落之间请空一行，方便阅读。"}
-            className="input-base resize-y font-serif leading-7"
-          />
-        </div>
+        {/* 插画作品：只放图片，不输入文字 */}
+        {work?.type === "art" ? (
+          <div className="rounded-xl border border-sky-100 bg-sky-50/60 px-4 py-3 text-xs text-sky-700">
+            插画作品以图片为主，直接上传下方图片即可，无需输入文字。每张图保存为一个内容条目。
+          </div>
+        ) : (
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              正文{" "}
+              {work?.type === "comic" ? (
+                <span className="font-normal text-slate-400">（选填，可留空）</span>
+              ) : (
+                <span className="text-rose-500">*</span>
+              )}
+            </label>
+            <textarea
+              ref={contentRef}
+              required={work?.type !== "comic"}
+              rows={16}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={
+                work?.type === "comic"
+                  ? "漫画可以写对话或剧情说明（选填），留空则只显示图片\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）"
+                  : "在这里写正文……\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）\n段落之间请空一行，方便阅读。"
+              }
+              className="input-base resize-y font-serif leading-7"
+            />
+          </div>
+        )}
 
         {/* 章节插图（可选） */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            章节插图 <span className="font-normal text-slate-400">（选填，可从相簿选择多张）</span>
+            {work?.type === "art"
+              ? "插画图片 " + (
+                  <span className="font-normal text-slate-400">（必传，可从相簿选择）</span>
+                )
+              : "章节插图 " + (
+                  <span className="font-normal text-slate-400">（选填，可从相簿选择多张）</span>
+                )}
           </label>
           <input
             ref={fileInputRef}
