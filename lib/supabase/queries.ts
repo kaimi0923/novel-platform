@@ -125,7 +125,22 @@ export async function getFavoriteCount(workId: string) {
   return count ?? 0;
 }
 
-/** 判断某用户是否已关注该作者 */
+/** 获取我对某作品的评分（未打分返回 null） */
+export async function getMyRating(workId: string, userId: string | null) {
+  if (!userId) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("work_ratings")
+    .select("score")
+    .eq("work_id", workId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  // 评分表未建立时降级为未评分
+  if (error) return null;
+  return data?.score ?? null;
+}
+
+/** 我是否已关注该作者 */
 export async function getIsFollowing(authorId: string, userId: string | null) {
   if (!userId || userId === authorId) return false;
   const supabase = await createClient();

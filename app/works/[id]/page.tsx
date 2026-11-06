@@ -5,11 +5,13 @@ import {
   getFavoriteCount,
   getIsFavorited,
   getIsFollowing,
+  getMyRating,
   getWorkComments,
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FollowButton } from "@/components/follow-button";
+import { RateWork } from "@/components/rate-work";
 import { CommentSection } from "@/components/comment-section";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +31,7 @@ export default async function WorkDetailPage({
   const favoriteCount = await getFavoriteCount(id);
   const isFavorited = await getIsFavorited(id, user?.id ?? null);
   const isFollowingAuthor = await getIsFollowing(work.author_id, user?.id ?? null);
+  const myRating = await getMyRating(id, user?.id ?? null);
   const comments = await getWorkComments(id);
 
   // 未通过审核的作品：仅作者和管理员可见
@@ -89,8 +92,19 @@ export default async function WorkDetailPage({
                 <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
                   {work.category}
                 </span>
+                <span
+                  className={
+                    work.is_completed
+                      ? "rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700"
+                      : "rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700"
+                  }
+                >
+                  {work.is_completed ? "已完结" : "连载中"}
+                </span>
                 <span className="text-xs text-slate-400">
-                  {work.view_count} 浏览 · {favoriteCount} 收藏
+                  {work.view_count} 阅读 · ★{" "}
+                  {(work.rating_average ?? 0).toFixed(1)}（{work.rating_count ?? 0}）
+                  · {favoriteCount} 收藏
                 </span>
               </div>
               <h1 className="text-2xl font-bold text-slate-900">{work.title}</h1>
@@ -156,6 +170,13 @@ export default async function WorkDetailPage({
                     loggedIn={!!user}
                   />
                 )}
+                {work.status === "approved" && user?.id !== work.author_id && (
+                  <RateWork
+                    workId={work.id}
+                    loggedIn={!!user}
+                    initialScore={myRating}
+                  />
+                )}
                 {user?.id === work.author_id && (
                   <Link
                     href={`/dashboard/works/${work.id}/chapters/new`}
@@ -192,8 +213,20 @@ export default async function WorkDetailPage({
                 <span className="rounded bg-brand-50 px-2 py-0.5 text-xs text-brand-700">
                   {work.category}
                 </span>
+                <span
+                  className={
+                    work.is_completed
+                      ? "rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700"
+                      : "rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700"
+                  }
+                >
+                  {work.is_completed ? "已完结" : "连载中"}
+                </span>
                 <span className="text-xs text-slate-400">
-                  {chapters.length} 章 · {work.view_count} 阅读 · {favoriteCount} 收藏
+                  {chapters.length} 章 · {work.word_count ?? 0} 字 ·{" "}
+                  {work.view_count} 阅读 · ★{" "}
+                  {(work.rating_average ?? 0).toFixed(1)}（{work.rating_count ?? 0}）
+                  · {favoriteCount} 收藏
                 </span>
               </div>
               <h1 className="text-2xl font-bold text-slate-900">{work.title}</h1>
@@ -259,6 +292,13 @@ export default async function WorkDetailPage({
                     initialCount={favoriteCount}
                     initialFavorited={isFavorited}
                     loggedIn={!!user}
+                  />
+                )}
+                {work.status === "approved" && user?.id !== work.author_id && (
+                  <RateWork
+                    workId={work.id}
+                    loggedIn={!!user}
+                    initialScore={myRating}
                   />
                 )}
                 {user?.id === work.author_id && (

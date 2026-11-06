@@ -156,6 +156,20 @@ export default function NewChapterPage() {
       return;
     }
 
+    // 统计全文字数并同步到作品（列表页直接显示）
+    const { data: allChapters } = await supabase
+      .from("chapters")
+      .select("content")
+      .eq("work_id", workId);
+    const totalWords = (allChapters ?? []).reduce(
+      (sum, c) => sum + (c.content ?? "").replace(/\s/g, "").length,
+      0
+    );
+    await supabase
+      .from("works")
+      .update({ word_count: totalWords })
+      .eq("id", workId);
+
     router.push(`/works/${workId}`);
     router.refresh();
   }

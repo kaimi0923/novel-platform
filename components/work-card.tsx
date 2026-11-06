@@ -10,6 +10,18 @@ const COVER_FALLBACK_COLORS = [
   "from-brand-400 to-blue-700",
 ];
 
+/** 字数/图片数的友好展示 */
+function formatLength(work: Work) {
+  if (work.type === "art" || work.type === "comic") {
+    return `${work.chapter_count ?? 0} 张图`;
+  }
+  const n = work.word_count ?? 0;
+  if (n === 0) return "0 字";
+  if (n >= 10000) return `${(n / 10000).toFixed(1)} 万字`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)} 千字`;
+  return `${n} 字`;
+}
+
 export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
   const gradient =
     COVER_FALLBACK_COLORS[index % COVER_FALLBACK_COLORS.length];
@@ -69,9 +81,36 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
             </div>
           )}
         </div>
-        <div className="flex items-center justify-between text-xs text-slate-400">
-          <span>作者：{work.author?.username ?? "佚名"}</span>
-          <span>{work.view_count} 阅读 · {work.favorite_count ?? 0} 收藏</span>
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-400">
+          <span className="text-slate-500">
+            作者：{work.author?.username ?? "佚名"}
+          </span>
+          <span className="text-slate-300">|</span>
+          <span>{work.view_count} 阅读</span>
+          <span className="text-slate-300">|</span>
+          {(work.rating_count ?? 0) > 0 ? (
+            <span className="font-medium text-amber-600">
+              ★ {(work.rating_average ?? 0).toFixed(1)}
+              <span className="ml-0.5 font-normal text-slate-400">
+                ({work.rating_count})
+              </span>
+            </span>
+          ) : (
+            <span>暂无评分</span>
+          )}
+          <span className="text-slate-300">|</span>
+          <span>{formatLength(work)}</span>
+          <span className="text-slate-300">|</span>
+          <span className="text-slate-400">{work.favorite_count ?? 0} 收藏</span>
+          <span
+            className={
+              work.is_completed
+                ? "rounded bg-emerald-50 px-1.5 py-0.5 font-medium text-emerald-700"
+                : "rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700"
+            }
+          >
+            {work.is_completed ? "已完结" : "连载中"}
+          </span>
         </div>
       </div>
     </Link>

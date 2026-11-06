@@ -16,6 +16,7 @@ export default function NewWorkPage() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -89,6 +90,7 @@ export default function NewWorkPage() {
       cover_url: finalCover,
       tags,
       type: workType,
+      is_completed: isCompleted,
       status: "pending",
     });
 
@@ -252,6 +254,40 @@ export default function NewWorkPage() {
           </label>
           <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
             <TagPicker value={tags} onChange={setTags} />
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            连载状态
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { key: false, label: "连载中", desc: "还在更新" },
+              { key: true, label: "已完结", desc: "全书完结" },
+            ].map((s) => (
+              <button
+                key={String(s.key)}
+                type="button"
+                onClick={() => setIsCompleted(s.key)}
+                className={`rounded-xl border p-3 text-left transition ${
+                  isCompleted === s.key
+                    ? "border-brand-600 bg-brand-50"
+                    : "border-slate-200 bg-white hover:border-brand-300"
+                }`}
+              >
+                <span
+                  className={`block text-sm font-semibold ${
+                    isCompleted === s.key ? "text-brand-700" : "text-slate-700"
+                  }`}
+                >
+                  {s.label}
+                </span>
+                <span className="mt-0.5 block text-xs text-slate-400">
+                  {s.desc}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
 

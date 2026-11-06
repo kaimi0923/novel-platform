@@ -407,3 +407,83 @@ create policy "follows_delete" on public.follows
   for delete using (auth.uid() = follower_id);
 
 grant select, insert, delete on table public.follows to anon, authenticated;
+
+-- ============================================================
+-- 作品展示数据（阅读/评分/字数/完结）2026-11-06 新增
+-- ============================================================
+
+-- ---------- 15. works 增加展示字段 ----------
+alter table public.works
+  add column if not exists is_completed boolean not null default false,
+  add column if not exists word_count integer not null default 0,
+  add column if not exists rating_average numeric(3,1) not null default 0,
+  add column if not exists rating_count integer not null default 0;
+
+-- ---------- 16. 评分表 ----------
+create table if not exists public.work_ratings (
+  id uuid primary key default gen_random_uuid(),
+  work_id uuid references public.works (id) on delete cascade not null,
+  user_id uuid references auth.users (id) on delete cascade not null,
+  score smallint not null check (score between 1 and 5),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (work_id, user_id)
+);
+
+create index if not exists work_ratings_work_idx on public.work_ratings (work_id);
+
+alter table public.work_ratings enable row level security;
+
+drop policy if exists "work_ratings_select" on public.work_ratings;
+create policy "work_ratings_select" on public.work_ratings
+  for select using (true);
+
+drop policy if exists "work_ratings_insert" on public.work_ratings;
+create policy "work_ratings_insert" on public.work_ratings
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "work_ratings_update" on public.work_ratings;
+create policy "work_ratings_update" on public.work_ratings
+  for update using (auth.uid() = user_id);
+
+drop policy if exists "work_ratings_delete" on public.work_ratings;
+create policy "work_ratings_delete" on public.work_ratings
+  for delete using (auth.uid() = user_id);
+
+grant select, insert, update, delete on table public.work_ratings to anon, authenticated;
+
+-- 评分变化后自动刷新作品的评分人数与平均分
+create or replace function public.refresh_work_rating()
+returns trigger
+language plpgsql
+security definer
+as $$
+declare
+  target_work uuid;
+begin
+  target_work := coalesce(new.work_id, old.work_id);
+  update public.works w
+  set rating_count = (
+        select count(*) from public.work_ratings r where r.work_id = target_work
+      ),
+      rating_average = coalesce((
+        select round(avg(r.score)::numeric, 1)
+        from public.work_ratings r where r.work_id = target_work
+      ), 0)
+  where w.id = target_work;
+  return null;
+end;
+$$;
+
+drop trigger if exists work_ratings_refresh on public.work_ratings;
+create trigger work_ratings_refresh
+  after insert or update or delete on public.work_ratings
+  for each row execute function public.refresh_work_rating();
+
+-- 回填已有章节的字数
+update public.works w
+set word_count = coalesce((
+  select sum(length(regexp_replace(c.content, '[[:space:]]', '', 'g')))
+  from public.chapters c
+  where c.work_id = w.id
+), 0);

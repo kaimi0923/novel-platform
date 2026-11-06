@@ -34,6 +34,14 @@ export interface Work {
   status: "pending" | "approved" | "rejected";
   reject_reason: string | null;
   view_count: number;
+  /** 是否已完结 */
+  is_completed?: boolean;
+  /** 正文字数（自动统计） */
+  word_count?: number;
+  /** 平均评分（1-5） */
+  rating_average?: number;
+  /** 打分人数 */
+  rating_count?: number;
   created_at: string;
   updated_at: string;
   // 作品标签（四大类中挑选）
