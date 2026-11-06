@@ -125,6 +125,73 @@ export async function getFavoriteCount(workId: string) {
   return count ?? 0;
 }
 
+/** 判断某用户是否已关注该作者 */
+export async function getIsFollowing(authorId: string, userId: string | null) {
+  if (!userId || userId === authorId) return false;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("follows")
+    .select("id")
+    .eq("follower_id", userId)
+    .eq("following_id", authorId)
+    .maybeSingle();
+  // 关注表未建立时降级为未关注，不影响页面
+  if (error) return false;
+  return !!data;
+}
+
+/** 获取我关注的作者列表（含其最新作品缩略） */
+export async function getMyFollowing(userId: string) {
+  const supabase = await createClient();
+  const { data: rows, error } = await supabase
+    .from("follows")
+    .select("following_id, created_at")
+    .eq("follower_id", userId)
+    .order("created_at", { ascending: false });
+  if (error || !rows || rows.length === 0) return [];
+
+  const ids = rows.map((r) => r.following_id);
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, username, avatar_url")
+    .in("id", ids);
+
+  const { data: works } = await supabase
+    .from("works")
+    .select("id, title, cover_url, author_id, created_at")
+    .in("author_id", ids)
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+  const worksByAuthor = new Map<
+    string,
+    { id: string; title: string; cover_url: string | null }[]
+  >();
+  for (const w of works ?? []) {
+    const list = worksByAuthor.get(w.author_id) ?? [];
+    if (list.length < 3) {
+      list.push({ id: w.id, title: w.title, cover_url: w.cover_url });
+      worksByAuthor.set(w.author_id, list);
+    }
+  }
+
+  return rows
+    .map((r) => {
+      const p = profileMap.get(r.following_id);
+      if (!p) return null;
+      return {
+        id: p.id,
+        username: p.username as string | null,
+        avatar_url: (p.avatar_url ?? null) as string | null,
+        followed_at: r.created_at as string,
+        works: worksByAuthor.get(p.id) ?? [],
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+}
+
 /** 判断某用户是否已收藏该作品 */
 export async function getIsFavorited(workId: string, userId: string | null) {
   if (!userId) return false;

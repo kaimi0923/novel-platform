@@ -29,6 +29,12 @@ export default async function DashboardPage() {
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id);
 
+  // 我关注的作者数量
+  const { count: myFollowingCount } = await supabase
+    .from("follows")
+    .select("id", { count: "exact", head: true })
+    .eq("follower_id", user.id);
+
   // 数据中心统计
   const totalChapters = works.reduce((s, w) => s + (w.chapter_count ?? 0), 0);
   const totalViews = works.reduce((s, w) => s + (w.view_count ?? 0), 0);
@@ -117,6 +123,9 @@ export default async function DashboardPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link href="/dashboard/favorites" className="btn-secondary">
             我的收藏{myFavoriteCount ? ` ${myFavoriteCount}` : ""}
+          </Link>
+          <Link href="/dashboard/following" className="btn-secondary">
+            我的关注{myFollowingCount ? ` ${myFollowingCount}` : ""}
           </Link>
           <Link href="/dashboard/comments" className="btn-secondary">
             留言管理

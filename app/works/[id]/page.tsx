@@ -4,10 +4,12 @@ import {
   getWorkWithChapters,
   getFavoriteCount,
   getIsFavorited,
+  getIsFollowing,
   getWorkComments,
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { FavoriteButton } from "@/components/favorite-button";
+import { FollowButton } from "@/components/follow-button";
 import { CommentSection } from "@/components/comment-section";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +28,7 @@ export default async function WorkDetailPage({
   const { work, chapters } = await getWorkWithChapters(id);
   const favoriteCount = await getFavoriteCount(id);
   const isFavorited = await getIsFavorited(id, user?.id ?? null);
+  const isFollowingAuthor = await getIsFollowing(work.author_id, user?.id ?? null);
   const comments = await getWorkComments(id);
 
   // 未通过审核的作品：仅作者和管理员可见
@@ -102,6 +105,15 @@ export default async function WorkDetailPage({
                 )}
                 <span>作者：{work.author?.username ?? "佚名"}</span>
               </p>
+              {user && user.id !== work.author_id && (
+                <div className="mt-2">
+                  <FollowButton
+                    authorId={work.author_id}
+                    loggedIn={!!user}
+                    initialFollowing={isFollowingAuthor}
+                  />
+                </div>
+              )}
               <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
                 {work.description ?? "作者还没有写简介。"}
               </p>
@@ -196,6 +208,15 @@ export default async function WorkDetailPage({
                 )}
                 <span>作者：{work.author?.username ?? "佚名"}</span>
               </p>
+              {user && user.id !== work.author_id && (
+                <div className="mt-2">
+                  <FollowButton
+                    authorId={work.author_id}
+                    loggedIn={!!user}
+                    initialFollowing={isFollowingAuthor}
+                  />
+                </div>
+              )}
               <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
                 {work.description ?? "作者还没有写简介。"}
               </p>
