@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getPendingWorks } from "@/lib/supabase/queries";
+import { getPendingWorks, getAdminOverview } from "@/lib/supabase/queries";
 import { AdminWorkActions } from "@/components/admin-work-actions";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +24,7 @@ export default async function AdminPage() {
   if (profile?.role !== "admin") redirect("/");
 
   const pendingWorks = await getPendingWorks();
+  const overview = await getAdminOverview();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -31,6 +32,65 @@ export default async function AdminPage() {
       <p className="mt-1 text-sm text-slate-500">
         待审核作品 {pendingWorks.length} 本，请先审后发
       </p>
+
+      {/* 数据总览 */}
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          {
+            label: "会员总数",
+            value: overview.memberCount,
+            hint: `今日新增 ${overview.todayNewMembers}`,
+          },
+          {
+            label: "作家 / 作者",
+            value: overview.authorCount,
+            hint: `纯读者 ${overview.readerCount}`,
+          },
+          {
+            label: "作品总数",
+            value: overview.totalWorks,
+            hint: `已通过 ${overview.approvedWorks} · 待审 ${overview.pendingWorks}`,
+          },
+          {
+            label: "总阅读量",
+            value: overview.totalViews,
+            hint: `收藏 ${overview.favoriteCount}`,
+          },
+          {
+            label: "关注关系",
+            value: overview.followCount,
+            hint: "读者关注作者的总数",
+          },
+          {
+            label: "待实名审核",
+            value: overview.pendingVerify,
+            hint: "需要处理",
+          },
+          {
+            label: "已驳回作品",
+            value: overview.rejectedWorks,
+            hint: "",
+          },
+          {
+            label: "管理员",
+            value: overview.adminCount,
+            hint: "",
+          },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="rounded-xl border border-slate-200 bg-white p-4"
+          >
+            <p className="text-2xl font-bold text-slate-900">
+              {s.value.toLocaleString("zh-CN")}
+            </p>
+            <p className="mt-0.5 text-xs text-slate-500">{s.label}</p>
+            {s.hint && (
+              <p className="mt-0.5 text-[11px] text-slate-400">{s.hint}</p>
+            )}
+          </div>
+        ))}
+      </div>
 
       <div className="mt-8">
         <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-3">
@@ -45,6 +105,12 @@ export default async function AdminPage() {
           </Link>
           <Link href="/admin/verify" className="text-sm text-slate-500 transition hover:text-brand-600">
             实名认证
+          </Link>
+          <Link
+            href="/admin/members"
+            className="text-sm font-medium text-brand-600 transition hover:text-brand-700"
+          >
+            会员与作家 →
           </Link>
         </div>
 

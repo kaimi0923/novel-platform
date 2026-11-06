@@ -309,3 +309,154 @@ export async function getChapterWithContext(
 
   return { work: work as Work, chapter: chapter as Chapter, chapters: chapters as Chapter[] };
 }
+
+/* ============================================================
+ * 管理后台统计与会员资料
+ * ============================================================ */
+
+export interface AdminOverview {
+  memberCount: number;
+  authorCount: number;
+  readerCount: number;
+  adminCount: number;
+  totalWorks: number;
+  approvedWorks: number;
+  pendingWorks: number;
+  rejectedWorks: number;
+  totalViews: number;
+  favoriteCount: number;
+  followCount: number;
+  pendingVerify: number;
+  todayNewMembers: number;
+}
+
+/** 管理后台总览数据 */
+export async function getAdminOverview(): Promise<AdminOverview> {
+  const supabase = await createClient();
+
+  const [{ data: profiles }, { data: works }, favRes, followRes] =
+    await Promise.all([
+      supabase.from("profiles").select("id, role, verify_status, created_at"),
+      supabase.from("works").select("author_id, status, view_count"),
+      supabase.from("favorites").select("id", { count: "exact", head: true }),
+      supabase.from("follows").select("id", { count: "exact", head: true }),
+    ]);
+
+  const rows = profiles ?? [];
+  const workRows = works ?? [];
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return {
+    memberCount: rows.length,
+    authorCount: new Set(workRows.map((w) => w.author_id)).size,
+    readerCount: rows.filter((p) => p.role === "reader").length,
+    adminCount: rows.filter((p) => p.role === "admin").length,
+    totalWorks: workRows.length,
+    approvedWorks: workRows.filter((w) => w.status === "approved").length,
+    pendingWorks: workRows.filter((w) => w.status === "pending").length,
+    rejectedWorks: workRows.filter((w) => w.status === "rejected").length,
+    totalViews: workRows.reduce((sum, w) => sum + Number(w.view_count ?? 0), 0),
+    favoriteCount: favRes.count ?? 0,
+    followCount: followRes.count ?? 0,
+    pendingVerify: rows.filter((p) => p.verify_status === "pending").length,
+    todayNewMembers: rows.filter(
+      (p) => new Date(p.created_at as string) >= today
+    ).length,
+  };
+}
+
+export interface AdminMember {
+  id: string;
+  email: string | null;
+  username: string | null;
+  role: string;
+  avatar_url: string | null;
+  real_name: string | null;
+  id_number: string | null;
+  id_address: string | null;
+  id_photo_url: string | null;
+  verify_status: string | null;
+  qq: string | null;
+  wechat: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  shipping_address: string | null;
+  created_at: string;
+  workCount: number;
+  publishedCount: number;
+  pendingCount: number;
+  totalViews: number;
+  followerCount: number;
+  followingCount: number;
+  works: { id: string; title: string; status: string; type: string | null }[];
+}
+
+/** 会员与作家资料（管理员） */
+export async function getAdminMembers(): Promise<AdminMember[]> {
+  const supabase = await createClient();
+
+  const [{ data: profiles }, { data: works }, { data: follows }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select(
+          "id, email, username, role, avatar_url, real_name, id_number, id_address, id_photo_url, verify_status, qq, wechat, contact_email, contact_phone, shipping_address, created_at"
+        )
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("works")
+        .select("id, title, author_id, status, type, view_count")
+        .order("created_at", { ascending: false }),
+      supabase.from("follows").select("follower_id, following_id"),
+    ]);
+
+  const followRows = follows ?? [];
+  const worksByAuthor = new Map<string, typeof works>();
+  for (const w of works ?? []) {
+    const list = worksByAuthor.get(w.author_id) ?? [];
+    list.push(w);
+    worksByAuthor.set(w.author_id, list);
+  }
+
+  return (profiles ?? []).map((p) => {
+    const mine = (worksByAuthor.get(p.id) ?? []).filter(Boolean) as {
+      id: string;
+      title: string;
+      status: string;
+      type: string | null;
+      view_count: number | null;
+    }[];
+    return {
+      id: p.id,
+      email: p.email ?? null,
+      username: p.username ?? null,
+      role: p.role ?? "reader",
+      avatar_url: p.avatar_url ?? null,
+      real_name: p.real_name ?? null,
+      id_number: p.id_number ?? null,
+      id_address: p.id_address ?? null,
+      id_photo_url: p.id_photo_url ?? null,
+      verify_status: p.verify_status ?? null,
+      qq: p.qq ?? null,
+      wechat: p.wechat ?? null,
+      contact_email: p.contact_email ?? null,
+      contact_phone: p.contact_phone ?? null,
+      shipping_address: p.shipping_address ?? null,
+      created_at: p.created_at as string,
+      workCount: mine.length,
+      publishedCount: mine.filter((w) => w.status === "approved").length,
+      pendingCount: mine.filter((w) => w.status === "pending").length,
+      totalViews: mine.reduce((s, w) => s + Number(w.view_count ?? 0), 0),
+      followerCount: followRows.filter((f) => f.following_id === p.id).length,
+      followingCount: followRows.filter((f) => f.follower_id === p.id).length,
+      works: mine.map((w) => ({
+        id: w.id,
+        title: w.title,
+        status: w.status,
+        type: w.type ?? null,
+      })),
+    };
+  });
+}
