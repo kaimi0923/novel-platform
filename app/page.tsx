@@ -33,13 +33,13 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 首页品牌头图（logo） */}
-      <section className="border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
-        <Link href="/works" className="block px-4 py-8 sm:py-10">
+      {/* 首页横版头图 */}
+      <section className="overflow-hidden bg-[#0b101d]">
+        <Link href="/works" className="block">
           <img
-            src="/banner-logo.png"
+            src="/banner-wide.jpg"
             alt="鬼点子 - 好故事的发源地"
-            className="mx-auto h-auto w-full max-w-lg object-contain"
+            className="h-[30vw] min-h-[120px] w-full object-cover object-center sm:h-auto sm:min-h-0"
           />
         </Link>
       </section>
