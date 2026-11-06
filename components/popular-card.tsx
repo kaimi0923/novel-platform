@@ -15,6 +15,18 @@ function formatCount(n: number) {
   return `${n}`;
 }
 
+/** 字数 / 图片数的友好展示 */
+function formatLength(work: Work) {
+  if (work.type === "art" || work.type === "comic") {
+    return `${work.chapter_count ?? 0} 张图`;
+  }
+  const n = work.word_count ?? 0;
+  if (n === 0) return "0 字";
+  if (n >= 10000) return `${(n / 10000).toFixed(1)} 万字`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)} 千字`;
+  return `${n} 字`;
+}
+
 /** 人气榜竖版大卡片：封面大图 + 标题 + 作者/阅读 + 简介 + 标签 */
 export function PopularCard({ work, index = 0 }: { work: Work; index?: number }) {
   const gradient =
@@ -45,6 +57,20 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
         <span className="absolute bottom-2 right-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur">
           {formatCount(work.view_count)} 阅读
         </span>
+        {/* 连载状态角标 */}
+        <span
+          className={`absolute left-2 top-2 rounded px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur ${
+            work.is_completed ? "bg-emerald-600/85" : "bg-brand-600/85"
+          }`}
+        >
+          {work.is_completed ? "已完结" : "连载中"}
+        </span>
+        {/* 评分角标 */}
+        {(work.rating_count ?? 0) > 0 && (
+          <span className="absolute bottom-2 left-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-amber-300 backdrop-blur">
+            ★ {(work.rating_average ?? 0).toFixed(1)}
+          </span>
+        )}
       </div>
 
       {/* 信息 */}
@@ -54,6 +80,22 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
         </h3>
         <p className="mt-0.5 text-xs text-slate-400">
           作者：{work.author?.username ?? "佚名"}
+        </p>
+        <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-slate-400">
+          {(work.rating_count ?? 0) > 0 ? (
+            <span className="font-medium text-amber-600">
+              ★ {(work.rating_average ?? 0).toFixed(1)}
+              <span className="ml-0.5 font-normal text-slate-400">
+                ({work.rating_count})
+              </span>
+            </span>
+          ) : (
+            <span>暂无评分</span>
+          )}
+          <span className="text-slate-300">|</span>
+          <span>{formatLength(work)}</span>
+          <span className="text-slate-300">|</span>
+          <span>{work.favorite_count ?? 0} 收藏</span>
         </p>
         <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-slate-500">
           {work.description ?? "（暂无简介）"}

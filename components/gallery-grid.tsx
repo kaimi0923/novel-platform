@@ -34,13 +34,37 @@ export function GalleryGrid({ works }: { works: Work[] }) {
                 </span>
               </div>
             )}
+            {/* 连载状态 */}
+            <span
+              className={`absolute left-2 top-2 rounded px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur ${
+                work.is_completed ? "bg-emerald-600/85" : "bg-brand-600/85"
+              }`}
+            >
+              {work.is_completed ? "已完结" : "连载中"}
+            </span>
+            {(work.rating_count ?? 0) > 0 && (
+              <span className="absolute bottom-2 left-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-amber-300 backdrop-blur">
+                ★ {(work.rating_average ?? 0).toFixed(1)}
+              </span>
+            )}
           </div>
           <div className="p-3">
             <h3 className="truncate text-sm font-semibold text-slate-900 group-hover:text-brand-600">
               {work.title}
             </h3>
             <p className="mt-0.5 truncate text-xs text-slate-400">
-              {work.author?.username ?? "佚名"} · {work.view_count} 浏览
+              {work.author?.username ?? "佚名"} · {work.view_count} 阅读
+            </p>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-slate-400">
+              {(work.rating_count ?? 0) > 0 ? (
+                <span className="font-medium text-amber-600">
+                  ★ {(work.rating_average ?? 0).toFixed(1)}
+                </span>
+              ) : (
+                <span>暂无评分</span>
+              )}
+              <span className="text-slate-300">|</span>
+              <span>{work.chapter_count ?? 0} 张图</span>
             </p>
           </div>
         </Link>
