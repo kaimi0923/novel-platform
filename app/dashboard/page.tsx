@@ -23,6 +23,12 @@ export default async function DashboardPage() {
 
   const works = await getMyWorks(user.id);
 
+  // 我收藏的作品数量
+  const { count: myFavoriteCount } = await supabase
+    .from("favorites")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
   // 数据中心统计
   const totalChapters = works.reduce((s, w) => s + (w.chapter_count ?? 0), 0);
   const totalViews = works.reduce((s, w) => s + (w.view_count ?? 0), 0);
@@ -101,14 +107,17 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">我的作品</h1>
           <p className="mt-1 text-sm text-slate-500">
             投稿后需经管理员审核，审核通过即可在书库展示
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href="/dashboard/favorites" className="btn-secondary">
+            我的收藏{myFavoriteCount ? ` ${myFavoriteCount}` : ""}
+          </Link>
           <Link href="/dashboard/comments" className="btn-secondary">
             留言管理
           </Link>

@@ -80,6 +80,40 @@ export async function getMyWorks(userId: string) {
   return (data ?? []).map(normalizeWork);
 }
 
+/** 获取我收藏的作品（按收藏时间倒序，含作者信息） */
+export async function getMyFavorites(userId: string) {
+  const supabase = await createClient();
+  const { data: favs, error: favError } = await supabase
+    .from("favorites")
+    .select("work_id, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (favError) throw favError;
+
+  const workIds = (favs ?? []).map((f) => f.work_id);
+  if (workIds.length === 0) return [];
+
+  const { data: works, error: worksError } = await supabase
+    .from("works")
+    .select(
+      "*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count), favorites(count)"
+    )
+    .in("id", workIds);
+  if (worksError) throw worksError;
+
+  const workMap = new Map(
+    (works ?? []).map((w) => [(w as WorkRow).id, w as WorkRow])
+  );
+
+  return (favs ?? [])
+    .map((f) => {
+      const work = workMap.get(f.work_id);
+      if (!work) return null;
+      return { ...normalizeWork(work), favorited_at: f.created_at };
+    })
+    .filter((w): w is Work & { favorited_at: string } => w !== null);
+}
+
 /** 获取单个作品的收藏数 */
 export async function getFavoriteCount(workId: string) {
   const supabase = await createClient();
