@@ -16,7 +16,7 @@ function normalizeWork(row: WorkRow): Work {
   } as Work;
 }
 
-/** 获取已通过审核的作品列表（可选按分类/标签/类型筛选、按阅读量排序） */
+/** 獲取已透過稽核的作品列表（可選按分類/標籤/型別篩選、按閱讀量排序） */
 export async function getApprovedWorks(
   category?: string,
   limit = 20,
@@ -53,7 +53,7 @@ export async function getApprovedWorks(
   return (data ?? []).map(normalizeWork);
 }
 
-/** 获取单个作品详情（含作者与章节列表） */
+/** 獲取單個作品詳情（含作者與章節列表） */
 export async function getWorkWithChapters(id: string) {
   const supabase = await createClient();
   const { data: work, error: workError } = await supabase
@@ -73,7 +73,7 @@ export async function getWorkWithChapters(id: string) {
   return { work: work as Work, chapters: (chapters ?? []) as Chapter[] };
 }
 
-/** 获取当前用户自己的作品列表 */
+/** 獲取當前使用者自己的作品列表 */
 export async function getMyWorks(userId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -85,7 +85,7 @@ export async function getMyWorks(userId: string) {
   return (data ?? []).map(normalizeWork);
 }
 
-/** 获取我收藏的作品（按收藏时间倒序，含作者信息） */
+/** 獲取我收藏的作品（按收藏時間倒序，含作者資訊） */
 export async function getMyFavorites(userId: string) {
   const supabase = await createClient();
   const { data: favs, error: favError } = await supabase
@@ -119,7 +119,7 @@ export async function getMyFavorites(userId: string) {
     .filter((w): w is Work & { favorited_at: string } => w !== null);
 }
 
-/** 获取单个作品的收藏数 */
+/** 獲取單個作品的收藏數 */
 export async function getFavoriteCount(workId: string) {
   const supabase = await createClient();
   const { count, error } = await supabase
@@ -130,7 +130,7 @@ export async function getFavoriteCount(workId: string) {
   return count ?? 0;
 }
 
-/** 获取我对某作品的评分（未打分返回 null） */
+/** 獲取我對某作品的評分（未打分返回 null） */
 export async function getMyRating(workId: string, userId: string | null) {
   if (!userId) return null;
   const supabase = await createClient();
@@ -140,12 +140,12 @@ export async function getMyRating(workId: string, userId: string | null) {
     .eq("work_id", workId)
     .eq("user_id", userId)
     .maybeSingle();
-  // 评分表未建立时降级为未评分
+  // 評分表未建立時降級為未評分
   if (error) return null;
   return data?.score ?? null;
 }
 
-/** 我是否已关注该作者 */
+/** 我是否已關注該作者 */
 export async function getIsFollowing(authorId: string, userId: string | null) {
   if (!userId || userId === authorId) return false;
   const supabase = await createClient();
@@ -155,12 +155,12 @@ export async function getIsFollowing(authorId: string, userId: string | null) {
     .eq("follower_id", userId)
     .eq("following_id", authorId)
     .maybeSingle();
-  // 关注表未建立时降级为未关注，不影响页面
+  // 關注表未建立時降級為未關注，不影響頁面
   if (error) return false;
   return !!data;
 }
 
-/** 获取我关注的作者列表（含其最新作品缩略） */
+/** 獲取我關注的作者列表（含其最新作品縮略） */
 export async function getMyFollowing(userId: string) {
   const supabase = await createClient();
   const { data: rows, error } = await supabase
@@ -212,7 +212,7 @@ export async function getMyFollowing(userId: string) {
     .filter((x): x is NonNullable<typeof x> => x !== null);
 }
 
-/** 判断某用户是否已收藏该作品 */
+/** 判斷某使用者是否已收藏該作品 */
 export async function getIsFavorited(workId: string, userId: string | null) {
   if (!userId) return false;
   const supabase = await createClient();
@@ -226,7 +226,7 @@ export async function getIsFavorited(workId: string, userId: string | null) {
   return !!data;
 }
 
-/** 获取作品的留言列表（带用户名） */
+/** 獲取作品的留言列表（帶使用者名稱） */
 export async function getWorkComments(workId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -239,7 +239,7 @@ export async function getWorkComments(workId: string) {
   return (data ?? []) as Comment[];
 }
 
-/** 获取作者自己作品收到的全部留言（留言管理） */
+/** 獲取作者自己作品收到的全部留言（留言管理） */
 export async function getMyWorksComments(userId: string) {
   const supabase = await createClient();
   const { data: myWorks } = await supabase
@@ -259,7 +259,7 @@ export async function getMyWorksComments(userId: string) {
   return (data ?? []) as (Comment & { work?: { title: string } | null })[];
 }
 
-/** 获取待审核作品列表（管理员） */
+/** 獲取待稽核作品列表（管理員） */
 export async function getPendingWorks() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -271,7 +271,7 @@ export async function getPendingWorks() {
   return (data ?? []).map(normalizeWork);
 }
 
-/** 按审核状态获取作品列表（管理员查看已通过/已驳回） */
+/** 按稽核狀態獲取作品列表（管理員檢視已透過/已駁回） */
 export async function getWorksByStatus(status: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -284,7 +284,7 @@ export async function getWorksByStatus(status: string) {
   return (data ?? []).map(normalizeWork);
 }
 
-/** 获取章节详情（含所属作品与上下章） */
+/** 獲取章節詳情（含所屬作品與上下章） */
 export async function getChapterWithContext(
   workId: string,
   chapterId: string
@@ -316,7 +316,7 @@ export async function getChapterWithContext(
 }
 
 /* ============================================================
- * 管理后台统计与会员资料
+ * 管理後臺統計與會員資料
  * ============================================================ */
 
 export interface AdminOverview {
@@ -335,7 +335,7 @@ export interface AdminOverview {
   todayNewMembers: number;
 }
 
-/** 管理后台总览数据 */
+/** 管理後臺總覽資料 */
 export async function getAdminOverview(): Promise<AdminOverview> {
   const supabase = await createClient();
 
@@ -398,7 +398,7 @@ export interface AdminMember {
   works: { id: string; title: string; status: string; type: string | null }[];
 }
 
-/** 会员与作家资料（管理员） */
+/** 會員與作家資料（管理員） */
 export async function getAdminMembers(): Promise<AdminMember[]> {
   const supabase = await createClient();
 
@@ -467,7 +467,7 @@ export async function getAdminMembers(): Promise<AdminMember[]> {
 }
 
 /* ------------------------------------------------------------------ */
-/* 个人中心：数据分析 / 浏览记录                                        */
+/* 個人中心：資料分析 / 瀏覽記錄                                        */
 /* ------------------------------------------------------------------ */
 
 export interface MyStats {
@@ -483,7 +483,7 @@ export interface MyStats {
   works: Work[];
 }
 
-/** 我的数据分析（个人作品与粉丝统计） */
+/** 我的資料分析（個人作品與粉絲統計） */
 export async function getMyStats(userId: string): Promise<MyStats> {
   const supabase = await createClient();
 
@@ -510,7 +510,7 @@ export async function getMyStats(userId: string): Promise<MyStats> {
     followerCount = followers ?? 0;
     followingCount = following ?? 0;
   } catch {
-    // 忽略关注数获取失败
+    // 忽略關注數獲取失敗
   }
 
   return {
@@ -529,7 +529,7 @@ export async function getMyStats(userId: string): Promise<MyStats> {
   };
 }
 
-/** 记录一次作品浏览（表不存在或失败时静默忽略） */
+/** 記錄一次作品瀏覽（表不存在或失敗時靜默忽略） */
 export async function recordView(userId: string, workId: string) {
   try {
     const supabase = await createClient();
@@ -542,13 +542,13 @@ export async function recordView(userId: string, workId: string) {
       { onConflict: "user_id,work_id" }
     );
   } catch {
-    // 浏览记录表可能尚未创建，不影响正常阅读
+    // 瀏覽記錄表可能尚未建立，不影響正常閱讀
   }
 }
 
 export type HistoryWork = Work & { viewed_at: string };
 
-/** 我的浏览记录（最近浏览的作品） */
+/** 我的瀏覽記錄（最近瀏覽的作品） */
 export async function getMyHistory(
   userId: string,
   limit = 30

@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 /**
- * 服务端 Supabase 客户端（用于"服务端组件"里读取数据，如首页、书库、审核后台）
+ * 服務端 Supabase 客戶端（用於"服務端元件"裡讀取資料，如首頁、書庫、稽核後臺）
  */
 export async function createClient() {
   const cookieStore = await cookies();
@@ -23,7 +23,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // 在 Server Component 中调用时会被忽略，Middleware 会负责刷新会话
+            // 在 Server Component 中呼叫時會被忽略，Middleware 會負責重新整理會話
           }
         },
       },

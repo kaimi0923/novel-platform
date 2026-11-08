@@ -29,7 +29,7 @@ export default function NewEpisodePage() {
       .eq("id", workId)
       .single()
       .then(({ data, error }) => {
-        if (error || !data) setError("作品不存在或无权访问");
+        if (error || !data) setError("作品不存在或無權訪問");
         else setWork(data as Work);
       });
     supabase
@@ -45,11 +45,11 @@ export default function NewEpisodePage() {
     e.target.value = "";
     if (!f) return;
     if (!f.type.startsWith("video/")) {
-      setError("请选择视频文件（mp4 / mov）");
+      setError("請選擇影片檔案（mp4 / mov）");
       return;
     }
     if (f.size > 50 * 1024 * 1024) {
-      setError("视频超过 50MB，请压缩或剪短到 1-3 分钟再上传");
+      setError("影片超過 50MB，請壓縮或剪短到 1-3 分鐘再上傳");
       return;
     }
     setError(null);
@@ -62,7 +62,7 @@ export default function NewEpisodePage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!file) {
-      setError("请先选择视频");
+      setError("請先選擇影片");
       return;
     }
     setError(null);
@@ -99,7 +99,7 @@ export default function NewEpisodePage() {
       router.push(`/drama/${workId}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "上传失败");
+      setError(err instanceof Error ? err.message : "上傳失敗");
       setLoading(false);
     }
   }
@@ -113,10 +113,10 @@ export default function NewEpisodePage() {
         >
           ← 返回我的作品
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">上传剧集</h1>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900">上傳劇集</h1>
         {work && (
           <p className="mt-1 text-sm text-slate-500">
-            短剧：《{work.title}》 · 已有 {existing.length} 集
+            短劇：《{work.title}》 · 已有 {existing.length} 集
           </p>
         )}
       </div>
@@ -124,7 +124,7 @@ export default function NewEpisodePage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            视频 <span className="text-rose-500">*</span>
+            影片 <span className="text-rose-500">*</span>
           </label>
           <input
             ref={fileInputRef}
@@ -147,13 +147,13 @@ export default function NewEpisodePage() {
               />
               <div className="mt-2 flex items-center justify-center gap-3 text-xs text-slate-500">
                 <span>{file?.name}</span>
-                {duration && <span>时长 {duration} 秒</span>}
+                {duration && <span>時長 {duration} 秒</span>}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="btn-secondary !px-3 !py-1.5 !text-xs"
                 >
-                  重新选择
+                  重新選擇
                 </button>
               </div>
             </div>
@@ -168,9 +168,9 @@ export default function NewEpisodePage() {
                 <path d="m10 4 2 4 2-4" />
                 <path d="M10 14l5-3-5-3z" />
               </svg>
-              <span className="text-sm">点击从相簿选择视频</span>
+              <span className="text-sm">點選從相簿選擇影片</span>
               <span className="text-xs text-slate-400">
-                MP4 / MOV，单集 ≤50MB（约 1–3 分钟）
+                MP4 / MOV，單集 ≤50MB（約 1–3 分鐘）
               </span>
             </button>
           )}
@@ -178,7 +178,7 @@ export default function NewEpisodePage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            本集标题 <span className="text-slate-400">（选填）</span>
+            本集標題 <span className="text-slate-400">（選填）</span>
           </label>
           <input
             type="text"
@@ -189,7 +189,7 @@ export default function NewEpisodePage() {
             className="input-base"
           />
           <p className="mt-1 text-xs text-slate-400">
-            不填会自动命名为「第 N 集」
+            不填會自動命名為「第 N 集」
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export default function NewEpisodePage() {
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? "上传中…" : "上传这一集"}
+            {loading ? "上傳中…" : "上傳這一集"}
           </button>
           <button
             type="button"
@@ -212,7 +212,7 @@ export default function NewEpisodePage() {
           </button>
         </div>
         <p className="text-xs text-slate-400">
-          * 一集一集传，传完可继续传下一集。审核通过后读者才能看到。
+          * 一集一集傳，傳完可繼續傳下一集。稽核透過後讀者才能看到。
         </p>
       </form>
     </div>

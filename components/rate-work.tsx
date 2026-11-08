@@ -10,7 +10,7 @@ interface RateWorkProps {
   initialScore: number | null;
 }
 
-/** 作品评分：5 星打分（可修改），一次只能打一次分 */
+/** 作品評分：5 星打分（可修改），一次只能打一次分 */
 export function RateWork({ workId, loggedIn, initialScore }: RateWorkProps) {
   const router = useRouter();
   const [score, setScore] = useState<number | null>(initialScore);
@@ -54,7 +54,7 @@ export function RateWork({ workId, loggedIn, initialScore }: RateWorkProps) {
   return (
     <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5">
       <span className="text-xs text-slate-500">
-        {score ? "我的评分" : "打个分"}
+        {score ? "我的評分" : "打個分"}
       </span>
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((n) => (

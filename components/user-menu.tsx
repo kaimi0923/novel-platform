@@ -14,15 +14,15 @@ interface UserMenuProps {
 }
 
 const LINKS = [
-  { href: "/dashboard/stats", label: "数据分析" },
+  { href: "/dashboard/stats", label: "資料分析" },
   { href: "/dashboard", label: "我的作品" },
   { href: "/dashboard/favorites", label: "我的收藏" },
-  { href: "/dashboard/history", label: "浏览记录" },
-  { href: "/dashboard/following", label: "我关注的作者" },
+  { href: "/dashboard/history", label: "瀏覽記錄" },
+  { href: "/dashboard/following", label: "我關注的作者" },
   { href: "/dashboard/comments", label: "我的留言" },
   { href: "/notifications", label: "通知" },
-  { href: "/dashboard/verify", label: "实名认证" },
-  { href: "/dashboard/profile", label: "个人设置" },
+  { href: "/dashboard/verify", label: "實名認證" },
+  { href: "/dashboard/profile", label: "個人設定" },
 ];
 
 export function UserMenu({
@@ -53,14 +53,14 @@ export function UserMenu({
     router.refresh();
   }
 
-  const initial = (username ?? "读").slice(0, 1);
+  const initial = (username ?? "讀").slice(0, 1);
 
   return (
     <div ref={wrapRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="账号菜单"
+        aria-label="帳號選單"
         aria-expanded={open}
         className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
       >
@@ -76,16 +76,16 @@ export function UserMenu({
         <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
           <div className="border-b border-slate-100 px-4 py-3">
             <p className="truncate text-sm font-semibold text-slate-900">
-              @{username ?? "新用户"}
+              @{username ?? "新使用者"}
             </p>
             <div className="mt-2 flex gap-6 text-xs text-slate-500">
               <span>
                 <b className="font-semibold text-slate-900">{followingCount}</b>{" "}
-                关注
+                關注
               </span>
               <span>
                 <b className="font-semibold text-slate-900">{followerCount}</b>{" "}
-                粉丝
+                粉絲
               </span>
             </div>
           </div>
@@ -107,7 +107,7 @@ export function UserMenu({
                 onClick={() => setOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-brand-600 transition hover:bg-slate-50"
               >
-                审核后台
+                稽核後臺
               </Link>
             )}
           </nav>
@@ -118,7 +118,7 @@ export function UserMenu({
               onClick={handleLogout}
               className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
             >
-              退出登录
+              退出登入
             </button>
           </div>
         </div>

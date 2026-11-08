@@ -32,7 +32,7 @@ export function AdminWorkActions({
 
   async function reject() {
     if (!rejectReason.trim()) {
-      setError("请填写驳回原因，方便作者修改");
+      setError("請填寫駁回原因，方便作者修改");
       return;
     }
     setLoading(true);
@@ -57,7 +57,7 @@ export function AdminWorkActions({
             rows={2}
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
-            placeholder="驳回原因（会展示给作者）"
+            placeholder="駁回原因（會展示給作者）"
             className="input-base resize-none !text-xs"
           />
           <div className="flex gap-2">
@@ -66,7 +66,7 @@ export function AdminWorkActions({
               disabled={loading}
               className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700 disabled:opacity-50"
             >
-              确认驳回
+              確認駁回
             </button>
             <button
               onClick={() => {
@@ -87,14 +87,14 @@ export function AdminWorkActions({
             disabled={loading}
             className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50"
           >
-            通过
+            透過
           </button>
           <button
             onClick={() => setShowRejectInput(true)}
             disabled={loading}
             className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700 disabled:opacity-50"
           >
-            驳回
+            駁回
           </button>
         </div>
       )}

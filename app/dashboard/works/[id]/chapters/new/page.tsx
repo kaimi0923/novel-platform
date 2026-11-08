@@ -14,7 +14,7 @@ export default function NewChapterPage() {
   const [work, setWork] = useState<Work | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  // 章节插图：本地待上传文件 + 预览地址
+  // 章節插圖：本地待上傳檔案 + 預覽地址
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export default function NewChapterPage() {
       .single()
       .then(({ data, error }) => {
         if (error || !data) {
-          setError("作品不存在或无权访问");
+          setError("作品不存在或無權訪問");
         } else {
           setWork(data as Work);
         }
@@ -41,15 +41,15 @@ export default function NewChapterPage() {
   function onPickImages(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
-    // 校验类型与大小（JPG/PNG/WebP，单张 ≤5MB）
+    // 校驗型別與大小（JPG/PNG/WebP，單張 ≤5MB）
     for (const f of files) {
       if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-        setError("只支持 JPG / PNG / WebP 格式的图片");
+        setError("只支援 JPG / PNG / WebP 格式的圖片");
         e.target.value = "";
         return;
       }
       if (f.size > 5 * 1024 * 1024) {
-        setError(`图片「${f.name}」超过 5MB，请压缩后重试`);
+        setError(`圖片「${f.name}」超過 5MB，請壓縮後重試`);
         e.target.value = "";
         return;
       }
@@ -71,9 +71,9 @@ export default function NewChapterPage() {
     });
   }
 
-  /** 在正文光标位置插入 [插图N] 标记 */
+  /** 在正文游標位置插入 [插圖N] 標記 */
   function insertImageMarker(i: number) {
-    const marker = `[插图${i + 1}]`;
+    const marker = `[插圖${i + 1}]`;
     const ta = contentRef.current;
     const start = ta?.selectionStart ?? content.length;
     const end = ta?.selectionEnd ?? content.length;
@@ -93,13 +93,13 @@ export default function NewChapterPage() {
 
     const supabase = createClient();
 
-    // 上传插图到存储（文件名带时间戳，避免浏览器缓存旧图）
+    // 上傳插圖到儲存（檔名帶時間戳，避免瀏覽器快取舊圖）
     let uploadedImages: string[] = [];
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("请先登录");
+      if (!user) throw new Error("請先登入");
 
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
@@ -113,12 +113,12 @@ export default function NewChapterPage() {
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "图片上传失败");
+      setError(err instanceof Error ? err.message : "圖片上傳失敗");
       setLoading(false);
       return;
     }
 
-    // 查询当前最大章节序号
+    // 查詢當前最大章節序號
     const { data: last } = await supabase
       .from("chapters")
       .select("chapter_order")
@@ -131,15 +131,15 @@ export default function NewChapterPage() {
     const isArt = work?.type === "art";
     const isVisual = work?.type === "art" || work?.type === "comic";
 
-    // 插画/漫画作品必须至少上传一张图片
+    // 插畫/漫畫作品必須至少上傳一張圖片
     if (isVisual && uploadedImages.length === 0) {
-      setError("请至少上传一张作品图片");
+      setError("請至少上傳一張作品圖片");
       setLoading(false);
       return;
     }
 
-    // 插画：标题选填，默认"插图 N"；插画/漫画正文都留空（只放图片）
-    const finalTitle = title.trim() || (isArt ? `插图 ${nextOrder}` : "");
+    // 插畫：標題選填，預設"插圖 N"；插畫/漫畫正文都留空（只放圖片）
+    const finalTitle = title.trim() || (isArt ? `插圖 ${nextOrder}` : "");
     const finalContent = isVisual ? "" : content.trim();
 
     const { error } = await supabase.from("chapters").insert({
@@ -156,7 +156,7 @@ export default function NewChapterPage() {
       return;
     }
 
-    // 统计全文字数并同步到作品（列表页直接显示）
+    // 統計全文字數並同步到作品（列表頁直接顯示）
     const { data: allChapters } = await supabase
       .from("chapters")
       .select("content")
@@ -183,7 +183,7 @@ export default function NewChapterPage() {
         >
           ← 返回我的作品
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">添加章节</h1>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900">新增章節</h1>
         {work && (
           <p className="mt-1 text-sm text-slate-500">
             作品：《{work.title}》
@@ -194,9 +194,9 @@ export default function NewChapterPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            章节标题{" "}
+            章節標題{" "}
             {work?.type === "art" ? (
-              <span className="font-normal text-slate-400">（选填，可不填）</span>
+              <span className="font-normal text-slate-400">（選填，可不填）</span>
             ) : (
               <span className="text-rose-500">*</span>
             )}
@@ -209,19 +209,19 @@ export default function NewChapterPage() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder={
               work?.type === "art"
-                ? "如：月光下的少女（插画名，可不填）"
+                ? "如：月光下的少女（插畫名，可不填）"
                 : "如：第一章 相遇"
             }
             className="input-base"
           />
         </div>
 
-        {/* 插画/漫画作品：只放图片，不出现文字框；小说保留正文 */}
+        {/* 插畫/漫畫作品：只放圖片，不出現文字框；小說保留正文 */}
         {work?.type === "art" || work?.type === "comic" ? (
           <div className="rounded-xl border border-sky-100 bg-sky-50/60 px-4 py-3 text-xs text-sky-700">
             {work?.type === "art"
-              ? "插画作品只放图片：直接上传下方图片即可，无需输入文字。"
-              : "漫画作品只放图片：直接上传下方图片即可（多张图按顺序阅读），无需输入文字。"}
+              ? "插畫作品只放圖片：直接上傳下方圖片即可，無需輸入文字。"
+              : "漫畫作品只放圖片：直接上傳下方圖片即可（多張圖按順序閱讀），無需輸入文字。"}
           </div>
         ) : (
           <div>
@@ -234,22 +234,22 @@ export default function NewChapterPage() {
               rows={16}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={"在这里写正文……\n\n想插入插图的位置，写 [插图1] [插图2]…（对应下方选的第几张图）\n段落之间请空一行，方便阅读。"}
+              placeholder={"在這裡寫正文……\n\n想插入插圖的位置，寫 [插圖1] [插圖2]…（對應下方選的第幾張圖）\n段落之間請空一行，方便閱讀。"}
               className="input-base resize-y font-serif leading-7"
             />
           </div>
         )}
 
-        {/* 章节插图（可选） */}
+        {/* 章節插圖（可選） */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             {work?.type === "art" || work?.type === "comic" ? (
               <>
-                作品图片 <span className="font-normal text-slate-400">（必传，可从相簿选择）</span>
+                作品圖片 <span className="font-normal text-slate-400">（必傳，可從相簿選擇）</span>
               </>
             ) : (
               <>
-                章节插图 <span className="font-normal text-slate-400">（选填，可从相簿选择多张）</span>
+                章節插圖 <span className="font-normal text-slate-400">（選填，可從相簿選擇多張）</span>
               </>
             )}
           </label>
@@ -273,8 +273,8 @@ export default function NewChapterPage() {
                 <path d="m21 15-3.5-3.5L11 18" />
                 <path d="M12 8v6M9 11h6" />
               </svg>
-              <span className="text-sm">点击从相簿选择图片（支持多选）</span>
-              <span className="text-xs text-slate-400">JPG / PNG / WebP，单张不超过 5MB</span>
+              <span className="text-sm">點選從相簿選擇圖片（支援多選）</span>
+              <span className="text-xs text-slate-400">JPG / PNG / WebP，單張不超過 5MB</span>
             </button>
           ) : (
             <>
@@ -287,19 +287,19 @@ export default function NewChapterPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={url}
-                      alt={`插图${i + 1}`}
+                      alt={`插圖${i + 1}`}
                       className="h-full w-full object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(i)}
                       className="absolute right-1.5 top-1.5 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white transition hover:bg-rose-600"
-                      aria-label="删除该插图"
+                      aria-label="刪除該插圖"
                     >
-                      删除
+                      刪除
                     </button>
                     <span className="absolute bottom-1.5 left-1.5 rounded bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
-                      插图 {i + 1}
+                      插圖 {i + 1}
                     </span>
                     <button
                       type="button"
@@ -319,11 +319,11 @@ export default function NewChapterPage() {
                   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 5v14M5 12h14" />
                   </svg>
-                  <span className="text-xs">继续添加</span>
+                  <span className="text-xs">繼續新增</span>
                 </button>
               </div>
               <p className="mt-2 text-xs text-slate-400">
-                共 {imageFiles.length} 张 · 点「插入正文」把标记放进正文（或自己写 [插图1] [插图2]…），保存后图片会显示在对应位置
+                共 {imageFiles.length} 張 · 點「插入正文」把標記放進正文（或自己寫 [插圖1] [插圖2]…），儲存後圖片會顯示在對應位置
               </p>
             </>
           )}
@@ -337,7 +337,7 @@ export default function NewChapterPage() {
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? "保存中…" : "保存章节"}
+            {loading ? "儲存中…" : "儲存章節"}
           </button>
           <button
             type="button"

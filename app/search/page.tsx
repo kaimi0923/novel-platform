@@ -7,9 +7,9 @@ import { Work } from "@/lib/types";
 import { GalleryGrid } from "@/components/gallery-grid";
 
 const TYPE_LABEL: Record<string, string> = {
-  novel: "小说",
-  art: "插画",
-  comic: "漫画",
+  novel: "小說",
+  art: "插畫",
+  comic: "漫畫",
 };
 
 export default function SearchPage() {
@@ -51,9 +51,9 @@ export default function SearchPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-slate-900">搜索</h1>
+      <h1 className="text-2xl font-bold text-slate-900">搜尋</h1>
       <p className="mt-1 text-sm text-slate-500">
-        搜索作品名称、简介，找到你想看的
+        搜尋作品名稱、簡介，找到你想看的
       </p>
 
       <form onSubmit={handleSearch} className="mt-6 flex gap-2">
@@ -61,17 +61,17 @@ export default function SearchPage() {
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          placeholder="输入关键词，如：甜宠、穿越、幽灵…"
+          placeholder="輸入關鍵詞，如：甜寵、穿越、幽靈…"
           className="input-base flex-1"
         />
         <button type="submit" disabled={searching} className="btn-primary">
-          {searching ? "搜索中…" : "搜索"}
+          {searching ? "搜尋中…" : "搜尋"}
         </button>
       </form>
 
-      {/* 快捷类型筛选 */}
+      {/* 快捷型別篩選 */}
       <div className="mt-4 flex items-center gap-2 text-sm">
-        <span className="text-slate-400">分类：</span>
+        <span className="text-slate-400">分類：</span>
         {Object.entries(TYPE_LABEL).map(([key, label]) => (
           <button
             key={key}
@@ -96,16 +96,16 @@ export default function SearchPage() {
       <div className="mt-6">
         {results === null ? (
           <p className="py-10 text-center text-sm text-slate-400">
-            输入关键词开始搜索
+            輸入關鍵詞開始搜尋
           </p>
         ) : results.length === 0 ? (
           <p className="py-10 text-center text-sm text-slate-400">
-            没有找到「{keyword}」相关的内容
+            沒有找到「{keyword}」相關的內容
           </p>
         ) : (
           <>
             <p className="mb-4 text-sm text-slate-500">
-              找到 {results.length} 个结果
+              找到 {results.length} 個結果
             </p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {results.map((work) => (
@@ -132,7 +132,7 @@ export default function SearchPage() {
                     <div>
                       <div className="mb-1 flex items-center gap-2">
                         <span className="rounded bg-brand-50 px-1.5 py-0.5 text-xs text-brand-700">
-                          {TYPE_LABEL[work.type ?? "novel"] ?? "小说"}
+                          {TYPE_LABEL[work.type ?? "novel"] ?? "小說"}
                         </span>
                         <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">
                           {work.category}
@@ -142,11 +142,11 @@ export default function SearchPage() {
                         {work.title}
                       </h3>
                       <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
-                        {work.description ?? "（暂无简介）"}
+                        {work.description ?? "（暫無簡介）"}
                       </p>
                     </div>
                     <p className="text-xs text-slate-400">
-                      {work.author?.username ?? "佚名"} · {work.view_count} 阅读
+                      {work.author?.username ?? "佚名"} · {work.view_count} 閱讀
                     </p>
                   </div>
                 </Link>

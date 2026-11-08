@@ -14,7 +14,7 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  // 当前用户档案（头像/封面/昵称/实名状态）
+  // 當前使用者檔案（頭像/封面/暱稱/實名狀態）
   const { data: profile } = await supabase
     .from("profiles")
     .select("username, avatar_url, cover_url, real_name, verify_status")
@@ -23,26 +23,26 @@ export default async function DashboardPage() {
 
   const works = await getMyWorks(user.id);
 
-  // 我收藏的作品数量
+  // 我收藏的作品數量
   const { count: myFavoriteCount } = await supabase
     .from("favorites")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id);
 
-  // 我关注的作者数量
+  // 我關注的作者數量
   const { count: myFollowingCount } = await supabase
     .from("follows")
     .select("id", { count: "exact", head: true })
     .eq("follower_id", user.id);
 
-  // 数据中心统计
+  // 資料中心統計
   const totalChapters = works.reduce((s, w) => s + (w.chapter_count ?? 0), 0);
   const totalViews = works.reduce((s, w) => s + (w.view_count ?? 0), 0);
   const totalFavorites = works.reduce((s, w) => s + (w.favorite_count ?? 0), 0);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      {/* 作者横幅（头像 + 封面 + 昵称） */}
+      {/* 作者橫幅（頭像 + 封面 + 暱稱） */}
       <div className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         {/* 封面背景 */}
         <div
@@ -81,14 +81,14 @@ export default async function DashboardPage() {
                 {profile?.username ?? "作者"}
               </p>
               <p className="text-xs text-white/80">
-                共 {works.length} 部作品 · {totalChapters} 章 · {totalViews} 阅读
+                共 {works.length} 部作品 · {totalChapters} 章 · {totalViews} 閱讀
               </p>
             </div>
           </div>
         </div>
         <div className="flex items-center justify-between px-6 py-3">
           <p className="text-xs text-slate-400">
-            作者专区 · 管理你的作品与个人资料
+            作者專區 · 管理你的作品與個人資料
           </p>
           <div className="flex items-center gap-3">
             <Link
@@ -96,18 +96,18 @@ export default async function DashboardPage() {
               className="btn-secondary !px-4 !py-1.5 !text-xs"
             >
               {profile?.verify_status === "approved"
-                ? "已实名认证 ✓"
+                ? "已實名認證 ✓"
                 : profile?.verify_status === "pending"
-                  ? "实名审核中"
+                  ? "實名稽核中"
                   : profile?.verify_status === "rejected"
-                    ? "实名未通过，重试"
-                    : "实名认证"}
+                    ? "實名未透過，重試"
+                    : "實名認證"}
             </Link>
             <Link
               href="/dashboard/profile"
               className="btn-secondary !px-4 !py-1.5 !text-xs"
             >
-              编辑个人资料
+              編輯個人資料
             </Link>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">我的作品</h1>
           <p className="mt-1 text-sm text-slate-500">
-            投稿后需经管理员审核，审核通过即可在书库展示
+            投稿後需經管理員稽核，稽核透過即可在書庫展示
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -125,40 +125,40 @@ export default async function DashboardPage() {
             我的收藏{myFavoriteCount ? ` ${myFavoriteCount}` : ""}
           </Link>
           <Link href="/dashboard/following" className="btn-secondary">
-            我的关注{myFollowingCount ? ` ${myFollowingCount}` : ""}
+            我的關注{myFollowingCount ? ` ${myFollowingCount}` : ""}
           </Link>
           <Link href="/dashboard/comments" className="btn-secondary">
             留言管理
           </Link>
           <Link href="/dashboard/works/new" className="btn-primary">
-            ＋ 发布新作品
+            ＋ 釋出新作品
           </Link>
         </div>
       </div>
 
-      {/* 数据中心：作品数据统计 */}
+      {/* 資料中心：作品資料統計 */}
       {works.length > 0 && (
         <div className="mb-8 grid grid-cols-3 gap-4">
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
             <p className="text-2xl font-bold text-slate-900">{totalChapters}</p>
-            <p className="mt-1 text-xs text-slate-500">总章节数</p>
+            <p className="mt-1 text-xs text-slate-500">總章節數</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
             <p className="text-2xl font-bold text-slate-900">{totalViews}</p>
-            <p className="mt-1 text-xs text-slate-500">总阅读数</p>
+            <p className="mt-1 text-xs text-slate-500">總閱讀數</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
             <p className="text-2xl font-bold text-slate-900">{totalFavorites}</p>
-            <p className="mt-1 text-xs text-slate-500">总收藏数</p>
+            <p className="mt-1 text-xs text-slate-500">總收藏數</p>
           </div>
         </div>
       )}
 
       {works.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-500">你还没有投稿作品</p>
+          <p className="text-slate-500">你還沒有投稿作品</p>
           <Link href="/dashboard/works/new" className="btn-primary mt-4">
-            发布第一本作品
+            釋出第一本作品
           </Link>
         </div>
       ) : (
@@ -180,7 +180,7 @@ export default async function DashboardPage() {
                       {work.category}
                     </span>
                     <span className="text-xs text-slate-400">
-                      {work.chapter_count ?? 0} 章 · {work.view_count} 阅读 ·{" "}
+                      {work.chapter_count ?? 0} 章 · {work.view_count} 閱讀 ·{" "}
                       {work.favorite_count ?? 0} 收藏
                     </span>
                   </div>
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
                   </Link>
                   {work.status === "rejected" && work.reject_reason && (
                     <p className="mt-1.5 rounded-lg bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
-                      驳回原因：{work.reject_reason}
+                      駁回原因：{work.reject_reason}
                     </p>
                   )}
                 </div>
@@ -207,27 +207,27 @@ export default async function DashboardPage() {
                   }
                   className="btn-primary !px-3 !py-1.5 !text-xs"
                 >
-                  {work.type === "drama" ? "上传剧集" : "添加章节"}
+                  {work.type === "drama" ? "上傳劇集" : "新增章節"}
                 </Link>
                 {work.type === "drama" && (
                   <Link
                     href={`/drama/${work.id}`}
                     className="btn-secondary !px-3 !py-1.5 !text-xs"
                   >
-                    播放页
+                    播放頁
                   </Link>
                 )}
                 <Link
                   href={`/dashboard/works/${work.id}/edit`}
                   className="btn-secondary !px-3 !py-1.5 !text-xs"
                 >
-                  编辑信息
+                  編輯資訊
                 </Link>
                 <Link
                   href={`/works/${work.id}`}
                   className="btn-secondary !px-3 !py-1.5 !text-xs"
                 >
-                  查看页面
+                  檢視頁面
                 </Link>
               </div>
             </div>

@@ -11,23 +11,23 @@ const COVER_FALLBACK_COLORS = [
 ];
 
 function formatCount(n: number) {
-  if (n >= 10000) return `${(n / 10000).toFixed(1)}万`;
+  if (n >= 10000) return `${(n / 10000).toFixed(1)}萬`;
   return `${n}`;
 }
 
-/** 字数 / 图片数的友好展示 */
+/** 字數 / 圖片數的友好展示 */
 function formatLength(work: Work) {
   if (work.type === "art" || work.type === "comic") {
-    return `${work.chapter_count ?? 0} 张图`;
+    return `${work.chapter_count ?? 0} 張圖`;
   }
   const n = work.word_count ?? 0;
   if (n === 0) return "0 字";
-  if (n >= 10000) return `${(n / 10000).toFixed(1)} 万字`;
+  if (n >= 10000) return `${(n / 10000).toFixed(1)} 萬字`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)} 千字`;
   return `${n} 字`;
 }
 
-/** 人气榜竖版大卡片：封面大图 + 标题 + 作者/阅读 + 简介 + 标签 */
+/** 人氣榜豎版大卡片：封面大圖 + 標題 + 作者/閱讀 + 簡介 + 標籤 */
 export function PopularCard({ work, index = 0 }: { work: Work; index?: number }) {
   const gradient =
     COVER_FALLBACK_COLORS[index % COVER_FALLBACK_COLORS.length];
@@ -53,19 +53,19 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
             {work.title}
           </span>
         )}
-        {/* 阅读量角标 */}
+        {/* 閱讀量角標 */}
         <span className="absolute bottom-2 right-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur">
-          {formatCount(work.view_count)} 阅读
+          {formatCount(work.view_count)} 閱讀
         </span>
-        {/* 连载状态角标 */}
+        {/* 連載狀態角標 */}
         <span
           className={`absolute left-2 top-2 rounded px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur ${
             work.is_completed ? "bg-emerald-600/85" : "bg-brand-600/85"
           }`}
         >
-          {work.is_completed ? "已完结" : "连载中"}
+          {work.is_completed ? "已完結" : "連載中"}
         </span>
-        {/* 评分角标 */}
+        {/* 評分角標 */}
         {(work.rating_count ?? 0) > 0 && (
           <span className="absolute bottom-2 left-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-amber-300 backdrop-blur">
             ★ {(work.rating_average ?? 0).toFixed(1)}
@@ -73,7 +73,7 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
         )}
       </div>
 
-      {/* 信息 */}
+      {/* 資訊 */}
       <div className="flex flex-1 flex-col p-3">
         <h3 className="truncate text-sm font-semibold text-slate-900 group-hover:text-brand-600">
           {work.title}
@@ -90,7 +90,7 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
               </span>
             </span>
           ) : (
-            <span>暂无评分</span>
+            <span>暫無評分</span>
           )}
           <span className="text-slate-300">|</span>
           <span>{formatLength(work)}</span>
@@ -98,7 +98,7 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
           <span>{work.favorite_count ?? 0} 收藏</span>
         </p>
         <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-slate-500">
-          {work.description ?? "（暂无简介）"}
+          {work.description ?? "（暫無簡介）"}
         </p>
         {work.tags && work.tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">

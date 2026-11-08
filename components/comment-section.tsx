@@ -18,10 +18,10 @@ function formatTime(iso: string) {
   const now = new Date();
   const diff = now.getTime() - d.getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "刚刚";
-  if (minutes < 60) return `${minutes} 分钟前`;
+  if (minutes < 1) return "剛剛";
+  if (minutes < 60) return `${minutes} 分鐘前`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} 小时前`;
+  if (hours < 24) return `${hours} 小時前`;
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days} 天前`;
   return d.toLocaleDateString("zh-CN");
@@ -42,7 +42,7 @@ export function CommentSection({
   async function handleSubmit() {
     const text = content.trim();
     if (!text) {
-      setError("留言内容不能为空");
+      setError("留言內容不能為空");
       return;
     }
     if (text.length > 500) {
@@ -68,7 +68,7 @@ export function CommentSection({
       .single();
     setSubmitting(false);
     if (err) {
-      setError("留言失败，请稍后再试");
+      setError("留言失敗，請稍後再試");
       return;
     }
     setComments((prev) => [data as Comment, ...prev]);
@@ -95,7 +95,7 @@ export function CommentSection({
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="写下你的读后感或想对作者说的话…"
+            placeholder="寫下你的讀後感或想對作者說的話…"
             rows={3}
             maxLength={500}
             className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
@@ -107,7 +107,7 @@ export function CommentSection({
               disabled={submitting}
               className="btn-primary !px-4 !py-2 !text-xs"
             >
-              发布留言
+              釋出留言
             </button>
           </div>
           {error && <p className="mt-2 text-xs text-rose-600">{error}</p>}
@@ -115,9 +115,9 @@ export function CommentSection({
       ) : (
         <p className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
           <Link href={`/login?redirect=${encodeURIComponent(`/works/${workId}`)}`} className="font-medium text-brand-600 hover:underline">
-            登录
+            登入
           </Link>
-          后即可留言
+          後即可留言
         </p>
       )}
 
@@ -125,7 +125,7 @@ export function CommentSection({
       <div className="mt-4 space-y-3">
         {comments.length === 0 ? (
           <p className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-            还没有留言，来抢沙发吧！
+            還沒有留言，來搶沙發吧！
           </p>
         ) : (
           comments.map((c) => (
@@ -136,10 +136,10 @@ export function CommentSection({
               <div className="mb-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-100 text-xs font-medium text-brand-700">
-                    {(c.profile?.username ?? "读")[0]}
+                    {(c.profile?.username ?? "讀")[0]}
                   </span>
                   <span className="text-sm font-medium text-slate-700">
-                    {c.profile?.username ?? "佚名读者"}
+                    {c.profile?.username ?? "佚名讀者"}
                   </span>
                   <span className="text-xs text-slate-400">
                     {formatTime(c.created_at)}
@@ -150,7 +150,7 @@ export function CommentSection({
                     onClick={() => handleDelete(c.id)}
                     className="text-xs text-slate-400 transition hover:text-rose-600"
                   >
-                    删除
+                    刪除
                   </button>
                 )}
               </div>

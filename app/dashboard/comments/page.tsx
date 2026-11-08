@@ -11,10 +11,10 @@ function formatTime(iso: string) {
   const now = new Date();
   const diff = now.getTime() - d.getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "刚刚";
-  if (minutes < 60) return `${minutes} 分钟前`;
+  if (minutes < 1) return "剛剛";
+  if (minutes < 60) return `${minutes} 分鐘前`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} 小时前`;
+  if (hours < 24) return `${hours} 小時前`;
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days} 天前`;
   return d.toLocaleDateString("zh-CN");
@@ -36,7 +36,7 @@ export default async function DashboardCommentsPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">留言管理</h1>
           <p className="mt-1 text-sm text-slate-500">
-            读者在你作品下的留言，可以删除不当内容
+            讀者在你作品下的留言，可以刪除不當內容
           </p>
         </div>
         <Link href="/dashboard" className="btn-secondary">
@@ -46,9 +46,9 @@ export default async function DashboardCommentsPage() {
 
       {comments.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-500">还没有收到留言</p>
+          <p className="text-slate-500">還沒有收到留言</p>
           <p className="mt-1 text-xs text-slate-400">
-            读者在你的作品页留言后会显示在这里
+            讀者在你的作品頁留言後會顯示在這裡
           </p>
         </div>
       ) : (
@@ -67,7 +67,7 @@ export default async function DashboardCommentsPage() {
                     《{c.work?.title ?? "未知作品"}》
                   </Link>
                   <span className="text-sm font-medium text-slate-700">
-                    {c.profile?.username ?? "佚名读者"}
+                    {c.profile?.username ?? "佚名讀者"}
                   </span>
                   <span className="text-xs text-slate-400">
                     {formatTime(c.created_at)}

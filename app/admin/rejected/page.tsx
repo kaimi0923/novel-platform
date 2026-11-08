@@ -25,19 +25,19 @@ export default async function AdminRejectedPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-slate-900">已驳回的作品</h1>
+      <h1 className="text-2xl font-bold text-slate-900">已駁回的作品</h1>
       <p className="mt-1 text-sm text-slate-500">共 {works.length} 本</p>
 
       <div className="mt-8">
         <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-3">
           <Link href="/admin" className="text-sm text-slate-500 transition hover:text-brand-600">
-            待审核
+            待稽核
           </Link>
           <Link href="/admin/approved" className="text-sm text-slate-500 transition hover:text-brand-600">
-            已通过
+            已透過
           </Link>
           <span className="rounded bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-800">
-            已驳回
+            已駁回
           </span>
         </div>
 
@@ -65,14 +65,14 @@ export default async function AdminRejectedPage() {
               </div>
               {work.reject_reason && (
                 <p className="mt-2 rounded-lg bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
-                  驳回原因：{work.reject_reason}
+                  駁回原因：{work.reject_reason}
                 </p>
               )}
             </div>
           ))}
           {works.length === 0 && (
             <p className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
-              还没有被驳回的作品
+              還沒有被駁回的作品
             </p>
           )}
         </div>

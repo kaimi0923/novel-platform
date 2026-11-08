@@ -21,7 +21,7 @@ export default async function ReadPage({
     chapterId
   );
 
-  // 未通过审核的作品：仅作者和管理员可读
+  // 未透過稽核的作品：僅作者和管理員可讀
   if (work.status !== "approved") {
     let canView = false;
     if (user) {
@@ -35,7 +35,7 @@ export default async function ReadPage({
     if (!canView) notFound();
   }
 
-  // 作品浏览数 +1（已通过审核才计数）
+  // 作品瀏覽數 +1（已透過稽核才計數）
   if (work.status === "approved") {
     await supabase.rpc("increment_view_count", { work_id: workId });
   }
@@ -47,10 +47,10 @@ export default async function ReadPage({
   const paragraphs = chapter.content.split(/\n+/).filter((p) => p.trim());
   const images = chapter.images ?? [];
 
-  // 解析正文中的 [插图N] 标记，替换为对应图片
+  // 解析正文中的 [插圖N] 標記，替換為對應圖片
   const usedImageIndexes = new Set<number>();
   const body = paragraphs.map((p, i) => {
-    const m = p.match(/^\[插图(\d+)\]$/);
+    const m = p.match(/^\[插圖(\d+)\]$/);
     if (m) {
       const idx = parseInt(m[1], 10);
       if (idx >= 1 && idx <= images.length) {
@@ -60,7 +60,7 @@ export default async function ReadPage({
           <img
             key={`img-${i}`}
             src={images[idx - 1]}
-            alt={`插图${idx}`}
+            alt={`插圖${idx}`}
             className="mx-auto my-4 w-full max-w-xl rounded-lg object-contain"
           />
         );
@@ -69,14 +69,14 @@ export default async function ReadPage({
     }
     return <p key={i}>{p}</p>;
   });
-  // 未被引用的插图显示在正文末尾
+  // 未被引用的插圖顯示在正文末尾
   const leftoverImages = images
     .map((url, idx) => ({ url, idx: idx + 1 }))
     .filter(({ idx }) => !usedImageIndexes.has(idx));
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      {/* 顶部导航 */}
+      {/* 頂部導航 */}
       <div className="mb-6 flex items-center justify-between text-sm">
         <Link
           href={`/works/${work.id}`}
@@ -98,7 +98,7 @@ export default async function ReadPage({
           </p>
         </header>
 
-        {/* 章节插图（正文开头） */}
+        {/* 章節插圖（正文開頭） */}
         {images.length > 0 && leftoverImages.length === images.length && (
           <div className="mb-8 space-y-4">
             {images.map((url, i) => (
@@ -106,7 +106,7 @@ export default async function ReadPage({
               <img
                 key={i}
                 src={url}
-                alt={`${chapter.title}插图${i + 1}`}
+                alt={`${chapter.title}插圖${i + 1}`}
                 className="mx-auto w-full max-w-xl rounded-lg object-contain"
               />
             ))}
@@ -115,7 +115,7 @@ export default async function ReadPage({
 
         <div className="prose-novel">
           {body}
-          {/* 正文中未被引用的插图（兼容旧章节，排在末尾） */}
+          {/* 正文中未被引用的插圖（相容舊章節，排在末尾） */}
           {leftoverImages.length > 0 && (
             <div className="mt-8 space-y-4">
               {leftoverImages.map(({ url, idx }) => (
@@ -123,7 +123,7 @@ export default async function ReadPage({
                 <img
                   key={`leftover-${idx}`}
                   src={url}
-                  alt={`${chapter.title}插图${idx}`}
+                  alt={`${chapter.title}插圖${idx}`}
                   className="mx-auto w-full max-w-xl rounded-lg object-contain"
                 />
               ))}
@@ -131,7 +131,7 @@ export default async function ReadPage({
           )}
         </div>
 
-        {/* 章节切换 */}
+        {/* 章節切換 */}
         <nav className="mt-10 flex items-center justify-between border-t border-slate-100 pt-6">
           {prevChapter ? (
             <Link
@@ -144,7 +144,7 @@ export default async function ReadPage({
             <span />
           )}
           <Link href={`/works/${work.id}`} className="text-sm text-slate-400 transition hover:text-brand-600">
-            目录
+            目錄
           </Link>
           {nextChapter ? (
             <Link
@@ -160,7 +160,7 @@ export default async function ReadPage({
       </article>
 
       <p className="mt-8 text-center text-xs text-slate-400">
-        本章节由作者原创投稿，未经授权禁止转载
+        本章節由作者原創投稿，未經授權禁止轉載
       </p>
     </div>
   );

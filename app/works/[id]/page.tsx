@@ -30,7 +30,7 @@ export default async function WorkDetailPage({
 
   const { work, chapters } = await getWorkWithChapters(id);
 
-  // 短剧：剧集列表
+  // 短劇：劇集列表
   const { data: dramaEpisodes } =
     work.type === "drama"
       ? await supabase
@@ -46,12 +46,12 @@ export default async function WorkDetailPage({
   const myRating = await getMyRating(id, user?.id ?? null);
   const comments = await getWorkComments(id);
 
-  // 登录用户写入浏览记录（表未创建时静默忽略，不影响阅读）
+  // 登入使用者寫入瀏覽記錄（表未建立時靜默忽略，不影響閱讀）
   if (user) {
     await recordView(user.id, id);
   }
 
-  // 未通过审核的作品：仅作者和管理员可见
+  // 未透過稽核的作品：僅作者和管理員可見
   let isAdmin = false;
   if (work.status !== "approved") {
     let canView = false;
@@ -75,23 +75,23 @@ export default async function WorkDetailPage({
   }
 
   const canManage = user?.id === work.author_id || isAdmin;
-  // 插画/漫画：以图片为主视觉展示
+  // 插畫/漫畫：以圖片為主視覺展示
   const isVisual = work.type === "art" || work.type === "comic";
   const isDrama = work.type === "drama";
   const typeLabel =
     work.type === "art"
-      ? "插画"
+      ? "插畫"
       : work.type === "comic"
-        ? "漫画"
+        ? "漫畫"
         : work.type === "drama"
-          ? "短剧"
-          : "小说";
+          ? "短劇"
+          : "小說";
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         {isVisual ? (
-          /* 插画/漫画：大图主视觉 */
+          /* 插畫/漫畫：大圖主視覺 */
           <div className="flex flex-col gap-6">
             <div className="overflow-hidden rounded-xl bg-slate-100">
               {work.cover_url ? (
@@ -124,10 +124,10 @@ export default async function WorkDetailPage({
                       : "rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700"
                   }
                 >
-                  {work.is_completed ? "已完结" : "连载中"}
+                  {work.is_completed ? "已完結" : "連載中"}
                 </span>
                 <span className="text-xs text-slate-400">
-                  {work.view_count} 阅读 · ★{" "}
+                  {work.view_count} 閱讀 · ★{" "}
                   {(work.rating_average ?? 0).toFixed(1)}（{work.rating_count ?? 0}）
                   · {favoriteCount} 收藏
                 </span>
@@ -138,7 +138,7 @@ export default async function WorkDetailPage({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={work.author.avatar_url}
-                    alt="作者头像"
+                    alt="作者頭像"
                     className="h-5 w-5 rounded-full object-cover"
                   />
                 )}
@@ -154,7 +154,7 @@ export default async function WorkDetailPage({
                 </div>
               )}
               <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
-                {work.description ?? "作者还没有写简介。"}
+                {work.description ?? "作者還沒有寫簡介。"}
               </p>
 
               {work.tags && work.tags.length > 0 && (
@@ -173,7 +173,7 @@ export default async function WorkDetailPage({
               {work.status !== "approved" && (
                 <div className="mt-4">
                   <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
-                    {work.status === "pending" ? "作品待审核，暂时仅自己可见" : "作品未通过审核"}
+                    {work.status === "pending" ? "作品待稽核，暫時僅自己可見" : "作品未透過稽核"}
                   </span>
                 </div>
               )}
@@ -184,7 +184,7 @@ export default async function WorkDetailPage({
                     href={`/read/${work.id}/${chapters[0].id}`}
                     className="btn-primary !px-6 !py-3"
                   >
-                    {work.status === "approved" ? "开始浏览" : "预览"}
+                    {work.status === "approved" ? "開始瀏覽" : "預覽"}
                   </Link>
                 )}
                 {work.status === "approved" && (
@@ -207,14 +207,14 @@ export default async function WorkDetailPage({
                     href={`/dashboard/works/${work.id}/chapters/new`}
                     className="btn-secondary !px-6 !py-3"
                   >
-                    添加内容
+                    新增內容
                   </Link>
                 )}
               </div>
             </div>
           </div>
         ) : (
-          /* 小说：封面 + 信息 */
+          /* 小說：封面 + 資訊 */
           <div className="flex flex-col gap-6 sm:flex-row">
             {/* 封面 */}
             <div className="mx-auto flex h-48 w-36 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 px-2 text-center sm:mx-0">
@@ -232,7 +232,7 @@ export default async function WorkDetailPage({
               )}
             </div>
 
-            {/* 信息 */}
+            {/* 資訊 */}
             <div className="flex-1">
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <span className="rounded bg-brand-50 px-2 py-0.5 text-xs text-brand-700">
@@ -245,11 +245,11 @@ export default async function WorkDetailPage({
                       : "rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700"
                   }
                 >
-                  {work.is_completed ? "已完结" : "连载中"}
+                  {work.is_completed ? "已完結" : "連載中"}
                 </span>
                 <span className="text-xs text-slate-400">
                   {chapters.length} 章 · {work.word_count ?? 0} 字 ·{" "}
-                  {work.view_count} 阅读 · ★{" "}
+                  {work.view_count} 閱讀 · ★{" "}
                   {(work.rating_average ?? 0).toFixed(1)}（{work.rating_count ?? 0}）
                   · {favoriteCount} 收藏
                 </span>
@@ -260,7 +260,7 @@ export default async function WorkDetailPage({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={work.author.avatar_url}
-                    alt="作者头像"
+                    alt="作者頭像"
                     className="h-5 w-5 rounded-full object-cover"
                   />
                 )}
@@ -276,7 +276,7 @@ export default async function WorkDetailPage({
                 </div>
               )}
               <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
-                {work.description ?? "作者还没有写简介。"}
+                {work.description ?? "作者還沒有寫簡介。"}
               </p>
 
               {work.tags && work.tags.length > 0 && (
@@ -295,7 +295,7 @@ export default async function WorkDetailPage({
               {work.status !== "approved" && (
                 <div className="mt-4">
                   <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
-                    {work.status === "pending" ? "作品待审核，暂时仅自己可见" : "作品未通过审核"}
+                    {work.status === "pending" ? "作品待稽核，暫時僅自己可見" : "作品未透過稽核"}
                   </span>
                 </div>
               )}
@@ -306,17 +306,17 @@ export default async function WorkDetailPage({
                     href={`/drama/${work.id}`}
                     className="btn-primary !px-6 !py-3"
                   >
-                    ▶ 立即观看（共 {episodes.length} 集）
+                    ▶ 立即觀看（共 {episodes.length} 集）
                   </Link>
                 ) : chapters.length > 0 ? (
                   <Link
                     href={`/read/${work.id}/${chapters[0].id}`}
                     className="btn-primary !px-6 !py-3"
                   >
-                    {work.status === "approved" ? "开始阅读" : "预览阅读"}
+                    {work.status === "approved" ? "開始閱讀" : "預覽閱讀"}
                   </Link>
                 ) : (
-                  <span className="text-sm text-slate-400">还没有章节</span>
+                  <span className="text-sm text-slate-400">還沒有章節</span>
                 )}
                 {work.status === "approved" && (
                   <FavoriteButton
@@ -342,7 +342,7 @@ export default async function WorkDetailPage({
                     }
                     className="btn-secondary !px-6 !py-3"
                   >
-                    {isDrama ? "上传剧集" : "添加章节"}
+                    {isDrama ? "上傳劇集" : "新增章節"}
                   </Link>
                 )}
               </div>
@@ -351,11 +351,11 @@ export default async function WorkDetailPage({
         )}
       </div>
 
-      {/* 短剧剧集列表 */}
+      {/* 短劇劇集列表 */}
       {isDrama && episodes.length > 0 && (
         <div className="mt-8">
           <h2 className="mb-4 text-lg font-semibold text-slate-900">
-            剧集（共 {episodes.length} 集）
+            劇集（共 {episodes.length} 集）
           </h2>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
             {episodes.map((ep) => (
@@ -374,11 +374,11 @@ export default async function WorkDetailPage({
         </div>
       )}
 
-      {/* 章节列表（插画/漫画有连载内容时也显示） */}
+      {/* 章節列表（插畫/漫畫有連載內容時也顯示） */}
       {chapters.length > 0 && (
         <div className="mt-8">
           <h2 className="mb-4 text-lg font-semibold text-slate-900">
-            {isVisual ? "内容列表" : "章节列表"}
+            {isVisual ? "內容列表" : "章節列表"}
           </h2>
           <div className="grid gap-2 sm:grid-cols-2">
             {chapters.map((ch) => (
@@ -392,7 +392,7 @@ export default async function WorkDetailPage({
                   {ch.title}
                 </span>
                 <span className="shrink-0 text-xs text-slate-400">
-                  {isVisual ? "查看 →" : "阅读 →"}
+                  {isVisual ? "檢視 →" : "閱讀 →"}
                 </span>
               </Link>
             ))}
@@ -400,7 +400,7 @@ export default async function WorkDetailPage({
         </div>
       )}
 
-      {/* 留言区 */}
+      {/* 留言區 */}
       <CommentSection
         workId={work.id}
         initialComments={comments}

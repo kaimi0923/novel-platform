@@ -1,7 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 /**
- * 浏览器端 Supabase 客户端（用于"客户端组件"里的登录/注册/提交表单等操作）
+ * 瀏覽器端 Supabase 客戶端（用於"客戶端元件"裡的登入/註冊/提交表單等操作）
  */
 export function createClient() {
   return createBrowserClient(

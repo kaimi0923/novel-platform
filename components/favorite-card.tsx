@@ -19,12 +19,12 @@ export interface FavoriteCardData {
 }
 
 const TYPE_LABEL: Record<string, string> = {
-  novel: "小说",
-  art: "插画",
-  comic: "漫画",
+  novel: "小說",
+  art: "插畫",
+  comic: "漫畫",
 };
 
-/** 收藏列表卡片：显示作品与作者，可一键取消收藏 */
+/** 收藏列表卡片：顯示作品與作者，可一鍵取消收藏 */
 export function FavoriteCard({ work }: { work: FavoriteCardData }) {
   const [removed, setRemoved] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ export function FavoriteCard({ work }: { work: FavoriteCardData }) {
           />
         ) : (
           <div className="flex h-28 w-[84px] items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400">
-            无封面
+            無封面
           </div>
         )}
       </Link>
@@ -62,7 +62,7 @@ export function FavoriteCard({ work }: { work: FavoriteCardData }) {
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-2">
           <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[11px] font-medium text-brand-700">
-            {TYPE_LABEL[work.type] ?? "小说"}
+            {TYPE_LABEL[work.type] ?? "小說"}
           </span>
           <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-500">
             {work.category}
@@ -99,7 +99,7 @@ export function FavoriteCard({ work }: { work: FavoriteCardData }) {
         </div>
 
         <p className="mt-1 text-[11px] text-slate-400">
-          收藏于 {work.favorited_at.slice(0, 10)} · {work.view_count} 阅读 ·{" "}
+          收藏於 {work.favorited_at.slice(0, 10)} · {work.view_count} 閱讀 ·{" "}
           {work.favorite_count} 收藏
         </p>
 
@@ -108,14 +108,14 @@ export function FavoriteCard({ work }: { work: FavoriteCardData }) {
             href={`/works/${work.id}`}
             className="btn-secondary !px-3 !py-1.5 !text-xs"
           >
-            查看作品
+            檢視作品
           </Link>
           <button
             onClick={handleRemove}
             disabled={loading}
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-600 transition hover:border-rose-300 hover:text-rose-600 disabled:opacity-50"
           >
-            {loading ? "处理中…" : "取消收藏"}
+            {loading ? "處理中…" : "取消收藏"}
           </button>
         </div>
       </div>

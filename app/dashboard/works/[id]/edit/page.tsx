@@ -36,7 +36,7 @@ export default function EditWorkPage() {
       .single()
       .then(({ data, error }) => {
         if (error || !data) {
-          setError("作品不存在或无权访问");
+          setError("作品不存在或無權訪問");
         } else {
           const work = data as Work;
           setWorkType(work.type ?? "novel");
@@ -55,12 +55,12 @@ export default function EditWorkPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      setError("封面只支持 JPG / PNG / WebP 格式");
+      setError("封面只支援 JPG / PNG / WebP 格式");
       e.target.value = "";
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError("封面图片超过 5MB，请压缩后重试");
+      setError("封面圖片超過 5MB，請壓縮後重試");
       e.target.value = "";
       return;
     }
@@ -85,14 +85,14 @@ export default function EditWorkPage() {
 
     const supabase = createClient();
 
-    // 上传新封面（文件名带时间戳，避免浏览器缓存旧图）
+    // 上傳新封面（檔名帶時間戳，避免瀏覽器快取舊圖）
     let finalCover: string | null = coverUrl || null;
     try {
       if (coverFile) {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (!user) throw new Error("请先登录");
+        if (!user) throw new Error("請先登入");
         const coverPath = `covers/${user.id}-${Date.now()}`;
         const { error: upErr } = await supabase.storage
           .from("author-images")
@@ -103,12 +103,12 @@ export default function EditWorkPage() {
           .getPublicUrl(coverPath).data.publicUrl;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "封面上传失败");
+      setError(err instanceof Error ? err.message : "封面上傳失敗");
       setSaving(false);
       return;
     }
 
-    // 只更新信息字段，不动审核状态
+    // 只更新資訊欄位，不動稽核狀態
     const { error } = await supabase
       .from("works")
       .update({
@@ -133,26 +133,26 @@ export default function EditWorkPage() {
   }
 
   if (loading) {
-    return <p className="px-4 py-20 text-center text-sm text-slate-400">加载中…</p>;
+    return <p className="px-4 py-20 text-center text-sm text-slate-400">載入中…</p>;
   }
 
   return (
     <VerifyGate>
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <h1 className="mb-6 text-2xl font-bold text-slate-900">编辑作品</h1>
+        <h1 className="mb-6 text-2xl font-bold text-slate-900">編輯作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品类型 <span className="text-rose-500">*</span>
+            作品型別 <span className="text-rose-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(
               [
-                { key: "novel", label: "小说", desc: "文字作品" },
-                { key: "art", label: "插画", desc: "单张图片" },
-                { key: "comic", label: "漫画", desc: "图片作品" },
-                { key: "drama", label: "短剧", desc: "竖屏视频剧集" },
+                { key: "novel", label: "小說", desc: "文字作品" },
+                { key: "art", label: "插畫", desc: "單張圖片" },
+                { key: "comic", label: "漫畫", desc: "圖片作品" },
+                { key: "drama", label: "短劇", desc: "豎屏影片劇集" },
               ] as const
             ).map((t) => (
               <button
@@ -176,7 +176,7 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品名称 <span className="text-rose-500">*</span>
+            作品名稱 <span className="text-rose-500">*</span>
           </label>
           <input
             type="text"
@@ -190,7 +190,7 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            分类 <span className="text-rose-500">*</span>
+            分類 <span className="text-rose-500">*</span>
           </label>
           <select
             value={category}
@@ -207,7 +207,7 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品简介
+            作品簡介
           </label>
           <textarea
             rows={5}
@@ -220,7 +220,7 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            封面图片 <span className="font-normal text-slate-400">（可从相簿选择）</span>
+            封面圖片 <span className="font-normal text-slate-400">（可從相簿選擇）</span>
           </label>
           <input
             ref={coverInputRef}
@@ -234,7 +234,7 @@ export default function EditWorkPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={coverPreview ?? coverUrl}
-                alt="封面预览"
+                alt="封面預覽"
                 className="mx-auto max-h-64 rounded-xl border border-slate-200 object-contain"
               />
               <div className="mt-2 flex items-center justify-center gap-3">
@@ -243,7 +243,7 @@ export default function EditWorkPage() {
                   onClick={() => coverInputRef.current?.click()}
                   className="btn-secondary !py-1.5 text-xs"
                 >
-                  {coverFile ? "重新选择" : "更换图片"}
+                  {coverFile ? "重新選擇" : "更換圖片"}
                 </button>
                 <button
                   type="button"
@@ -266,7 +266,7 @@ export default function EditWorkPage() {
                 <path d="m21 15-3.5-3.5L11 18" />
                 <path d="M12 8v6M9 11h6" />
               </svg>
-              <span className="text-sm">点击从相簿选择封面</span>
+              <span className="text-sm">點選從相簿選擇封面</span>
               <span className="text-xs text-slate-400">JPG / PNG / WebP，≤5MB</span>
             </button>
           )}
@@ -274,7 +274,7 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品标签 <span className="text-slate-400">（选填，最多 12 个）</span>
+            作品標籤 <span className="text-slate-400">（選填，最多 12 個）</span>
           </label>
           <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
             <TagPicker value={tags} onChange={setTags} />
@@ -283,12 +283,12 @@ export default function EditWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            连载状态
+            連載狀態
           </label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: false, label: "连载中", desc: "还在更新" },
-              { key: true, label: "已完结", desc: "全书完结" },
+              { key: false, label: "連載中", desc: "還在更新" },
+              { key: true, label: "已完結", desc: "全書完結" },
             ].map((s) => (
               <button
                 key={String(s.key)}
@@ -323,7 +323,7 @@ export default function EditWorkPage() {
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? "保存中…" : "保存修改"}
+            {saving ? "儲存中…" : "儲存修改"}
           </button>
           <button
             type="button"
@@ -334,7 +334,7 @@ export default function EditWorkPage() {
           </button>
         </div>
         <p className="text-xs text-slate-400">
-          * 已通过审核的作品修改信息后，状态保持不变
+          * 已透過稽核的作品修改資訊後，狀態保持不變
         </p>
       </form>
       </div>

@@ -1,5 +1,5 @@
-// 大陆身份证 / 台湾居民居住证号码校验（18 位，GB11643 校验位算法）
-// 台湾居民居住证号码同样为 18 位、同编码体系，校验规则一致。
+// 大陸身份證 / 臺灣居民居住證號碼校驗（18 位，GB11643 校驗位演算法）
+// 臺灣居民居住證號碼同樣為 18 位、同編碼體系，校驗規則一致。
 export function isValidIdNumber(id: string): boolean {
   const value = id.trim().toUpperCase();
   if (!/^\d{17}[\dX]$/.test(value)) return false;
@@ -12,7 +12,7 @@ export function isValidIdNumber(id: string): boolean {
   return codes[sum % 11] === value[17];
 }
 
-// 脱敏显示：姓名保留首字，证件号保留前3后4
+// 脫敏顯示：姓名保留首字，證件號保留前3後4
 export function maskName(name: string): string {
   if (!name) return "";
   if (name.length <= 1) return name + "**";

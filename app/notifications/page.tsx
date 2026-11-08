@@ -18,15 +18,15 @@ export default async function NotificationsPage() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-bold text-slate-900">通知</h1>
       <p className="mt-1 text-sm text-slate-500">
-        读者在你作品下的最新留言
+        讀者在你作品下的最新留言
       </p>
 
       <div className="mt-6">
         {comments.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p className="text-slate-500">暂无通知</p>
+            <p className="text-slate-500">暫無通知</p>
             <p className="mt-1 text-xs text-slate-400">
-              读者在你的作品下留言后，会在这里看到
+              讀者在你的作品下留言後，會在這裡看到
             </p>
           </div>
         ) : (
@@ -39,9 +39,9 @@ export default async function NotificationsPage() {
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-slate-500">
                     <span className="font-medium text-slate-900">
-                      {c.profile?.username ?? "读者"}
+                      {c.profile?.username ?? "讀者"}
                     </span>{" "}
-                    评论了你的作品
+                    評論了你的作品
                     {c.work?.title ? (
                       <>
                         {" "}

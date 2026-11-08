@@ -1,4 +1,4 @@
-// 数据库行类型定义（与 supabase/schema.sql 中的表结构对应）
+// 資料庫行型別定義（與 supabase/schema.sql 中的表結構對應）
 
 export interface Profile {
   id: string;
@@ -7,13 +7,13 @@ export interface Profile {
   role: "reader" | "author" | "admin";
   avatar_url?: string | null;
   cover_url?: string | null;
-  // 实名认证信息
+  // 實名認證資訊
   real_name?: string | null;
   id_number?: string | null;
   id_address?: string | null;
   id_photo_url?: string | null;
   verify_status?: "pending" | "approved" | "rejected" | null;
-  // 联系方式
+  // 聯絡方式
   qq?: string | null;
   wechat?: string | null;
   contact_email?: string | null;
@@ -29,30 +29,30 @@ export interface Work {
   description: string | null;
   cover_url: string | null;
   category: string;
-  /** 作品类型：novel 小说 / art 插画 / comic 漫画 / drama 短剧 */
+  /** 作品型別：novel 小說 / art 插畫 / comic 漫畫 / drama 短劇 */
   type?: "novel" | "art" | "comic" | "drama";
   status: "pending" | "approved" | "rejected";
   reject_reason: string | null;
   view_count: number;
-  /** 是否已完结 */
+  /** 是否已完結 */
   is_completed?: boolean;
-  /** 正文字数（自动统计） */
+  /** 正文字數（自動統計） */
   word_count?: number;
-  /** 平均评分（1-5） */
+  /** 平均評分（1-5） */
   rating_average?: number;
-  /** 打分人数 */
+  /** 打分人數 */
   rating_count?: number;
   created_at: string;
   updated_at: string;
-  // 作品标签（四大类中挑选）
+  // 作品標籤（四大類中挑選）
   tags?: string[];
-  // 联表查询时附带
+  // 聯表查詢時附帶
   author?: { username: string | null; avatar_url?: string | null } | null;
-  // 章节数（联表聚合时附带）
+  // 章節數（聯表聚合時附帶）
   chapter_count?: number;
-  // 短剧集数（联表聚合时附带）
+  // 短劇集數（聯表聚合時附帶）
   episode_count?: number;
-  // 收藏数（联表聚合时附带）
+  // 收藏數（聯表聚合時附帶）
   favorite_count?: number;
 }
 
@@ -69,7 +69,7 @@ export interface Comment {
   user_id: string;
   content: string;
   created_at: string;
-  // 联表查询时附带
+  // 聯表查詢時附帶
   profile?: { username: string | null } | null;
 }
 
@@ -79,23 +79,23 @@ export interface Chapter {
   title: string;
   content: string;
   chapter_order: number;
-  /** 章节插图（图片 URL 列表，可选） */
+  /** 章節插圖（圖片 URL 列表，可選） */
   images?: string[];
   created_at: string;
 }
 
 export type WorkStatus = Work["status"];
 
-/** 短剧的一集 */
+/** 短劇的一集 */
 export interface Episode {
   id: string;
   work_id: string;
-  /** 第几集（从 1 开始） */
+  /** 第幾集（從 1 開始） */
   episode_order: number;
   title: string | null;
   video_url: string;
   cover_url: string | null;
-  /** 时长（秒） */
+  /** 時長（秒） */
   duration: number | null;
   created_at: string;
 }

@@ -26,7 +26,7 @@ export function DramaPlayer({
 
   const storageKey = `drama_progress_${work.id}`;
 
-  // 初始：URL ?ep=N 优先，其次恢复上次看到第几集
+  // 初始：URL ?ep=N 優先，其次恢復上次看到第幾集
   useEffect(() => {
     const epParam = Number(
       new URLSearchParams(window.location.search).get("ep") ?? "0"
@@ -46,7 +46,7 @@ export function DramaPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 登录状态 + 是否已追剧
+  // 登入狀態 + 是否已追劇
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data }) => {
@@ -65,7 +65,7 @@ export function DramaPlayer({
 
 
 
-  // 监听哪一集在屏幕中
+  // 監聽哪一集在螢幕中
   useEffect(() => {
     const nodes = Array.from(
       document.querySelectorAll<HTMLElement>("[data-ep]")
@@ -86,14 +86,14 @@ export function DramaPlayer({
     return () => obs.disconnect();
   }, [storageKey]);
 
-  // 切换集：播放当前，暂停其他
+  // 切換集：播放當前，暫停其他
   useEffect(() => {
     videoRefs.current.forEach((v, i) => {
       if (!v) return;
       if (i === index) {
         setProgress(0);
         v.play().catch(() => {
-          /* 浏览器限制自动播放时等用户点 */
+          /* 瀏覽器限制自動播放時等使用者點 */
         });
       } else {
         v.pause();
@@ -120,17 +120,17 @@ export function DramaPlayer({
         .eq("user_id", userId)
         .eq("work_id", work.id);
       setFavorited(false);
-      flash("已取消追剧");
+      flash("已取消追劇");
     } else {
       const { error } = await supabase
         .from("favorites")
         .insert({ user_id: userId, work_id: work.id });
       if (error) {
-        flash("追剧失败：" + error.message);
+        flash("追劇失敗：" + error.message);
         return;
       }
       setFavorited(true);
-      flash("已加入我的追剧");
+      flash("已加入我的追劇");
     }
   }
 
@@ -141,10 +141,10 @@ export function DramaPlayer({
         await navigator.share({ title: work.title, url });
       } else {
         await navigator.clipboard.writeText(url);
-        flash("链接已复制");
+        flash("連結已複製");
       }
     } catch {
-      /* 用户取消 */
+      /* 使用者取消 */
     }
   }
 
@@ -157,7 +157,7 @@ export function DramaPlayer({
 
   return (
     <div className="relative h-[100dvh] w-full bg-black">
-      {/* 顶部信息 */}
+      {/* 頂部資訊 */}
       <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-black/60 to-transparent px-3 pb-8 pt-3">
         <div className="pointer-events-auto flex items-center gap-2">
           <Link
@@ -180,7 +180,7 @@ export function DramaPlayer({
         </div>
       </div>
 
-      {/* 剧集流 */}
+      {/* 劇集流 */}
       <div
         ref={containerRef}
         className="h-[100dvh] snap-y snap-mandatory overflow-y-scroll overscroll-y-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -217,12 +217,12 @@ export function DramaPlayer({
               }}
             />
 
-            {/* 播放按钮（暂停时） */}
+            {/* 播放按鈕（暫停時） */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="rounded-full bg-black/40 p-4 text-white opacity-0" />
             </div>
 
-            {/* 右侧操作 */}
+            {/* 右側操作 */}
             <div className="absolute bottom-28 right-2 z-20 flex flex-col items-center gap-4">
               <button
                 onClick={() => setShowList(true)}
@@ -236,7 +236,7 @@ export function DramaPlayer({
                     <rect x="13" y="13" width="7" height="7" rx="1.5" />
                   </svg>
                 </span>
-                <span className="mt-1 text-[11px] text-white/80">选集</span>
+                <span className="mt-1 text-[11px] text-white/80">選集</span>
               </button>
 
               <button
@@ -249,7 +249,7 @@ export function DramaPlayer({
                   </svg>
                 </span>
                 <span className="mt-1 text-[11px] text-white/80">
-                  {favorited ? "已追" : "追剧"}
+                  {favorited ? "已追" : "追劇"}
                 </span>
               </button>
 
@@ -264,7 +264,7 @@ export function DramaPlayer({
               </button>
             </div>
 
-            {/* 底部：剧名/简介 */}
+            {/* 底部：劇名/簡介 */}
             <div className="pointer-events-none absolute bottom-4 left-0 right-16 z-20 px-4 pb-2">
               <p className="text-sm font-semibold text-white">{work.title}</p>
               {item.title && (
@@ -272,7 +272,7 @@ export function DramaPlayer({
               )}
             </div>
 
-            {/* 进度条 */}
+            {/* 進度條 */}
             {i === index && (
               <div className="absolute bottom-0 left-0 right-0 z-20 h-[3px] bg-white/20">
                 <div
@@ -285,9 +285,9 @@ export function DramaPlayer({
         ))}
         {episodes.length === 0 && (
           <div className="flex h-[100dvh] flex-col items-center justify-center gap-2 text-white/70">
-            <p>这部剧还没有上传剧集</p>
+            <p>這部劇還沒有上傳劇集</p>
             <Link href="/drama" className="mt-2 text-sm text-brand-400">
-              返回短剧
+              返回短劇
             </Link>
           </div>
         )}
@@ -301,27 +301,27 @@ export function DramaPlayer({
 
       {ended && (
         <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-3 bg-black/85 px-6 text-center text-white">
-          <p className="text-lg font-semibold">已看完最后一集</p>
-          <p className="text-sm text-white/60">想看更多？去短剧频道逛逛</p>
+          <p className="text-lg font-semibold">已看完最後一集</p>
+          <p className="text-sm text-white/60">想看更多？去短劇頻道逛逛</p>
           <Link href="/drama" className="btn-primary mt-1">
-            发现更多短剧
+            發現更多短劇
           </Link>
           <button onClick={() => setEnded(false)} className="text-xs text-white/50">
-            继续停留
+            繼續停留
           </button>
         </div>
       )}
 
-      {/* 选集抽屉 */}
+      {/* 選集抽屜 */}
       {showList && (
         <div className="absolute inset-0 z-40 flex flex-col justify-end bg-black/50">
           <div className="max-h-[60vh] overflow-y-auto rounded-t-2xl bg-white pb-6">
             <div className="sticky top-0 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3">
               <p className="text-sm font-semibold text-slate-900">
-                选集（共 {episodes.length} 集）
+                選集（共 {episodes.length} 集）
               </p>
               <button onClick={() => setShowList(false)} className="text-xs text-slate-500">
-                关闭
+                關閉
               </button>
             </div>
             <div className="grid grid-cols-5 gap-2 p-4">

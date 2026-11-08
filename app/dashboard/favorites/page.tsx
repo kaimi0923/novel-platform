@@ -36,19 +36,19 @@ export default async function MyFavoritesPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">我的收藏</h1>
           <p className="mt-1 text-sm text-slate-500">
-            你收藏的作品与作者，共 {cards.length} 部
+            你收藏的作品與作者，共 {cards.length} 部
           </p>
         </div>
         <Link href="/dashboard" className="btn-secondary shrink-0">
-          返回个人首页
+          返回個人首頁
         </Link>
       </div>
 
       {cards.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-500">还没有收藏任何作品</p>
+          <p className="text-slate-500">還沒有收藏任何作品</p>
           <Link href="/works" className="btn-primary mt-4">
-            去书库逛逛
+            去書庫逛逛
           </Link>
         </div>
       ) : (

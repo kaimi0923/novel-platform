@@ -10,7 +10,7 @@ interface FollowButtonProps {
   initialFollowing: boolean;
 }
 
-/** 关注作者按钮：未登录跳登录，已关注可取消 */
+/** 關注作者按鈕：未登入跳登入，已關注可取消 */
 export function FollowButton({
   authorId,
   loggedIn,
@@ -64,7 +64,7 @@ export function FollowButton({
           : "inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-brand-400 hover:text-brand-600 disabled:opacity-50"
       }
     >
-      {following ? "已关注" : "＋ 关注作者"}
+      {following ? "已關注" : "＋ 關注作者"}
     </button>
   );
 }

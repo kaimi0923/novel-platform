@@ -10,17 +10,17 @@ export default async function DramaPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">短剧</h1>
+        <h1 className="text-2xl font-bold text-slate-900">短劇</h1>
       </div>
 
       {works.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-          <p className="text-sm text-slate-500">还没有短剧上线</p>
+          <p className="text-sm text-slate-500">還沒有短劇上線</p>
           <Link
             href="/dashboard/works/new"
             className="btn-primary mt-4 inline-flex"
           >
-            投一部短剧
+            投一部短劇
           </Link>
         </div>
       ) : (
@@ -58,7 +58,7 @@ export default async function DramaPage() {
                 </div>
 
                 <span className="absolute left-2 top-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur">
-                  短剧
+                  短劇
                 </span>
                 {work.view_count > 0 && (
                   <span className="absolute right-2 top-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] text-white backdrop-blur">

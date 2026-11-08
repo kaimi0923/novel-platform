@@ -27,35 +27,35 @@ export function Nav({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/brand-logo-nav.png"
-              alt="鬼点子"
+              alt="鬼點子"
               className="h-11 w-auto"
             />
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-slate-600 sm:flex">
             <Link href="/" className="transition hover:text-brand-600">
-              首页
+              首頁
             </Link>
             <Link href="/art" className="transition hover:text-brand-600">
-              插画
+              插畫
             </Link>
             <Link href="/comic" className="transition hover:text-brand-600">
-              漫画
+              漫畫
             </Link>
             <Link href="/works" className="transition hover:text-brand-600">
-              小说
+              小說
             </Link>
             <Link href="/drama" className="transition hover:text-brand-600">
-              短剧
+              短劇
             </Link>
             <Link
               href="/dashboard/works/new"
               className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-700"
             >
-              + 创作
+              + 創作
             </Link>
             {role === "admin" && (
               <Link href="/admin" className="transition hover:text-brand-600">
-                审核后台
+                稽核後臺
               </Link>
             )}
           </nav>
@@ -76,10 +76,10 @@ export function Nav({
                 href="/login"
                 className="text-sm font-medium text-slate-600 transition hover:text-brand-600"
               >
-                登录
+                登入
               </Link>
               <Link href="/signup" className="btn-primary !py-2 text-sm">
-                注册
+                註冊
               </Link>
             </>
           )}

@@ -23,7 +23,7 @@ export function TagPicker({ value, onChange }: TagPickerProps) {
     if (!group) return;
     const groupCount = value.filter((t) => group.tags.includes(t)).length;
     if (groupCount >= MAX_PER_GROUP) {
-      setMessage(`「${group.name}」类型最多选 ${MAX_PER_GROUP} 个标签`);
+      setMessage(`「${group.name}」型別最多選 ${MAX_PER_GROUP} 個標籤`);
       return;
     }
     onChange([...value, tag]);
@@ -33,9 +33,9 @@ export function TagPicker({ value, onChange }: TagPickerProps) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-slate-500">每个类型下可选 1-3 个标签</p>
+        <p className="text-xs text-slate-500">每個型別下可選 1-3 個標籤</p>
         <p className="text-xs font-medium text-brand-600">
-          已选 {value.length} 个
+          已選 {value.length} 個
         </p>
       </div>
 

@@ -20,21 +20,21 @@ export default async function MyFollowingPage() {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">我的关注</h1>
+          <h1 className="text-2xl font-bold text-slate-900">我的關注</h1>
           <p className="mt-1 text-sm text-slate-500">
-            你关注的作者，共 {authors.length} 位
+            你關注的作者，共 {authors.length} 位
           </p>
         </div>
         <Link href="/dashboard" className="btn-secondary shrink-0">
-          返回个人首页
+          返回個人首頁
         </Link>
       </div>
 
       {authors.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-500">还没有关注任何作者</p>
+          <p className="text-slate-500">還沒有關注任何作者</p>
           <Link href="/works" className="btn-primary mt-4">
-            去发现作者
+            去發現作者
           </Link>
         </div>
       ) : (
@@ -48,7 +48,7 @@ export default async function MyFollowingPage() {
                 {author.avatar_url ? (
                   <img
                     src={author.avatar_url}
-                    alt={author.username ?? "作者头像"}
+                    alt={author.username ?? "作者頭像"}
                     className="h-11 w-11 rounded-full object-cover"
                   />
                 ) : (
@@ -61,10 +61,10 @@ export default async function MyFollowingPage() {
                     {author.username ?? "匿名作者"}
                   </p>
                   <p className="text-[11px] text-slate-400">
-                    关注于 {author.followed_at.slice(0, 10)} · {" "}
+                    關注於 {author.followed_at.slice(0, 10)} · {" "}
                     {author.works.length > 0
                       ? `${author.works.length} 部作品`
-                      : "暂无公开作品"}
+                      : "暫無公開作品"}
                   </p>
                 </div>
                 <FollowButton
@@ -90,7 +90,7 @@ export default async function MyFollowingPage() {
                         />
                       ) : (
                         <div className="flex h-20 w-16 items-center justify-center rounded-md bg-slate-100 text-[10px] text-slate-400">
-                          无封面
+                          無封面
                         </div>
                       )}
                       <p className="mt-1 truncate text-[11px] text-slate-600">

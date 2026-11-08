@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import type { AdminMember } from "@/lib/supabase/queries";
 
 const ROLE_LABEL: Record<string, string> = {
-  reader: "读者",
+  reader: "讀者",
   author: "作家",
-  admin: "管理员",
+  admin: "管理員",
 };
 
 const ROLE_COLOR: Record<string, string> = {
@@ -16,9 +16,9 @@ const ROLE_COLOR: Record<string, string> = {
 };
 
 const VERIFY_LABEL: Record<string, string> = {
-  pending: "待审核",
-  approved: "已实名",
-  rejected: "未通过",
+  pending: "待稽核",
+  approved: "已實名",
+  rejected: "未透過",
 };
 
 const VERIFY_COLOR: Record<string, string> = {
@@ -28,9 +28,9 @@ const VERIFY_COLOR: Record<string, string> = {
 };
 
 const WORK_STATUS: Record<string, string> = {
-  approved: "已通过",
-  pending: "待审",
-  rejected: "已驳回",
+  approved: "已透過",
+  pending: "待審",
+  rejected: "已駁回",
 };
 
 type Filter = "all" | "author" | "reader" | "verified" | "pendingVerify";
@@ -70,7 +70,7 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
         <input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          placeholder="搜笔名 / 邮箱 / 真名 / QQ / 手机号"
+          placeholder="搜筆名 / 郵箱 / 真名 / QQ / 手機號"
           className="input-base sm:max-w-xs"
         />
         <div className="flex flex-wrap gap-1.5">
@@ -78,9 +78,9 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
             [
               { key: "all", label: "全部" },
               { key: "author", label: "有作品的" },
-              { key: "reader", label: "纯读者" },
-              { key: "verified", label: "已实名" },
-              { key: "pendingVerify", label: "待实名审核" },
+              { key: "reader", label: "純讀者" },
+              { key: "verified", label: "已實名" },
+              { key: "pendingVerify", label: "待實名稽核" },
             ] as const
           ).map((f) => (
             <button
@@ -114,7 +114,7 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
                 {m.avatar_url ? (
                   <img
                     src={m.avatar_url}
-                    alt={m.username ?? "头像"}
+                    alt={m.username ?? "頭像"}
                     className="h-11 w-11 shrink-0 rounded-full object-cover"
                   />
                 ) : (
@@ -126,7 +126,7 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="truncate text-sm font-semibold text-slate-900">
-                      {m.username ?? "（未设笔名）"}
+                      {m.username ?? "（未設筆名）"}
                     </span>
                     <span
                       className={`rounded px-1.5 py-0.5 text-[11px] ${ROLE_COLOR[m.role] ?? ""}`}
@@ -142,18 +142,18 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
                     )}
                   </div>
                   <p className="mt-0.5 truncate text-xs text-slate-500">
-                    {m.email ?? "无邮箱"}
+                    {m.email ?? "無郵箱"}
                   </p>
                   <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-slate-400">
                     <span>{m.workCount} 部作品</span>
                     <span className="text-slate-300">|</span>
-                    <span>{m.totalViews} 总阅读</span>
+                    <span>{m.totalViews} 總閱讀</span>
                     <span className="text-slate-300">|</span>
-                    <span>{m.followerCount} 粉丝</span>
+                    <span>{m.followerCount} 粉絲</span>
                     <span className="text-slate-300">|</span>
-                    <span>关注 {m.followingCount} 人</span>
+                    <span>關注 {m.followingCount} 人</span>
                     <span className="text-slate-300">|</span>
-                    <span>注册 {m.created_at.slice(0, 10)}</span>
+                    <span>註冊 {m.created_at.slice(0, 10)}</span>
                   </p>
                 </div>
 
@@ -161,7 +161,7 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
                   onClick={() => setOpenId(open ? null : m.id)}
                   className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-1 text-xs text-slate-600 transition hover:border-brand-400 hover:text-brand-600"
                 >
-                  {open ? "收起" : "资料"}
+                  {open ? "收起" : "資料"}
                 </button>
               </div>
 
@@ -170,13 +170,13 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
                   <dl className="grid grid-cols-1 gap-x-4 gap-y-1.5 text-xs sm:grid-cols-2">
                     {[
                       ["真名", m.real_name],
-                      ["证件号", m.id_number],
-                      ["证件地址", m.id_address],
+                      ["證件號", m.id_number],
+                      ["證件地址", m.id_address],
                       ["QQ", m.qq],
                       ["微信", m.wechat],
-                      ["联系邮箱", m.contact_email],
-                      ["联系手机", m.contact_phone],
-                      ["收货地址", m.shipping_address],
+                      ["聯絡郵箱", m.contact_email],
+                      ["聯絡手機", m.contact_phone],
+                      ["收貨地址", m.shipping_address],
                     ].map(([label, value]) => (
                       <div key={label as string} className="flex gap-2">
                         <dt className="w-16 shrink-0 text-slate-400">
@@ -194,7 +194,7 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
                       TA 的作品（{m.works.length}）
                     </p>
                     {m.works.length === 0 ? (
-                      <p className="text-xs text-slate-400">还没有发布作品</p>
+                      <p className="text-xs text-slate-400">還沒有釋出作品</p>
                     ) : (
                       <div className="flex flex-wrap gap-1.5">
                         {m.works.map((w) => (
@@ -220,7 +220,7 @@ export function AdminMemberList({ members }: { members: AdminMember[] }) {
 
         {list.length === 0 && (
           <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-400">
-            没有符合条件的会员
+            沒有符合條件的會員
           </div>
         )}
       </div>

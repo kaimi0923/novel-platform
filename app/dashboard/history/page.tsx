@@ -6,19 +6,19 @@ import { getMyHistory } from "@/lib/supabase/queries";
 export const dynamic = "force-dynamic";
 
 const TYPE_LABEL: Record<string, string> = {
-  novel: "小说",
-  art: "插画",
-  comic: "漫画",
-  drama: "短剧",
+  novel: "小說",
+  art: "插畫",
+  comic: "漫畫",
+  drama: "短劇",
 };
 
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "刚刚";
-  if (minutes < 60) return `${minutes} 分钟前`;
+  if (minutes < 1) return "剛剛";
+  if (minutes < 60) return `${minutes} 分鐘前`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} 小时前`;
+  if (hours < 24) return `${hours} 小時前`;
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days} 天前`;
   return new Date(iso).toLocaleDateString("zh-CN");
@@ -37,24 +37,24 @@ export default async function HistoryPage() {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">浏览记录</h1>
+          <h1 className="text-2xl font-bold text-slate-900">瀏覽記錄</h1>
           <p className="mt-1 text-sm text-slate-500">
-            最近看过的作品，共 {items.length} 部
+            最近看過的作品，共 {items.length} 部
           </p>
         </div>
         <Link href="/dashboard" className="btn-secondary shrink-0">
-          返回个人首页
+          返回個人首頁
         </Link>
       </div>
 
       {items.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-500">还没有浏览记录</p>
+          <p className="text-slate-500">還沒有瀏覽記錄</p>
           <p className="mt-1 text-xs text-slate-400">
-            打开任意作品后，会自动记录在这里
+            開啟任意作品後，會自動記錄在這裡
           </p>
           <Link href="/works" className="btn-primary mt-4">
-            去书库逛逛
+            去書庫逛逛
           </Link>
         </div>
       ) : (
@@ -75,7 +75,7 @@ export default async function HistoryPage() {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-                    无封面
+                    無封面
                   </div>
                 )}
               </div>
@@ -84,10 +84,10 @@ export default async function HistoryPage() {
                   {w.title}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">
-                  {TYPE_LABEL[w.type ?? "novel"] ?? "小说"} · {w.category}
+                  {TYPE_LABEL[w.type ?? "novel"] ?? "小說"} · {w.category}
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  {(w.view_count ?? 0).toLocaleString("zh-CN")} 阅读 · 收藏{" "}
+                  {(w.view_count ?? 0).toLocaleString("zh-CN")} 閱讀 · 收藏{" "}
                   {(w.favorite_count ?? 0).toLocaleString("zh-CN")}
                 </p>
               </div>

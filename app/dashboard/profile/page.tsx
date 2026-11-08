@@ -9,8 +9,8 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
 function checkFile(file: File): string | null {
-  if (!ALLOWED.includes(file.type)) return "仅支持 JPG / PNG / WebP 格式图片";
-  if (file.size > MAX_SIZE) return "图片大小不能超过 5MB";
+  if (!ALLOWED.includes(file.type)) return "僅支援 JPG / PNG / WebP 格式圖片";
+  if (file.size > MAX_SIZE) return "圖片大小不能超過 5MB";
   return null;
 }
 
@@ -21,13 +21,13 @@ export default function ProfilePage() {
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
-  // 联系方式
+  // 聯絡方式
   const [qq, setQq] = useState("");
   const [wechat, setWechat] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
-  // 待上传的新文件（选了但还没保存）
+  // 待上傳的新檔案（選了但還沒儲存）
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [newCover, setNewCover] = useState<File | null>(null);
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
@@ -98,7 +98,7 @@ export default function ProfilePage() {
 
     const name = username.trim();
     if (name.length < 2 || name.length > 20) {
-      setMessage({ type: "err", text: "昵称长度需在 2-20 个字符之间" });
+      setMessage({ type: "err", text: "暱稱長度需在 2-20 個字元之間" });
       return;
     }
 
@@ -108,7 +108,7 @@ export default function ProfilePage() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      setMessage({ type: "err", text: "请先登录" });
+      setMessage({ type: "err", text: "請先登入" });
       setSaving(false);
       return;
     }
@@ -117,7 +117,7 @@ export default function ProfilePage() {
     let finalCover = coverUrl;
 
     try {
-      // 上传新头像（文件名带时间戳，避免浏览器缓存旧图）
+      // 上傳新頭像（檔名帶時間戳，避免瀏覽器快取舊圖）
       if (newAvatar) {
         const avatarPath = `avatars/${user.id}-${Date.now()}`;
         const { error: upErr } = await supabase.storage
@@ -129,7 +129,7 @@ export default function ProfilePage() {
           .getPublicUrl(avatarPath).data.publicUrl;
       }
 
-      // 上传新封面
+      // 上傳新封面
       if (newCover) {
         const coverPath = `covers/${user.id}-${Date.now()}`;
         const { error: upErr } = await supabase.storage
@@ -141,7 +141,7 @@ export default function ProfilePage() {
           .getPublicUrl(coverPath).data.publicUrl;
       }
 
-      // 保存档案
+      // 儲存檔案
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -163,28 +163,28 @@ export default function ProfilePage() {
       setNewCover(null);
       setPreviewAvatar(null);
       setPreviewCover(null);
-      setMessage({ type: "ok", text: "保存成功！" });
+      setMessage({ type: "ok", text: "儲存成功！" });
       router.refresh();
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? err.message : "保存失败" });
+      setMessage({ type: "err", text: err instanceof Error ? err.message : "儲存失敗" });
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return <p className="px-4 py-20 text-center text-sm text-slate-400">加载中…</p>;
+    return <p className="px-4 py-20 text-center text-sm text-slate-400">載入中…</p>;
   }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">个人档案</h1>
+      <h1 className="mb-6 text-2xl font-bold text-slate-900">個人檔案</h1>
 
       <form onSubmit={handleSave} className="space-y-6">
-        {/* 个人封面横幅 */}
+        {/* 個人封面橫幅 */}
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-2 block text-sm font-medium text-slate-700">
-            个人页面封面
+            個人頁面封面
           </label>
           <div
             className="relative flex h-32 w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 text-center"
@@ -200,7 +200,7 @@ export default function ProfilePage() {
           >
             {!previewCover && !coverUrl && (
               <span className="text-xs font-medium text-white/90">
-                上传一张横幅封面（建议宽度 1200px 以上）
+                上傳一張橫幅封面（建議寬度 1200px 以上）
               </span>
             )}
           </div>
@@ -216,14 +216,14 @@ export default function ProfilePage() {
             onClick={() => coverInput.current?.click()}
             className="btn-secondary mt-3 !py-2 text-sm"
           >
-            {previewCover || coverUrl ? "更换封面" : "上传封面"}
+            {previewCover || coverUrl ? "更換封面" : "上傳封面"}
           </button>
         </div>
 
-        {/* 头像 */}
+        {/* 頭像 */}
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-2 block text-sm font-medium text-slate-700">
-            个人头像
+            個人頭像
           </label>
           <div className="flex items-center gap-5">
             <div
@@ -255,92 +255,92 @@ export default function ProfilePage() {
                 onClick={() => avatarInput.current?.click()}
                 className="btn-secondary !py-2 text-sm"
               >
-                {previewAvatar || avatarUrl ? "更换头像" : "上传头像"}
+                {previewAvatar || avatarUrl ? "更換頭像" : "上傳頭像"}
               </button>
               <p className="mt-2 text-xs text-slate-400">
-                支持 JPG、PNG、WebP，大小不超过 5MB
+                支援 JPG、PNG、WebP，大小不超過 5MB
               </p>
             </div>
           </div>
         </div>
 
-        {/* 昵称 */}
+        {/* 暱稱 */}
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-2 block text-sm font-medium text-slate-700">
-            昵称
+            暱稱
           </label>
           <input
             type="text"
             maxLength={20}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="你的笔名 / 昵称"
+            placeholder="你的筆名 / 暱稱"
             className="input-base"
           />
           <p className="mt-1.5 text-xs text-slate-400">
-            昵称会显示在作品详情页、留言区和人气榜上
+            暱稱會顯示在作品詳情頁、留言區和人氣榜上
           </p>
         </div>
 
-        {/* 联系方式（仅自己可见） */}
+        {/* 聯絡方式（僅自己可見） */}
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-3 block text-sm font-medium text-slate-700">
-            联系方式
+            聯絡方式
           </label>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm text-slate-600">QQ 号码</label>
+              <label className="mb-1 block text-sm text-slate-600">QQ 號碼</label>
               <input
                 type="text"
                 value={qq}
                 onChange={(e) => setQq(e.target.value)}
-                placeholder="你的 QQ 号码"
+                placeholder="你的 QQ 號碼"
                 className="input-base"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-slate-600">微信号码</label>
+              <label className="mb-1 block text-sm text-slate-600">微訊號碼</label>
               <input
                 type="text"
                 value={wechat}
                 onChange={(e) => setWechat(e.target.value)}
-                placeholder="你的微信号"
+                placeholder="你的微訊號"
                 className="input-base"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-slate-600">电子邮箱</label>
+              <label className="mb-1 block text-sm text-slate-600">電子郵箱</label>
               <input
                 type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                placeholder="用于接收通知的邮箱"
+                placeholder="用於接收通知的郵箱"
                 className="input-base"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-slate-600">紧急联系方式</label>
+              <label className="mb-1 block text-sm text-slate-600">緊急聯絡方式</label>
               <input
                 type="text"
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="手机号码"
+                placeholder="手機號碼"
                 className="input-base"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-slate-600">我的收货地址</label>
+              <label className="mb-1 block text-sm text-slate-600">我的收貨地址</label>
               <input
                 type="text"
                 value={shippingAddress}
                 onChange={(e) => setShippingAddress(e.target.value)}
-                placeholder="用于接收实体礼物/奖品"
+                placeholder="用於接收實體禮物/獎品"
                 className="input-base"
               />
             </div>
           </div>
           <p className="mt-2 text-xs text-slate-400">
-            联系方式仅保存在你自己账号下，不会公开展示
+            聯絡方式僅儲存在你自己帳號下，不會公開展示
           </p>
         </div>
 
@@ -358,7 +358,7 @@ export default function ProfilePage() {
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? "保存中…" : "保存修改"}
+            {saving ? "儲存中…" : "儲存修改"}
           </button>
           <button
             type="button"

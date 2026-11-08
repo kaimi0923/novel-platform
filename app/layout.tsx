@@ -6,8 +6,8 @@ import { BottomNav } from "@/components/bottom-nav";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "鬼点子 · 原创小说投稿与阅读平台",
-  description: "一个开放的原创小说投稿与阅读平台：作者自由投稿，读者在线阅读。",
+  title: "鬼點子 · 原創小說投稿與閱讀平臺",
+  description: "一個開放的原創小說投稿與閱讀平臺：作者自由投稿，讀者線上閱讀。",
 };
 
 export default async function RootLayout({
@@ -17,7 +17,7 @@ export default async function RootLayout({
 }>) {
   const supabase = await createClient();
 
-  // 容错：即使获取登录状态失败，网站也应正常展示（按未登录处理）
+  // 容錯：即使獲取登入狀態失敗，網站也應正常展示（按未登入處理）
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] = null;
   try {
     const {
@@ -58,12 +58,12 @@ export default async function RootLayout({
       followerCount = followers ?? 0;
       followingCount = following ?? 0;
     } catch {
-      // 档案/关注数据获取失败时不影响页面渲染
+      // 檔案/關注資料獲取失敗時不影響頁面渲染
     }
   }
 
   return (
-    <html lang="zh-CN">
+    <html lang="zh-Hant-TW">
       <body className="flex min-h-screen flex-col">
         <Nav
           user={user}

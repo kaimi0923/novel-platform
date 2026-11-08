@@ -25,12 +25,12 @@ export default function NewWorkPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      setError("封面只支持 JPG / PNG / WebP 格式");
+      setError("封面只支援 JPG / PNG / WebP 格式");
       e.target.value = "";
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError("封面图片超过 5MB，请压缩后重试");
+      setError("封面圖片超過 5MB，請壓縮後重試");
       e.target.value = "";
       return;
     }
@@ -58,12 +58,12 @@ export default function NewWorkPage() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("请先登录");
+      setError("請先登入");
       setLoading(false);
       return;
     }
 
-    // 上传封面（文件名带时间戳，避免浏览器缓存旧图）
+    // 上傳封面（檔名帶時間戳，避免瀏覽器快取舊圖）
     let finalCover: string | null = null;
     try {
       if (coverFile) {
@@ -77,7 +77,7 @@ export default function NewWorkPage() {
           .getPublicUrl(coverPath).data.publicUrl;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "封面上传失败");
+      setError(err instanceof Error ? err.message : "封面上傳失敗");
       setLoading(false);
       return;
     }
@@ -107,20 +107,20 @@ export default function NewWorkPage() {
   return (
     <VerifyGate>
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <h1 className="mb-6 text-2xl font-bold text-slate-900">发布新作品</h1>
+        <h1 className="mb-6 text-2xl font-bold text-slate-900">釋出新作品</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品类型 <span className="text-rose-500">*</span>
+            作品型別 <span className="text-rose-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(
               [
-                { key: "novel", label: "小说", desc: "文字作品" },
-                { key: "art", label: "插画", desc: "单张图片" },
-                { key: "comic", label: "漫画", desc: "图片作品" },
-                { key: "drama", label: "短剧", desc: "竖屏视频剧集" },
+                { key: "novel", label: "小說", desc: "文字作品" },
+                { key: "art", label: "插畫", desc: "單張圖片" },
+                { key: "comic", label: "漫畫", desc: "圖片作品" },
+                { key: "drama", label: "短劇", desc: "豎屏影片劇集" },
               ] as const
             ).map((t) => (
               <button
@@ -142,19 +142,19 @@ export default function NewWorkPage() {
           </div>
           {workType === "drama" && (
             <p className="mt-2 text-xs text-amber-600">
-              短剧创建后会进入审核；通过后在「添加剧集」页逐集上传视频（竖屏 9:16 最佳，单集建议 1–3 分钟、50MB 以内）
+              短劇建立後會進入稽核；透過後在「新增劇集」頁逐集上傳影片（豎屏 9:16 最佳，單集建議 1–3 分鐘、50MB 以內）
             </p>
           )}
           {(workType === "art" || workType === "comic") && (
             <p className="mt-2 text-xs text-amber-600">
-              插画/漫画作品请务必上传作品图（封面），读者以图片形式浏览
+              插畫/漫畫作品請務必上傳作品圖（封面），讀者以圖片形式瀏覽
             </p>
           )}
         </div>
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品名称 <span className="text-rose-500">*</span>
+            作品名稱 <span className="text-rose-500">*</span>
           </label>
           <input
             type="text"
@@ -162,14 +162,14 @@ export default function NewWorkPage() {
             maxLength={50}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="给作品起个名字"
+            placeholder="給作品起個名字"
             className="input-base"
           />
         </div>
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            分类 <span className="text-rose-500">*</span>
+            分類 <span className="text-rose-500">*</span>
           </label>
           <select
             value={category}
@@ -186,21 +186,21 @@ export default function NewWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品简介
+            作品簡介
           </label>
           <textarea
             rows={5}
             maxLength={500}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="简单介绍一下你的故事（500 字以内）"
+            placeholder="簡單介紹一下你的故事（500 字以內）"
             className="input-base resize-none"
           />
         </div>
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            封面图片 <span className="font-normal text-slate-400">（选填，可从相簿选择）</span>
+            封面圖片 <span className="font-normal text-slate-400">（選填，可從相簿選擇）</span>
           </label>
           <input
             ref={coverInputRef}
@@ -214,7 +214,7 @@ export default function NewWorkPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={coverPreview}
-                alt="封面预览"
+                alt="封面預覽"
                 className="mx-auto max-h-64 rounded-xl border border-slate-200 object-contain"
               />
               <div className="mt-2 flex items-center justify-center gap-3">
@@ -223,7 +223,7 @@ export default function NewWorkPage() {
                   onClick={() => coverInputRef.current?.click()}
                   className="btn-secondary !py-1.5 text-xs"
                 >
-                  更换图片
+                  更換圖片
                 </button>
                 <button
                   type="button"
@@ -246,13 +246,13 @@ export default function NewWorkPage() {
                 <path d="m21 15-3.5-3.5L11 18" />
                 <path d="M12 8v6M9 11h6" />
               </svg>
-              <span className="text-sm">点击从相簿选择封面</span>
+              <span className="text-sm">點選從相簿選擇封面</span>
               <span className="text-xs text-slate-400">
                 {workType === "drama"
-                  ? "短剧请上传竖版封面（9:16），JPG / PNG / WebP，≤5MB"
+                  ? "短劇請上傳豎版封面（9:16），JPG / PNG / WebP，≤5MB"
                   : workType === "novel"
-                    ? "小说封面建议竖版（3:4），JPG / PNG / WebP，≤5MB"
-                    : "插画/漫画请上传作品图"}
+                    ? "小說封面建議豎版（3:4），JPG / PNG / WebP，≤5MB"
+                    : "插畫/漫畫請上傳作品圖"}
               </span>
             </button>
           )}
@@ -260,7 +260,7 @@ export default function NewWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            作品标签 <span className="text-slate-400">（选填，最多 12 个）</span>
+            作品標籤 <span className="text-slate-400">（選填，最多 12 個）</span>
           </label>
           <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
             <TagPicker value={tags} onChange={setTags} />
@@ -269,12 +269,12 @@ export default function NewWorkPage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            连载状态
+            連載狀態
           </label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: false, label: "连载中", desc: "还在更新" },
-              { key: true, label: "已完结", desc: "全书完结" },
+              { key: false, label: "連載中", desc: "還在更新" },
+              { key: true, label: "已完結", desc: "全書完結" },
             ].map((s) => (
               <button
                 key={String(s.key)}
@@ -309,7 +309,7 @@ export default function NewWorkPage() {
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? "提交中…" : "提交审核"}
+            {loading ? "提交中…" : "提交稽核"}
           </button>
           <button
             type="button"
@@ -320,7 +320,7 @@ export default function NewWorkPage() {
           </button>
         </div>
         <p className="text-xs text-slate-400">
-          * 提交后作品进入审核队列，通过后才会在书库展示
+          * 提交後作品進入稽核佇列，透過後才會在書庫展示
         </p>
       </form>
       </div>

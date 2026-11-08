@@ -16,13 +16,13 @@ export default async function WorksPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">书库</h1>
+        <h1 className="text-2xl font-bold text-slate-900">書庫</h1>
         <p className="mt-1 text-sm text-slate-500">
-          全部已通过审核的原创作品
+          全部已透過稽核的原創作品
         </p>
       </div>
 
-      {/* 分类筛选 */}
+      {/* 分類篩選 */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link
           href={tag ? `/works?tag=${encodeURIComponent(tag)}` : "/works"}
@@ -49,10 +49,10 @@ export default async function WorksPage({
         ))}
       </div>
 
-      {/* 当前标签筛选 */}
+      {/* 當前標籤篩選 */}
       {tag && (
         <div className="mb-4 flex items-center gap-2 text-sm">
-          <span className="text-slate-400">正在筛选标签：</span>
+          <span className="text-slate-400">正在篩選標籤：</span>
           <span className="rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-700">
             #{tag}
           </span>
@@ -60,7 +60,7 @@ export default async function WorksPage({
             href={category ? `/works?category=${encodeURIComponent(category)}` : "/works"}
             className="text-xs text-slate-400 underline transition hover:text-brand-600"
           >
-            清除标签筛选
+            清除標籤篩選
           </Link>
         </div>
       )}
@@ -69,10 +69,10 @@ export default async function WorksPage({
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <p className="text-slate-500">
             {tag
-              ? `没有带「${tag}」标签的作品`
+              ? `沒有帶「${tag}」標籤的作品`
               : category
-                ? `「${category}」分类下还没有作品`
-                : "还没有作品上架"}
+                ? `「${category}」分類下還沒有作品`
+                : "還沒有作品上架"}
           </p>
         </div>
       ) : (

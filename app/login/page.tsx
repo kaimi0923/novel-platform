@@ -29,7 +29,7 @@ function LoginForm() {
 
     if (error) {
       setError(error.message === "Invalid login credentials"
-        ? "邮箱或密码不正确"
+        ? "郵箱或密碼不正確"
         : error.message);
       setLoading(false);
       return;
@@ -43,7 +43,7 @@ function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          邮箱
+          郵箱
         </label>
         <input
           type="email"
@@ -56,14 +56,14 @@ function LoginForm() {
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          密码
+          密碼
         </label>
         <input
           type="password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="请输入密码"
+          placeholder="請輸入密碼"
           className="input-base"
         />
       </div>
@@ -75,13 +75,13 @@ function LoginForm() {
       )}
 
       <button type="submit" disabled={loading} className="btn-primary w-full">
-        {loading ? "登录中…" : "登录"}
+        {loading ? "登入中…" : "登入"}
       </button>
 
       <p className="text-center text-sm text-slate-500">
-        还没有账号？{" "}
+        還沒有帳號？{" "}
         <Link href="/signup" className="font-medium text-brand-600 hover:underline">
-          立即注册
+          立即註冊
         </Link>
       </p>
     </form>
@@ -93,9 +93,9 @@ export default function LoginPage() {
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
-          登录鬼点子
+          登入鬼點子
         </h1>
-        <Suspense fallback={<p className="text-center text-sm text-slate-400">加载中…</p>}>
+        <Suspense fallback={<p className="text-center text-sm text-slate-400">載入中…</p>}>
           <LoginForm />
         </Suspense>
       </div>

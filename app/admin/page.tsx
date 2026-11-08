@@ -14,7 +14,7 @@ export default async function AdminPage() {
 
   if (!user) redirect("/login");
 
-  // 仅管理员可访问
+  // 僅管理員可訪問
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
@@ -28,51 +28,51 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-slate-900">审核后台</h1>
+      <h1 className="text-2xl font-bold text-slate-900">稽核後臺</h1>
       <p className="mt-1 text-sm text-slate-500">
-        待审核作品 {pendingWorks.length} 本，请先审后发
+        待稽核作品 {pendingWorks.length} 本，請先審後發
       </p>
 
-      {/* 数据总览 */}
+      {/* 資料總覽 */}
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
           {
-            label: "会员总数",
+            label: "會員總數",
             value: overview.memberCount,
             hint: `今日新增 ${overview.todayNewMembers}`,
           },
           {
             label: "作家 / 作者",
             value: overview.authorCount,
-            hint: `纯读者 ${overview.readerCount}`,
+            hint: `純讀者 ${overview.readerCount}`,
           },
           {
-            label: "作品总数",
+            label: "作品總數",
             value: overview.totalWorks,
-            hint: `已通过 ${overview.approvedWorks} · 待审 ${overview.pendingWorks}`,
+            hint: `已透過 ${overview.approvedWorks} · 待審 ${overview.pendingWorks}`,
           },
           {
-            label: "总阅读量",
+            label: "總閱讀量",
             value: overview.totalViews,
             hint: `收藏 ${overview.favoriteCount}`,
           },
           {
-            label: "关注关系",
+            label: "關注關係",
             value: overview.followCount,
-            hint: "读者关注作者的总数",
+            hint: "讀者關注作者的總數",
           },
           {
-            label: "待实名审核",
+            label: "待實名稽核",
             value: overview.pendingVerify,
-            hint: "需要处理",
+            hint: "需要處理",
           },
           {
-            label: "已驳回作品",
+            label: "已駁回作品",
             value: overview.rejectedWorks,
             hint: "",
           },
           {
-            label: "管理员",
+            label: "管理員",
             value: overview.adminCount,
             hint: "",
           },
@@ -95,28 +95,28 @@ export default async function AdminPage() {
       <div className="mt-8">
         <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-3">
           <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-            待审核
+            待稽核
           </span>
           <Link href="/admin/approved" className="text-sm text-slate-500 transition hover:text-brand-600">
-            已通过
+            已透過
           </Link>
           <Link href="/admin/rejected" className="text-sm text-slate-500 transition hover:text-brand-600">
-            已驳回
+            已駁回
           </Link>
           <Link href="/admin/verify" className="text-sm text-slate-500 transition hover:text-brand-600">
-            实名认证
+            實名認證
           </Link>
           <Link
             href="/admin/members"
             className="text-sm font-medium text-brand-600 transition hover:text-brand-700"
           >
-            会员与作家 →
+            會員與作家 →
           </Link>
         </div>
 
         {pendingWorks.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p className="text-slate-500">暂无待审核作品，全部处理完了</p>
+            <p className="text-slate-500">暫無待稽核作品，全部處理完了</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -132,7 +132,7 @@ export default async function AdminPage() {
                         {work.category}
                       </span>
                       <span className="text-xs text-slate-400">
-                        投稿于 {new Date(work.created_at).toLocaleString("zh-CN")}
+                        投稿於 {new Date(work.created_at).toLocaleString("zh-CN")}
                       </span>
                     </div>
                     <Link
@@ -145,7 +145,7 @@ export default async function AdminPage() {
                       作者：{work.author?.username ?? "佚名"} · {work.chapter_count ?? 0} 章
                     </p>
                     <p className="mt-2 line-clamp-2 text-sm text-slate-600">
-                      {work.description ?? "（无简介）"}
+                      {work.description ?? "（無簡介）"}
                     </p>
                   </div>
                 </div>

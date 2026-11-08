@@ -10,7 +10,7 @@ export function CommentDeleteButton({ commentId }: { commentId: string }) {
 
   async function handleDelete() {
     if (deleting) return;
-    if (!window.confirm("确定删除这条留言吗？")) return;
+    if (!window.confirm("確定刪除這條留言嗎？")) return;
     setDeleting(true);
     const supabase = createClient();
     const { error } = await supabase
@@ -29,7 +29,7 @@ export function CommentDeleteButton({ commentId }: { commentId: string }) {
       disabled={deleting}
       className="rounded-lg border border-slate-200 px-2.5 py-1 text-xs text-slate-500 transition hover:border-rose-300 hover:text-rose-600 disabled:opacity-50"
     >
-      删除
+      刪除
     </button>
   );
 }

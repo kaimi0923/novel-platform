@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const ITEMS = [
   {
     key: "home",
-    label: "首页",
+    label: "首頁",
     href: "/",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -17,7 +17,7 @@ const ITEMS = [
   },
   {
     key: "search",
-    label: "搜索",
+    label: "搜尋",
     href: "/search",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,7 +28,7 @@ const ITEMS = [
   },
   {
     key: "create",
-    label: "创作",
+    label: "創作",
     href: "/dashboard/works/new",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -60,7 +60,7 @@ const ITEMS = [
   },
 ];
 
-/** 底部快捷键导航（App 风格）：首页 / 搜索 / 创作 / 通知 / 我的 */
+/** 底部快捷鍵導航（App 風格）：首頁 / 搜尋 / 創作 / 通知 / 我的 */
 export function BottomNav() {
   const pathname = usePathname();
 

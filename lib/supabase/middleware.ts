@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * 中间件里用的 Supabase 客户端：刷新会话 + 登录保护
+ * 中介軟體裡用的 Supabase 客戶端：重新整理會話 + 登入保護
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -30,7 +30,7 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // 获取当前登录用户（容错：网络异常时按未登录处理）
+  // 獲取當前登入使用者（容錯：網路異常時按未登入處理）
   let user = null;
   try {
     const {
@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
     user = null;
   }
 
-  // 未登录访问受保护页面 -> 跳转到登录页
+  // 未登入訪問受保護頁面 -> 跳轉到登入頁
   if (!user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
