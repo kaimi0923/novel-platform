@@ -30,6 +30,7 @@ const HOT_TAGS = [
 export default async function HomePage() {
   const latestWorks = await getApprovedWorks(undefined, 12);
   const popularWorks = await getApprovedWorks(undefined, 6, "popular");
+  const dramas = await getApprovedWorks(undefined, 8, "latest", undefined, "drama");
 
   return (
     <div>
@@ -42,6 +43,74 @@ export default async function HomePage() {
             className="block h-auto w-full max-w-[560px] object-contain"
           />
         </Link>
+      </section>
+
+      {/* 短剧频道 */}
+      <section className="mx-auto max-w-6xl px-4 pt-8">
+        <div className="mb-4 flex items-end justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900">短剧</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              竖屏刷剧 · 一集 1–3 分钟 · 上下滑换集
+            </p>
+          </div>
+          <Link
+            href="/drama"
+            className="text-sm text-brand-600 transition hover:text-brand-700"
+          >
+            全部短剧 →
+          </Link>
+        </div>
+
+        {dramas.length > 0 ? (
+          <div className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {dramas.map((d) => (
+              <Link
+                key={d.id}
+                href={`/drama/${d.id}`}
+                className="group relative block aspect-[9/16] w-[132px] shrink-0 overflow-hidden rounded-xl bg-slate-900 sm:w-[150px]"
+              >
+                {d.cover_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={d.cover_url}
+                    alt={d.title}
+                    className="h-full w-full object-cover transition group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700 p-2">
+                    <span className="text-center text-sm font-bold text-white">
+                      {d.title}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent px-2 pb-2 pt-8">
+                  <p className="line-clamp-2 text-xs font-semibold text-white">
+                    {d.title}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-white/70">
+                    共 {d.episode_count ?? 0} 集
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <Link
+            href="/drama"
+            className="flex items-center justify-between rounded-xl border border-dashed border-brand-300 bg-brand-50/50 px-5 py-6 transition hover:bg-brand-50"
+          >
+            <div>
+              <p className="text-sm font-semibold text-brand-700">
+                短剧频道已开通
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                还没有作品，作者可以投稿竖屏短剧，审核通过后出现在这里
+              </p>
+            </div>
+            <span className="text-sm text-brand-600">去看看 →</span>
+          </Link>
+        )}
       </section>
 
       {/* 分类导航（彩色卡片） */}

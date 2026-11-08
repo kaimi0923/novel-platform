@@ -28,6 +28,17 @@ export default async function WorkDetailPage({
   } = await supabase.auth.getUser();
 
   const { work, chapters } = await getWorkWithChapters(id);
+
+  // 短剧：剧集列表
+  const { data: dramaEpisodes } =
+    work.type === "drama"
+      ? await supabase
+          .from("episodes")
+          .select("id, episode_order, title, duration")
+          .eq("work_id", id)
+          .order("episode_order", { ascending: true })
+      : { data: null };
+  const episodes = dramaEpisodes ?? [];
   const favoriteCount = await getFavoriteCount(id);
   const isFavorited = await getIsFavorited(id, user?.id ?? null);
   const isFollowingAuthor = await getIsFollowing(work.author_id, user?.id ?? null);
@@ -60,7 +71,15 @@ export default async function WorkDetailPage({
   const canManage = user?.id === work.author_id || isAdmin;
   // 插画/漫画：以图片为主视觉展示
   const isVisual = work.type === "art" || work.type === "comic";
-  const typeLabel = work.type === "art" ? "插画" : work.type === "comic" ? "漫画" : "小说";
+  const isDrama = work.type === "drama";
+  const typeLabel =
+    work.type === "art"
+      ? "插画"
+      : work.type === "comic"
+        ? "漫画"
+        : work.type === "drama"
+          ? "短剧"
+          : "小说";
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -276,7 +295,14 @@ export default async function WorkDetailPage({
               )}
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                {chapters.length > 0 ? (
+                {isDrama ? (
+                  <Link
+                    href={`/drama/${work.id}`}
+                    className="btn-primary !px-6 !py-3"
+                  >
+                    ▶ 立即观看（共 {episodes.length} 集）
+                  </Link>
+                ) : chapters.length > 0 ? (
                   <Link
                     href={`/read/${work.id}/${chapters[0].id}`}
                     className="btn-primary !px-6 !py-3"
@@ -303,10 +329,14 @@ export default async function WorkDetailPage({
                 )}
                 {user?.id === work.author_id && (
                   <Link
-                    href={`/dashboard/works/${work.id}/chapters/new`}
+                    href={
+                      isDrama
+                        ? `/dashboard/works/${work.id}/episodes/new`
+                        : `/dashboard/works/${work.id}/chapters/new`
+                    }
                     className="btn-secondary !px-6 !py-3"
                   >
-                    添加章节
+                    {isDrama ? "上传剧集" : "添加章节"}
                   </Link>
                 )}
               </div>
@@ -314,6 +344,29 @@ export default async function WorkDetailPage({
           </div>
         )}
       </div>
+
+      {/* 短剧剧集列表 */}
+      {isDrama && episodes.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">
+            剧集（共 {episodes.length} 集）
+          </h2>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            {episodes.map((ep) => (
+              <Link
+                key={ep.id}
+                href={`/drama/${work.id}?ep=${ep.episode_order}`}
+                className="flex flex-col items-center justify-center rounded-lg border border-slate-200 bg-white px-2 py-3 text-sm transition hover:border-brand-400 hover:text-brand-600"
+              >
+                <span className="font-medium">{ep.episode_order}</span>
+                <span className="mt-0.5 line-clamp-1 text-[11px] text-slate-400">
+                  {ep.title ?? `第 ${ep.episode_order} 集`}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 章节列表（插画/漫画有连载内容时也显示） */}
       {chapters.length > 0 && (

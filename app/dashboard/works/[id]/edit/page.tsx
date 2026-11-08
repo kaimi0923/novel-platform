@@ -15,7 +15,7 @@ export default function EditWorkPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [workType, setWorkType] = useState<"novel" | "art" | "comic">("novel");
+  const [workType, setWorkType] = useState<"novel" | "art" | "comic" | "drama">("novel");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
@@ -146,12 +146,13 @@ export default function EditWorkPage() {
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品类型 <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(
               [
                 { key: "novel", label: "小说", desc: "文字作品" },
                 { key: "art", label: "插画", desc: "单张图片" },
                 { key: "comic", label: "漫画", desc: "图片作品" },
+                { key: "drama", label: "短剧", desc: "竖屏视频剧集" },
               ] as const
             ).map((t) => (
               <button

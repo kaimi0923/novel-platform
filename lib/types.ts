@@ -29,8 +29,8 @@ export interface Work {
   description: string | null;
   cover_url: string | null;
   category: string;
-  /** 作品类型：novel 小说 / art 插画 / comic 漫画 */
-  type?: "novel" | "art" | "comic";
+  /** 作品类型：novel 小说 / art 插画 / comic 漫画 / drama 短剧 */
+  type?: "novel" | "art" | "comic" | "drama";
   status: "pending" | "approved" | "rejected";
   reject_reason: string | null;
   view_count: number;
@@ -50,6 +50,8 @@ export interface Work {
   author?: { username: string | null; avatar_url?: string | null } | null;
   // 章节数（联表聚合时附带）
   chapter_count?: number;
+  // 短剧集数（联表聚合时附带）
+  episode_count?: number;
   // 收藏数（联表聚合时附带）
   favorite_count?: number;
 }
@@ -83,3 +85,17 @@ export interface Chapter {
 }
 
 export type WorkStatus = Work["status"];
+
+/** 短剧的一集 */
+export interface Episode {
+  id: string;
+  work_id: string;
+  /** 第几集（从 1 开始） */
+  episode_order: number;
+  title: string | null;
+  video_url: string;
+  cover_url: string | null;
+  /** 时长（秒） */
+  duration: number | null;
+  created_at: string;
+}

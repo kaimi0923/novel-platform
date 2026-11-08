@@ -487,3 +487,104 @@ set word_count = coalesce((
   from public.chapters c
   where c.work_id = w.id
 ), 0);
+
+-- ============================================================
+-- 短剧板块（2026-11-08 新增）
+-- ============================================================
+
+-- ---------- 17. 作品类型支持短剧 ----------
+alter table public.works drop constraint if exists works_type_check;
+alter table public.works
+  add constraint works_type_check check (type in ('novel', 'art', 'comic', 'drama'));
+
+-- ---------- 18. 剧集表（一集一条） ----------
+create table if not exists public.episodes (
+  id uuid primary key default gen_random_uuid(),
+  work_id uuid references public.works (id) on delete cascade not null,
+  episode_order integer not null,
+  title text,
+  video_url text not null,
+  cover_url text,
+  duration integer,
+  created_at timestamptz not null default now(),
+  unique (work_id, episode_order)
+);
+
+create index if not exists episodes_work_idx on public.episodes (work_id, episode_order);
+
+alter table public.episodes enable row level security;
+
+-- 作品可见则剧集可见；仅作者可上传/删除自己的剧集
+drop policy if exists "episodes_select" on public.episodes;
+create policy "episodes_select" on public.episodes
+  for select using (
+    exists (
+      select 1 from public.works w
+      where w.id = episodes.work_id
+        and (
+          w.status = 'approved'
+          or w.author_id = auth.uid()
+          or exists (
+            select 1 from public.profiles p
+            where p.id = auth.uid() and p.role = 'admin'
+          )
+        )
+    )
+  );
+
+drop policy if exists "episodes_insert" on public.episodes;
+create policy "episodes_insert" on public.episodes
+  for insert with check (
+    exists (
+      select 1 from public.works w
+      where w.id = episodes.work_id and w.author_id = auth.uid()
+    )
+  );
+
+drop policy if exists "episodes_update" on public.episodes;
+create policy "episodes_update" on public.episodes
+  for update using (
+    exists (
+      select 1 from public.works w
+      where w.id = episodes.work_id and w.author_id = auth.uid()
+    )
+  );
+
+drop policy if exists "episodes_delete" on public.episodes;
+create policy "episodes_delete" on public.episodes
+  for delete using (
+    exists (
+      select 1 from public.works w
+      where w.id = episodes.work_id
+        and (
+          w.author_id = auth.uid()
+          or exists (
+            select 1 from public.profiles p
+            where p.id = auth.uid() and p.role = 'admin'
+          )
+        )
+    )
+  );
+
+grant select, insert, update, delete on table public.episodes to anon, authenticated;
+
+-- ---------- 19. 短剧视频存储桶 ----------
+insert into storage.buckets (id, name, public)
+values ('drama-videos', 'drama-videos', true)
+on conflict (id) do nothing;
+
+drop policy if exists "drama_videos_read" on storage.objects;
+create policy "drama_videos_read" on storage.objects
+  for select using (bucket_id = 'drama-videos');
+
+drop policy if exists "drama_videos_insert" on storage.objects;
+create policy "drama_videos_insert" on storage.objects
+  for insert with check (bucket_id = 'drama-videos' and auth.uid() = owner);
+
+drop policy if exists "drama_videos_update" on storage.objects;
+create policy "drama_videos_update" on storage.objects
+  for update using (bucket_id = 'drama-videos' and auth.uid() = owner);
+
+drop policy if exists "drama_videos_delete" on storage.objects;
+create policy "drama_videos_delete" on storage.objects
+  for delete using (bucket_id = 'drama-videos' and auth.uid() = owner);

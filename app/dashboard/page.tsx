@@ -200,11 +200,23 @@ export default async function DashboardPage() {
 
               <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
                 <Link
-                  href={`/dashboard/works/${work.id}/chapters/new`}
+                  href={
+                    work.type === "drama"
+                      ? `/dashboard/works/${work.id}/episodes/new`
+                      : `/dashboard/works/${work.id}/chapters/new`
+                  }
                   className="btn-primary !px-3 !py-1.5 !text-xs"
                 >
-                  添加章节
+                  {work.type === "drama" ? "上传剧集" : "添加章节"}
                 </Link>
+                {work.type === "drama" && (
+                  <Link
+                    href={`/drama/${work.id}`}
+                    className="btn-secondary !px-3 !py-1.5 !text-xs"
+                  >
+                    播放页
+                  </Link>
+                )}
                 <Link
                   href={`/dashboard/works/${work.id}/edit`}
                   className="btn-secondary !px-3 !py-1.5 !text-xs"

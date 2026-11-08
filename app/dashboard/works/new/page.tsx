@@ -9,7 +9,7 @@ import VerifyGate from "@/components/verify-gate";
 
 export default function NewWorkPage() {
   const router = useRouter();
-  const [workType, setWorkType] = useState<"novel" | "art" | "comic">("novel");
+  const [workType, setWorkType] = useState<"novel" | "art" | "comic" | "drama">("novel");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [description, setDescription] = useState("");
@@ -114,12 +114,13 @@ export default function NewWorkPage() {
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             作品类型 <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(
               [
                 { key: "novel", label: "小说", desc: "文字作品" },
                 { key: "art", label: "插画", desc: "单张图片" },
                 { key: "comic", label: "漫画", desc: "图片作品" },
+                { key: "drama", label: "短剧", desc: "竖屏视频剧集" },
               ] as const
             ).map((t) => (
               <button
@@ -139,7 +140,12 @@ export default function NewWorkPage() {
               </button>
             ))}
           </div>
-          {workType !== "novel" && (
+          {workType === "drama" && (
+            <p className="mt-2 text-xs text-amber-600">
+              短剧创建后会进入审核；通过后在「添加剧集」页逐集上传视频（竖屏 9:16 最佳，单集建议 1–3 分钟、50MB 以内）
+            </p>
+          )}
+          {(workType === "art" || workType === "comic") && (
             <p className="mt-2 text-xs text-amber-600">
               插画/漫画作品请务必上传作品图（封面），读者以图片形式浏览
             </p>
@@ -242,7 +248,11 @@ export default function NewWorkPage() {
               </svg>
               <span className="text-sm">点击从相簿选择封面</span>
               <span className="text-xs text-slate-400">
-                {workType !== "novel" ? "插画/漫画请上传作品图" : "小说封面建议竖版（3:4），JPG / PNG / WebP，≤5MB"}
+                {workType === "drama"
+                  ? "短剧请上传竖版封面（9:16），JPG / PNG / WebP，≤5MB"
+                  : workType === "novel"
+                    ? "小说封面建议竖版（3:4），JPG / PNG / WebP，≤5MB"
+                    : "插画/漫画请上传作品图"}
               </span>
             </button>
           )}

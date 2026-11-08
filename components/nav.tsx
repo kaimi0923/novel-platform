@@ -33,6 +33,9 @@ export function Nav({ user, role }: NavProps) {
             <Link href="/works" className="transition hover:text-brand-600">
               小说
             </Link>
+            <Link href="/drama" className="transition hover:text-brand-600">
+              短剧
+            </Link>
             <Link
               href="/dashboard/works/new"
               className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-700"

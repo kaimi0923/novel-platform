@@ -1,13 +1,18 @@
 import { Work, Chapter, Comment } from "@/lib/types";
 import { createClient } from "./server";
 
-type WorkRow = Work & { chapters?: { count: number }[]; favorites?: { count: number }[] };
+type WorkRow = Work & {
+  chapters?: { count: number }[];
+  favorites?: { count: number }[];
+  episodes?: { count: number }[];
+};
 
 function normalizeWork(row: WorkRow): Work {
   return {
     ...row,
     chapter_count: row.chapters?.[0]?.count ?? 0,
     favorite_count: row.favorites?.[0]?.count ?? 0,
+    episode_count: row.episodes?.[0]?.count ?? 0,
   } as Work;
 }
 
@@ -17,12 +22,12 @@ export async function getApprovedWorks(
   limit = 20,
   sortBy: "latest" | "popular" = "latest",
   tag?: string,
-  type?: "novel" | "art" | "comic"
+  type?: "novel" | "art" | "comic" | "drama"
 ) {
   const supabase = await createClient();
   let query = supabase
     .from("works")
-    .select("*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count), favorites(count)")
+    .select("*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count), favorites(count), episodes(count)")
     .eq("status", "approved");
 
   if (sortBy === "popular") {
