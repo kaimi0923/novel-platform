@@ -50,9 +50,6 @@ export default async function HomePage() {
         <div className="mb-4 flex items-end justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">短剧</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
-              竖屏刷剧 · 一集 1–3 分钟 · 上下滑换集
-            </p>
           </div>
           <Link
             href="/drama"
