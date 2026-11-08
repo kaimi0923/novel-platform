@@ -621,3 +621,77 @@ create policy "view_history_delete" on public.view_history
 
 grant select, insert, update, delete on public.view_history to anon, authenticated;
 
+
+-- ============================================================
+-- 21. 短劇內容分級與檢舉（台灣市場合規）
+--    依《電腦網路內容分級處理辦法》與兒少法，平台需標示分級、
+--    提供檢舉機制並保留處理紀錄。
+-- ============================================================
+
+-- 作品分級：general 普遍級 / protected 保護級 / pg12 輔12 / pg15 輔15 / restricted 限制級
+alter table public.works
+  add column if not exists content_rating text not null default 'general';
+
+do $$
+begin
+  alter table public.works
+    add constraint works_content_rating_check
+    check (content_rating in ('general', 'protected', 'pg12', 'pg15', 'restricted'));
+exception
+  when duplicate_object then null;
+end $$;
+
+-- 內容檢舉表
+create table if not exists public.content_reports (
+  id uuid primary key default gen_random_uuid(),
+  work_id uuid not null references public.works(id) on delete cascade,
+  reporter_id uuid references public.profiles(id) on delete set null,
+  reason text not null,
+  detail text,
+  status text not null default 'pending'
+    check (status in ('pending', 'resolved', 'dismissed')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists content_reports_work_idx
+  on public.content_reports (work_id, created_at desc);
+
+create index if not exists content_reports_status_idx
+  on public.content_reports (status, created_at desc);
+
+alter table public.content_reports enable row level security;
+
+-- 任何人（含未登入）都可檢舉
+drop policy if exists "content_reports_insert_any" on public.content_reports;
+create policy "content_reports_insert_any" on public.content_reports
+  for insert with check (true);
+
+-- 僅管理員可查看、處理、刪除
+drop policy if exists "content_reports_select_admin" on public.content_reports;
+create policy "content_reports_select_admin" on public.content_reports
+  for select using (
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+drop policy if exists "content_reports_update_admin" on public.content_reports;
+create policy "content_reports_update_admin" on public.content_reports
+  for update using (
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+drop policy if exists "content_reports_delete_admin" on public.content_reports;
+create policy "content_reports_delete_admin" on public.content_reports
+  for delete using (
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+grant select, insert, update, delete on public.content_reports to anon, authenticated;

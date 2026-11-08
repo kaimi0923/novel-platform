@@ -106,6 +106,9 @@ export default async function AdminPage() {
           <Link href="/admin/verify" className="text-sm text-slate-500 transition hover:text-brand-600">
             實名認證
           </Link>
+          <Link href="/admin/reports" className="text-sm text-slate-500 transition hover:text-brand-600">
+            檢舉處理
+          </Link>
           <Link
             href="/admin/members"
             className="text-sm font-medium text-brand-600 transition hover:text-brand-700"

@@ -42,6 +42,8 @@ export interface Work {
   rating_average?: number;
   /** 打分人數 */
   rating_count?: number;
+  /** 內容分級（短劇）：general 普遍 / protected 保護 / pg12 輔12 / pg15 輔15 / restricted 限制 */
+  content_rating?: string;
   created_at: string;
   updated_at: string;
   // 作品標籤（四大類中挑選）

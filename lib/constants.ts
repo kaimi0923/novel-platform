@@ -64,3 +64,36 @@ export const STATUS_COLOR: Record<string, string> = {
   approved: "bg-emerald-100 text-emerald-800",
   rejected: "bg-rose-100 text-rose-800",
 };
+
+// 短劇內容分級（依台灣《電腦網路內容分級處理辦法》與兒少法）
+export const CONTENT_RATINGS = [
+  { value: "general", label: "普遍級", desc: "所有年齡皆可觀賞" },
+  { value: "protected", label: "保護級", desc: "未滿 6 歲不宜觀賞，6–12 歲需家長陪同" },
+  { value: "pg12", label: "輔12級", desc: "未滿 12 歲不宜觀賞" },
+  { value: "pg15", label: "輔15級", desc: "未滿 15 歲不宜觀賞" },
+  { value: "restricted", label: "限制級", desc: "未滿 18 歲不得觀賞" },
+] as const;
+
+export type ContentRating = (typeof CONTENT_RATINGS)[number]["value"];
+
+export const RATING_LABEL: Record<string, string> = Object.fromEntries(
+  CONTENT_RATINGS.map((r) => [r.value, r.label])
+);
+
+export const RATING_BADGE: Record<string, string> = {
+  general: "bg-emerald-100 text-emerald-700",
+  protected: "bg-sky-100 text-sky-700",
+  pg12: "bg-amber-100 text-amber-700",
+  pg15: "bg-orange-100 text-orange-700",
+  restricted: "bg-rose-100 text-rose-700",
+};
+
+// 檢舉原因選項
+export const REPORT_REASONS = [
+  "內容涉及色情或猥褻",
+  "內容有害兒童及少年身心健康",
+  "涉及暴力、自傷或犯罪教學",
+  "侵犯著作權",
+  "不實資訊或詐騙",
+  "其他",
+] as const;

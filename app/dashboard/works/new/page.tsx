@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES, CONTENT_RATINGS } from "@/lib/constants";
 import { TagPicker } from "@/components/tag-picker";
 import VerifyGate from "@/components/verify-gate";
 
@@ -17,6 +17,7 @@ export default function NewWorkPage() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [rating, setRating] = useState<string>("general");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -91,6 +92,7 @@ export default function NewWorkPage() {
       tags,
       type: workType,
       is_completed: isCompleted,
+      content_rating: workType === "drama" ? rating : "general",
       status: "pending",
     });
 
@@ -141,9 +143,30 @@ export default function NewWorkPage() {
             ))}
           </div>
           {workType === "drama" && (
-            <p className="mt-2 text-xs text-amber-600">
-              短劇建立後會進入稽核；透過後在「新增劇集」頁逐集上傳影片（豎屏 9:16 最佳，單集建議 1–3 分鐘、50MB 以內）
-            </p>
+            <>
+              <p className="mt-2 text-xs text-amber-600">
+                短劇建立後會進入稽核；透過後在「新增劇集」頁逐集上傳影片（豎屏 9:16 最佳，單集建議 1–3 分鐘、50MB 以內）
+              </p>
+              <div className="mt-4">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  內容分級 <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  className="input-base"
+                >
+                  {CONTENT_RATINGS.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}｜{r.desc}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1.5 text-xs text-slate-400">
+                  依台灣《電腦網路內容分級處理辦法》，分級會顯示在播放頁；限制級須年滿 18 歲才能觀看。
+                </p>
+              </div>
+            </>
           )}
           {(workType === "art" || workType === "comic") && (
             <p className="mt-2 text-xs text-amber-600">

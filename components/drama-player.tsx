@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Work, Episode } from "@/lib/types";
+import { REPORT_REASONS, RATING_LABEL, RATING_BADGE } from "@/lib/constants";
 
 export function DramaPlayer({
   work,
@@ -18,6 +19,11 @@ export function DramaPlayer({
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [index, setIndex] = useState(0);
   const [showList, setShowList] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState<string>(REPORT_REASONS[0]);
+  const [reportDetail, setReportDetail] = useState("");
+  const [reporting, setReporting] = useState(false);
+  const [ageOk, setAgeOk] = useState(true);
   const [progress, setProgress] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [favorited, setFavorited] = useState(false);
@@ -42,6 +48,12 @@ export function DramaPlayer({
         const el = document.querySelectorAll<HTMLElement>("[data-ep]")[target];
         el?.scrollIntoView({ block: "start" });
       });
+    }
+
+    // 限制級：未確認年齡前擋住播放
+    if (work.content_rating === "restricted") {
+      const confirmed = localStorage.getItem(`age_ok_${work.id}`);
+      if (!confirmed) setAgeOk(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -148,6 +160,27 @@ export function DramaPlayer({
     }
   }
 
+  async function submitReport() {
+    setReporting(true);
+    const supabase = createClient();
+    const { error } = await supabase.from("content_reports").insert({
+      work_id: work.id,
+      reporter_id: userId,
+      reason: reportReason,
+      detail: reportDetail.trim() || null,
+    });
+    setReporting(false);
+
+    if (error) {
+      flash("檢舉送出失敗，請稍後再試或寄信給我們");
+      return;
+    }
+    setShowReport(false);
+    setReportDetail("");
+    setReportReason(REPORT_REASONS[0]);
+    flash("已收到檢舉，我們會盡快處理");
+  }
+
   function flash(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(""), 1800);
@@ -173,8 +206,15 @@ export function DramaPlayer({
             <p className="truncate text-sm font-semibold text-white">
               {work.title}
             </p>
-            <p className="text-[11px] text-white/60">
+            <p className="flex items-center gap-1.5 text-[11px] text-white/60">
               全 {episodes.length} 集{ep ? ` · 第 ${ep.episode_order} 集` : ""}
+              <span
+                className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                  RATING_BADGE[work.content_rating ?? "general"] ?? RATING_BADGE.general
+                }`}
+              >
+                {RATING_LABEL[work.content_rating ?? "general"] ?? "普遍級"}
+              </span>
             </p>
           </div>
         </div>
@@ -262,6 +302,19 @@ export function DramaPlayer({
                 </span>
                 <span className="mt-1 text-[11px] text-white/80">分享</span>
               </button>
+
+              <button
+                onClick={() => setShowReport(true)}
+                className="flex flex-col items-center text-white"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M12 9v4M12 17h.01" />
+                    <path d="M10.3 3.9L2.4 17.4A1.8 1.8 0 004 20h16a1.8 1.8 0 001.6-2.6L13.7 3.9a1.8 1.8 0 00-3.4 0z" />
+                  </svg>
+                </span>
+                <span className="mt-1 text-[11px] text-white/80">檢舉</span>
+              </button>
             </div>
 
             {/* 底部：劇名/簡介 */}
@@ -340,6 +393,92 @@ export function DramaPlayer({
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 檢舉彈窗 */}
+      {showReport && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 px-5">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-5">
+            <p className="text-base font-semibold text-slate-900">檢舉此內容</p>
+            <p className="mt-1 truncate text-xs text-slate-500">《{work.title}》</p>
+
+            <div className="mt-4 space-y-1.5">
+              {REPORT_REASONS.map((r) => (
+                <label
+                  key={r}
+                  className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                    reportReason === r
+                      ? "border-brand-500 bg-brand-50 text-brand-700"
+                      : "border-slate-200 text-slate-600"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="report-reason"
+                    className="accent-brand-600"
+                    checked={reportReason === r}
+                    onChange={() => setReportReason(r)}
+                  />
+                  {r}
+                </label>
+              ))}
+            </div>
+
+            <textarea
+              rows={3}
+              maxLength={300}
+              value={reportDetail}
+              onChange={(e) => setReportDetail(e.target.value)}
+              placeholder="補充說明（選填）"
+              className="input-base mt-3 resize-none"
+            />
+
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowReport(false)}
+                className="btn-secondary flex-1"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={submitReport}
+                disabled={reporting}
+                className="btn-primary flex-1 disabled:opacity-60"
+              >
+                {reporting ? "送出中…" : "送出檢舉"}
+              </button>
+            </div>
+            <p className="mt-2 text-center text-[11px] text-slate-400">
+              我們會依《電腦網路內容分級處理辦法》與著作權法處理
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 限制級年齡確認 */}
+      {!ageOk && (
+        <div className="absolute inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-black px-8 text-center text-white">
+          <span className="rounded bg-rose-600 px-2 py-0.5 text-xs font-medium">限制級</span>
+          <p className="text-lg font-semibold">此內容為限制級</p>
+          <p className="max-w-xs text-sm leading-relaxed text-white/70">
+            依台灣《電腦網路內容分級處理辦法》，未滿 18 歲者不得觀賞本內容。
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.setItem(`age_ok_${work.id}`, "1");
+              setAgeOk(true);
+            }}
+            className="btn-primary mt-2 w-full max-w-xs"
+          >
+            我已滿 18 歲，繼續觀看
+          </button>
+          <Link href="/drama" className="text-sm text-white/60">
+            離開
+          </Link>
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES, CONTENT_RATINGS } from "@/lib/constants";
 import { Work } from "@/lib/types";
 import { TagPicker } from "@/components/tag-picker";
 import VerifyGate from "@/components/verify-gate";
@@ -24,6 +24,7 @@ export default function EditWorkPage() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [rating, setRating] = useState<string>("general");
   const [error, setError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +47,7 @@ export default function EditWorkPage() {
           setCoverUrl(work.cover_url ?? "");
           setTags(work.tags ?? []);
           setIsCompleted(!!work.is_completed);
+          setRating(work.content_rating ?? "general");
         }
         setLoading(false);
       });
@@ -119,6 +121,7 @@ export default function EditWorkPage() {
         tags,
         type: workType,
         is_completed: isCompleted,
+        content_rating: workType === "drama" ? rating : "general",
       })
       .eq("id", workId);
 
@@ -172,6 +175,24 @@ export default function EditWorkPage() {
               </button>
             ))}
           </div>
+          {workType === "drama" && (
+            <div className="mt-4">
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                內容分級
+              </label>
+              <select
+                value={rating}
+                onChange={(e) => setRating(e.target.value)}
+                className="input-base"
+              >
+                {CONTENT_RATINGS.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}｜{r.desc}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div>
