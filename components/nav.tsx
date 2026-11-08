@@ -12,13 +12,13 @@ export function Nav({ user, role }: NavProps) {
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-lg font-bold text-white">
-              拾
-            </span>
-            <span className="text-lg font-bold tracking-wide text-slate-900">
-              鬼点子
-            </span>
+          <Link href="/" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand-logo-nav.png"
+              alt="鬼点子"
+              className="h-11 w-auto"
+            />
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-slate-600 sm:flex">
             <Link href="/" className="transition hover:text-brand-600">
