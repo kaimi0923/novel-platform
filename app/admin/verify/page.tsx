@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import AdminVerifyActions from "@/components/admin-verify-actions";
 import IdPhotoView from "@/components/id-photo-view";
+import { idTypeLabel } from "@/lib/id-validator";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function AdminVerifyPage() {
   // 待稽核的實名認證申請
   const { data: pendingList } = await supabase
     .from("profiles")
-    .select("id, username, email, real_name, id_number, id_address, id_photo_url, created_at")
+    .select("id, username, email, real_name, id_number, id_type, id_address, id_photo_url, created_at")
     .eq("verify_status", "pending")
     .order("created_at", { ascending: true });
 
@@ -70,8 +71,12 @@ export default async function AdminVerifyPage() {
 
                 <dl className="grid grid-cols-1 gap-3 border-t border-slate-100 pt-4 text-sm sm:grid-cols-2">
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-slate-500">真實姓名</dt>
+                    <dt className="text-slate-500">姓名</dt>
                     <dd className="font-medium text-slate-900">{p.real_name ?? "—"}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-slate-500">證件類型</dt>
+                    <dd className="font-medium text-slate-900">{idTypeLabel(p.id_type)}</dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <dt className="text-slate-500">證件號碼</dt>

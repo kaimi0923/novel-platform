@@ -10,6 +10,8 @@ export interface Profile {
   // 實名認證資訊
   real_name?: string | null;
   id_number?: string | null;
+  /** 證件類型：tw_id 身分證 / health_card 健保卡 / passport 護照 / arc 居留證 / cn_id 大陸證件 */
+  id_type?: string | null;
   id_address?: string | null;
   id_photo_url?: string | null;
   verify_status?: "pending" | "approved" | "rejected" | null;

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Profile } from "@/lib/types";
-import { isValidIdNumber, maskName, maskId } from "@/lib/id-validator";
+import { ID_TYPES, idTypeLabel, maskName, maskId, validateIdNumber } from "@/lib/id-validator";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
@@ -16,6 +16,7 @@ export default function VerifyPage() {
   // 認證資訊
   const [realName, setRealName] = useState("");
   const [idNumber, setIdNumber] = useState("");
+  const [idType, setIdType] = useState<string>("tw_id");
   const [idAddress, setIdAddress] = useState("");
   const [idPhotoUrl, setIdPhotoUrl] = useState<string | null>(null);
   const [verifyStatus, setVerifyStatus] = useState<Profile["verify_status"]>(null);
@@ -48,6 +49,7 @@ export default function VerifyPage() {
       if (p) {
         setRealName(p.real_name ?? "");
         setIdNumber(p.id_number ?? "");
+        setIdType(p.id_type ?? "tw_id");
         setIdAddress(p.id_address ?? "");
         setIdPhotoUrl(p.id_photo_url ?? null);
         setVerifyStatus(p.verify_status ?? null);
@@ -79,14 +81,12 @@ export default function VerifyPage() {
     const name = realName.trim();
     const idNo = idNumber.trim();
     if (name.length < 2) {
-      setMessage({ type: "err", text: "請填寫真實姓名" });
+      setMessage({ type: "err", text: "請填寫姓名" });
       return;
     }
-    if (!isValidIdNumber(idNo)) {
-      setMessage({
-        type: "err",
-        text: "證件號碼格式不正確，請填寫 18 位身份證 / 臺灣居民居住證號碼",
-      });
+    const check = validateIdNumber(idType, idNo);
+    if (!check.ok) {
+      setMessage({ type: "err", text: check.msg ?? "證件號碼格式不正確" });
       return;
     }
     // 證件照片必填：已有照片或本次新上傳均可
@@ -124,6 +124,7 @@ export default function VerifyPage() {
         .update({
           real_name: name,
           id_number: idNo,
+          id_type: idType,
           id_address: idAddress.trim() || null,
           id_photo_url: finalPhoto,
           verify_status: "pending",
@@ -153,7 +154,10 @@ export default function VerifyPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">實名認證</h1>
+      <h1 className="mb-2 text-2xl font-bold text-slate-900">實名認證</h1>
+      <p className="mb-5 text-xs leading-relaxed text-slate-400">
+        依《個人資料保護法》，姓名、證件號碼與證件照片僅用於核實身分，只有你本人與管理員能查看，不會公開展示或用於其他用途。
+      </p>
 
       {/* 狀態提示 */}
       {verifyStatus === "approved" && !editing && (
@@ -201,15 +205,40 @@ export default function VerifyPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              真實姓名 <span className="text-rose-500">*</span>
+              姓名 <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               value={realName}
               onChange={(e) => setRealName(e.target.value)}
-              placeholder="與證件一致的姓名"
+              placeholder="與證件上完全一致的姓名"
               className="input-base"
             />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              證件類型 <span className="text-rose-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {ID_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => {
+                    setIdType(t.value);
+                    setIdNumber("");
+                  }}
+                  className={`rounded-xl border px-3 py-2 text-sm transition ${
+                    idType === t.value
+                      ? "border-brand-600 bg-brand-50 font-medium text-brand-700"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-brand-300"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -220,23 +249,23 @@ export default function VerifyPage() {
               type="text"
               value={idNumber}
               onChange={(e) => setIdNumber(e.target.value)}
-              placeholder="18 位身份證 / 臺灣居民居住證號碼"
+              placeholder={ID_TYPES.find((t) => t.value === idType)?.hint}
               className="input-base"
             />
             <p className="mt-1.5 text-xs text-slate-400">
-              將校驗號碼格式，且需管理員稽核透過後方算認證成功
+              系統會依所選證件類型檢查格式，送出後由管理員核對證件照片才算認證完成
             </p>
           </div>
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              證件地址
+              戶籍地址 <span className="text-slate-400">（選填）</span>
             </label>
             <input
               type="text"
               value={idAddress}
               onChange={(e) => setIdAddress(e.target.value)}
-              placeholder="證件上的地址（選填）"
+              placeholder="身分證上的戶籍地址"
               className="input-base"
             />
           </div>
@@ -318,9 +347,15 @@ export default function VerifyPage() {
           <div className="rounded-xl border border-slate-200 bg-white p-5">
             <dl className="space-y-4">
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-slate-500">真實姓名</dt>
+                <dt className="text-sm text-slate-500">姓名</dt>
                 <dd className="text-sm font-medium text-slate-900">
                   {maskName(realName)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-slate-500">證件類型</dt>
+                <dd className="text-sm font-medium text-slate-900">
+                  {idTypeLabel(idType)}
                 </dd>
               </div>
               <div className="flex items-center justify-between">

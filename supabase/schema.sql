@@ -695,3 +695,17 @@ create policy "content_reports_delete_admin" on public.content_reports
   );
 
 grant select, insert, update, delete on public.content_reports to anon, authenticated;
+
+-- ============================================================
+-- 22. 實名認證證件類型（台灣證件為主）
+--    tw_id 國民身分證 / health_card 健保卡 / passport 護照
+--    arc 居留證 / cn_id 大陸身分證或居住證
+-- ============================================================
+
+alter table public.profiles
+  add column if not exists id_type text;
+
+-- 既有資料視為大陸身分證（當時僅支援此格式）
+update public.profiles
+  set id_type = 'cn_id'
+  where id_type is null and id_number is not null;

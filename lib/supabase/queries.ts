@@ -380,6 +380,7 @@ export interface AdminMember {
   avatar_url: string | null;
   real_name: string | null;
   id_number: string | null;
+  id_type: string | null;
   id_address: string | null;
   id_photo_url: string | null;
   verify_status: string | null;
@@ -407,7 +408,7 @@ export async function getAdminMembers(): Promise<AdminMember[]> {
       supabase
         .from("profiles")
         .select(
-          "id, email, username, role, avatar_url, real_name, id_number, id_address, id_photo_url, verify_status, qq, wechat, contact_email, contact_phone, shipping_address, created_at"
+          "id, email, username, role, avatar_url, real_name, id_number, id_type, id_address, id_photo_url, verify_status, qq, wechat, contact_email, contact_phone, shipping_address, created_at"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -441,6 +442,7 @@ export async function getAdminMembers(): Promise<AdminMember[]> {
       avatar_url: p.avatar_url ?? null,
       real_name: p.real_name ?? null,
       id_number: p.id_number ?? null,
+      id_type: p.id_type ?? null,
       id_address: p.id_address ?? null,
       id_photo_url: p.id_photo_url ?? null,
       verify_status: p.verify_status ?? null,
