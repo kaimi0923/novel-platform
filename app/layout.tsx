@@ -4,11 +4,16 @@ import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { BottomNav } from "@/components/bottom-nav";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/client";
 
-export const metadata: Metadata = {
-  title: "鬼點子 · 原創小說投稿與閱讀平臺",
-  description: "一個開放的原創小說投稿與閱讀平臺：作者自由投稿，讀者線上閱讀。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return {
+    title: t("meta.title"),
+    description: t("meta.desc"),
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -16,6 +21,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
+  const { lang } = await getT();
+  const htmlLang =
+    lang === "zh-TW"
+      ? "zh-Hant-TW"
+      : lang === "zh-CN"
+        ? "zh-Hans-CN"
+        : lang;
 
   // 容錯：即使獲取登入狀態失敗，網站也應正常展示（按未登入處理）
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] = null;
@@ -63,19 +75,21 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="zh-Hant-TW">
+    <html lang={htmlLang}>
       <body className="flex min-h-screen flex-col">
-        <Nav
-          user={user}
-          role={role}
-          username={username}
-          avatarUrl={avatarUrl}
-          followerCount={followerCount}
-          followingCount={followingCount}
-        />
-        <main className="flex-1 pb-16">{children}</main>
-        <Footer />
-        <BottomNav />
+        <I18nProvider lang={lang}>
+          <Nav
+            user={user}
+            role={role}
+            username={username}
+            avatarUrl={avatarUrl}
+            followerCount={followerCount}
+            followingCount={followingCount}
+          />
+          <main className="flex-1 pb-16">{children}</main>
+          <Footer />
+          <BottomNav />
+        </I18nProvider>
       </body>
     </html>
   );

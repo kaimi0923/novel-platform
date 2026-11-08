@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
 import { UserMenu } from "@/components/user-menu";
+import { LangSwitcher } from "@/components/lang-switcher";
+import { getT } from "@/lib/i18n/server";
 
 interface NavProps {
   user: User | null;
@@ -11,7 +13,7 @@ interface NavProps {
   followingCount?: number;
 }
 
-export function Nav({
+export async function Nav({
   user,
   role,
   username = null,
@@ -19,6 +21,7 @@ export function Nav({
   followerCount = 0,
   followingCount = 0,
 }: NavProps) {
+  const { t } = await getT();
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
@@ -33,35 +36,36 @@ export function Nav({
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-slate-600 sm:flex">
             <Link href="/" className="transition hover:text-brand-600">
-              首頁
+              {t("nav.home")}
             </Link>
             <Link href="/art" className="transition hover:text-brand-600">
-              插畫
+              {t("nav.art")}
             </Link>
             <Link href="/comic" className="transition hover:text-brand-600">
-              漫畫
+              {t("nav.comic")}
             </Link>
             <Link href="/works" className="transition hover:text-brand-600">
-              小說
+              {t("nav.novel")}
             </Link>
             <Link href="/drama" className="transition hover:text-brand-600">
-              短劇
+              {t("nav.drama")}
             </Link>
             <Link
               href="/dashboard/works/new"
               className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-700"
             >
-              + 創作
+              {t("nav.create")}
             </Link>
             {role === "admin" && (
               <Link href="/admin" className="transition hover:text-brand-600">
-                稽核後臺
+                {t("nav.admin")}
               </Link>
             )}
           </nav>
         </div>
 
         <div className="flex items-center gap-3">
+          <LangSwitcher />
           {user ? (
             <UserMenu
               username={username}
@@ -76,10 +80,10 @@ export function Nav({
                 href="/login"
                 className="text-sm font-medium text-slate-600 transition hover:text-brand-600"
               >
-                登入
+                {t("nav.login")}
               </Link>
               <Link href="/signup" className="btn-primary !py-2 text-sm">
-                註冊
+                {t("nav.signup")}
               </Link>
             </>
           )}

@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 function LoginForm() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") ?? "/dashboard";
@@ -29,7 +31,7 @@ function LoginForm() {
 
     if (error) {
       setError(error.message === "Invalid login credentials"
-        ? "郵箱或密碼不正確"
+        ? t("auth.invalid")
         : error.message);
       setLoading(false);
       return;
@@ -43,7 +45,7 @@ function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          郵箱
+          {t("auth.email")}
         </label>
         <input
           type="email"
@@ -56,14 +58,14 @@ function LoginForm() {
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          密碼
+          {t("auth.password")}
         </label>
         <input
           type="password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="請輸入密碼"
+          placeholder={t("auth.passwordPh")}
           className="input-base"
         />
       </div>
@@ -75,13 +77,13 @@ function LoginForm() {
       )}
 
       <button type="submit" disabled={loading} className="btn-primary w-full">
-        {loading ? "登入中…" : "登入"}
+        {loading ? t("auth.loggingIn") : t("auth.login")}
       </button>
 
       <p className="text-center text-sm text-slate-500">
-        還沒有帳號？{" "}
+        {t("auth.noAccount")}{" "}
         <Link href="/signup" className="font-medium text-brand-600 hover:underline">
-          立即註冊
+          {t("auth.signupNow")}
         </Link>
       </p>
     </form>
@@ -89,13 +91,14 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const t = useT();
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
-          登入鬼點子
+          {t("auth.loginBrand")}
         </h1>
-        <Suspense fallback={<p className="text-center text-sm text-slate-400">載入中…</p>}>
+        <Suspense fallback={<p className="text-center text-sm text-slate-400">{t("common.loading")}</p>}>
           <LoginForm />
         </Suspense>
       </div>

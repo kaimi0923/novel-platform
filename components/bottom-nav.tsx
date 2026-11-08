@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useT } from "@/lib/i18n/client";
 
 const ITEMS = [
   {
     key: "home",
-    label: "首頁",
+    labelKey: "bottom.home",
     href: "/",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -17,7 +18,7 @@ const ITEMS = [
   },
   {
     key: "search",
-    label: "搜尋",
+    labelKey: "bottom.search",
     href: "/search",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,7 +29,7 @@ const ITEMS = [
   },
   {
     key: "create",
-    label: "創作",
+    labelKey: "bottom.create",
     href: "/dashboard/works/new",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -38,7 +39,7 @@ const ITEMS = [
   },
   {
     key: "notify",
-    label: "通知",
+    labelKey: "bottom.notify",
     href: "/notifications",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -49,7 +50,7 @@ const ITEMS = [
   },
   {
     key: "me",
-    label: "我的",
+    labelKey: "bottom.me",
     href: "/dashboard",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -63,6 +64,7 @@ const ITEMS = [
 /** 底部快捷鍵導航（App 風格）：首頁 / 搜尋 / 創作 / 通知 / 我的 */
 export function BottomNav() {
   const pathname = usePathname();
+  const t = useT();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur">
@@ -81,7 +83,7 @@ export function BottomNav() {
               }`}
             >
               {item.icon}
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}

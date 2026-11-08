@@ -3,6 +3,7 @@ import { getApprovedWorks } from "@/lib/supabase/queries";
 import { WorkCard } from "@/components/work-card";
 import { PopularCard } from "@/components/popular-card";
 import { CATEGORIES } from "@/lib/constants";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ const HOT_TAGS = [
 ];
 
 export default async function HomePage() {
+  const { t } = await getT();
   const latestWorks = await getApprovedWorks(undefined, 12);
   const popularWorks = await getApprovedWorks(undefined, 6, "popular");
   const dramas = await getApprovedWorks(undefined, 8, "latest", undefined, "drama");
@@ -49,13 +51,13 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 pt-8">
         <div className="mb-4 flex items-end justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">短劇</h2>
+            <h2 className="text-xl font-semibold text-slate-900">{t("home.drama")}</h2>
           </div>
           <Link
             href="/drama"
             className="text-sm text-brand-600 transition hover:text-brand-700"
           >
-            全部短劇 →
+            {t("home.allDrama")}
           </Link>
         </div>
 
@@ -86,7 +88,7 @@ export default async function HomePage() {
                     {d.title}
                   </p>
                   <p className="mt-0.5 text-[10px] text-white/70">
-                    共 {d.episode_count ?? 0} 集
+                    {t("home.episodes", { n: d.episode_count ?? 0 })}
                   </p>
                 </div>
               </Link>
@@ -99,20 +101,20 @@ export default async function HomePage() {
           >
             <div>
               <p className="text-sm font-semibold text-brand-700">
-                短劇頻道已開通
+                {t("home.emptyDrama.title")}
               </p>
               <p className="mt-1 text-xs text-slate-500">
-                還沒有作品，作者可以投稿豎屏短劇，稽核透過後出現在這裡
+                {t("home.emptyDrama.desc")}
               </p>
             </div>
-            <span className="text-sm text-brand-600">去看看 →</span>
+            <span className="text-sm text-brand-600">{t("home.emptyDrama.link")}</span>
           </Link>
         )}
       </section>
 
       {/* 分類導航（彩色卡片） */}
       <section className="mx-auto max-w-6xl px-4 py-10">
-        <h2 className="mb-5 text-xl font-semibold text-slate-900">作品分類</h2>
+        <h2 className="mb-5 text-xl font-semibold text-slate-900">{t("home.categories")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {CATEGORIES.map((c) => {
             const s = CATEGORY_STYLES[c] ?? CATEGORY_STYLES["其他"];
@@ -123,7 +125,7 @@ export default async function HomePage() {
                 className={`flex items-center gap-3 rounded-xl ${s.bg} px-4 py-4 transition hover:opacity-80 hover:shadow-md active:scale-[0.98]`}
               >
                 <span className="text-2xl">{s.icon}</span>
-                <span className={`text-sm font-semibold ${s.text}`}>{c}</span>
+                <span className={`text-sm font-semibold ${s.text}`}>{t(`cat.${c}`)}</span>
               </Link>
             );
           })}
@@ -134,16 +136,16 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-slate-900">
-            🔥 人氣榜
+            {t("home.popular")}
           </h2>
           <Link href="/works" className="text-sm text-brand-600 transition hover:text-brand-700">
-            檢視全部 →
+            {t("home.viewAll")}
           </Link>
         </div>
 
         {popularWorks.length === 0 ? (
           <p className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-            還沒有上榜作品，快去投稿吧
+            {t("home.emptyPopular")}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -157,9 +159,9 @@ export default async function HomePage() {
       {/* 熱門標籤 */}
       <section className="mx-auto max-w-6xl px-4 pb-12">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">熱門標籤</h2>
+          <h2 className="text-xl font-semibold text-slate-900">{t("home.hotTags")}</h2>
           <Link href="/works" className="text-sm text-brand-600 transition hover:text-brand-700">
-            全部標籤 →
+            {t("home.allTags")}
           </Link>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -178,17 +180,17 @@ export default async function HomePage() {
       {/* 最新作品 */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">最新上架</h2>
+          <h2 className="text-xl font-semibold text-slate-900">{t("home.latest")}</h2>
           <Link href="/works" className="text-sm text-brand-600 transition hover:text-brand-700">
-            檢視全部 →
+            {t("home.viewAll")}
           </Link>
         </div>
 
         {latestWorks.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p className="text-slate-500">還沒有作品上架，來發布第一本吧</p>
+            <p className="text-slate-500">{t("home.emptyLatest")}</p>
             <Link href="/dashboard/works/new" className="btn-primary mt-4">
-              立即投稿
+              {t("home.emptyCta")}
             </Link>
           </div>
         ) : (

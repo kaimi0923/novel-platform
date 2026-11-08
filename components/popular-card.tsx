@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Work } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 
 const COVER_FALLBACK_COLORS = [
   "from-brand-400 to-brand-600",
@@ -16,19 +17,28 @@ function formatCount(n: number) {
 }
 
 /** 字數 / 圖片數的友好展示 */
-function formatLength(work: Work) {
+function formatLength(
+  work: Work,
+  lang: string,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
   if (work.type === "art" || work.type === "comic") {
-    return `${work.chapter_count ?? 0} 張圖`;
+    return t("card.images", { n: work.chapter_count ?? 0 });
   }
   const n = work.word_count ?? 0;
-  if (n === 0) return "0 字";
-  if (n >= 10000) return `${(n / 10000).toFixed(1)} 萬字`;
-  if (n >= 1000) return `${(n / 1000).toFixed(1)} 千字`;
-  return `${n} 字`;
+  if (n === 0) return t("card.zeroWords");
+  if (lang === "en") {
+    if (n >= 1000) return `${(n / 1000).toFixed(1)}k words`;
+    return `${n} words`;
+  }
+  if (n >= 10000) return t("card.wanWords", { n: (n / 10000).toFixed(1) });
+  if (n >= 1000) return t("card.qianWords", { n: (n / 1000).toFixed(1) });
+  return t("card.words", { n });
 }
 
 /** 人氣榜豎版大卡片：封面大圖 + 標題 + 作者/閱讀 + 簡介 + 標籤 */
-export function PopularCard({ work, index = 0 }: { work: Work; index?: number }) {
+export async function PopularCard({ work, index = 0 }: { work: Work; index?: number }) {
+  const { lang, t } = await getT();
   const gradient =
     COVER_FALLBACK_COLORS[index % COVER_FALLBACK_COLORS.length];
 
@@ -55,7 +65,7 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
         )}
         {/* 閱讀量角標 */}
         <span className="absolute bottom-2 right-2 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur">
-          {formatCount(work.view_count)} 閱讀
+          {t("card.read", { n: formatCount(work.view_count) })}
         </span>
         {/* 連載狀態角標 */}
         <span
@@ -63,7 +73,7 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
             work.is_completed ? "bg-emerald-600/85" : "bg-brand-600/85"
           }`}
         >
-          {work.is_completed ? "已完結" : "連載中"}
+          {work.is_completed ? t("card.ended") : t("card.ongoing")}
         </span>
         {/* 評分角標 */}
         {(work.rating_count ?? 0) > 0 && (
@@ -79,7 +89,7 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
           {work.title}
         </h3>
         <p className="mt-0.5 text-xs text-slate-400">
-          作者：{work.author?.username ?? "佚名"}
+          {t("card.by", { name: work.author?.username ?? t("card.anonymous") })}
         </p>
         <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-slate-400">
           {(work.rating_count ?? 0) > 0 ? (
@@ -90,15 +100,15 @@ export function PopularCard({ work, index = 0 }: { work: Work; index?: number })
               </span>
             </span>
           ) : (
-            <span>暫無評分</span>
+            <span>{t("card.noRating")}</span>
           )}
           <span className="text-slate-300">|</span>
-          <span>{formatLength(work)}</span>
+          <span>{formatLength(work, lang, t)}</span>
           <span className="text-slate-300">|</span>
-          <span>{work.favorite_count ?? 0} 收藏</span>
+          <span>{t("card.favorites", { n: work.favorite_count ?? 0 })}</span>
         </p>
         <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-slate-500">
-          {work.description ?? "（暫無簡介）"}
+          {work.description ?? t("card.noDesc")}
         </p>
         {work.tags && work.tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">

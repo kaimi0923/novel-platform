@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Work } from "@/lib/types";
+import { getT } from "@/lib/i18n/server";
 
 const COVER_FALLBACK_COLORS = [
   "from-brand-400 to-brand-600",
@@ -11,18 +12,27 @@ const COVER_FALLBACK_COLORS = [
 ];
 
 /** 字數/圖片數的友好展示 */
-function formatLength(work: Work) {
+function formatLength(
+  work: Work,
+  lang: string,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
   if (work.type === "art" || work.type === "comic") {
-    return `${work.chapter_count ?? 0} 張圖`;
+    return t("card.images", { n: work.chapter_count ?? 0 });
   }
   const n = work.word_count ?? 0;
-  if (n === 0) return "0 字";
-  if (n >= 10000) return `${(n / 10000).toFixed(1)} 萬字`;
-  if (n >= 1000) return `${(n / 1000).toFixed(1)} 千字`;
-  return `${n} 字`;
+  if (n === 0) return t("card.zeroWords");
+  if (lang === "en") {
+    if (n >= 1000) return `${(n / 1000).toFixed(1)}k words`;
+    return `${n} words`;
+  }
+  if (n >= 10000) return t("card.wanWords", { n: (n / 10000).toFixed(1) });
+  if (n >= 1000) return t("card.qianWords", { n: (n / 1000).toFixed(1) });
+  return t("card.words", { n });
 }
 
-export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
+export async function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
+  const { lang, t } = await getT();
   const gradient =
     COVER_FALLBACK_COLORS[index % COVER_FALLBACK_COLORS.length];
 
@@ -52,21 +62,21 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
           <div className="mb-1.5 flex items-center gap-2">
             {work.type && work.type !== "novel" && (
               <span className="rounded bg-violet-50 px-1.5 py-0.5 text-xs text-violet-700">
-                {work.type === "art" ? "插畫" : work.type === "comic" ? "漫畫" : work.type === "drama" ? "短劇" : "小說"}
+                {t(`type.${work.type}`)}
               </span>
             )}
             <span className="rounded bg-brand-50 px-1.5 py-0.5 text-xs text-brand-700">
-              {work.category}
+              {t(`cat.${work.category}`)}
             </span>
             <span className="text-xs text-slate-400">
-              {work.chapter_count ?? 0} 章
+              {t("card.chapterCount", { n: work.chapter_count ?? 0 })}
             </span>
           </div>
           <h3 className="truncate text-base font-semibold text-slate-900 group-hover:text-brand-600">
             {work.title}
           </h3>
           <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-500">
-            {work.description ?? "（暫無簡介）"}
+            {work.description ?? t("card.noDesc")}
           </p>
           {work.tags && work.tags.length > 0 && (
             <div className="mt-1.5 flex flex-wrap gap-1">
@@ -83,10 +93,10 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-400">
           <span className="text-slate-500">
-            作者：{work.author?.username ?? "佚名"}
+            {t("card.by", { name: work.author?.username ?? t("card.anonymous") })}
           </span>
           <span className="text-slate-300">|</span>
-          <span>{work.view_count} 閱讀</span>
+          <span>{t("card.read", { n: work.view_count })}</span>
           <span className="text-slate-300">|</span>
           {(work.rating_count ?? 0) > 0 ? (
             <span className="font-medium text-amber-600">
@@ -96,12 +106,12 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
               </span>
             </span>
           ) : (
-            <span>暫無評分</span>
+            <span>{t("card.noRating")}</span>
           )}
           <span className="text-slate-300">|</span>
-          <span>{formatLength(work)}</span>
+          <span>{formatLength(work, lang, t)}</span>
           <span className="text-slate-300">|</span>
-          <span className="text-slate-400">{work.favorite_count ?? 0} 收藏</span>
+          <span className="text-slate-400">{t("card.favorites", { n: work.favorite_count ?? 0 })}</span>
           <span
             className={
               work.is_completed
@@ -109,7 +119,7 @@ export function WorkCard({ work, index = 0 }: { work: Work; index?: number }) {
                 : "rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700"
             }
           >
-            {work.is_completed ? "已完結" : "連載中"}
+            {work.is_completed ? t("card.ended") : t("card.ongoing")}
           </span>
         </div>
       </div>

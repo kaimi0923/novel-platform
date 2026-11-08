@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 interface UserMenuProps {
   username: string | null;
@@ -14,15 +15,15 @@ interface UserMenuProps {
 }
 
 const LINKS = [
-  { href: "/dashboard/stats", label: "資料分析" },
-  { href: "/dashboard", label: "我的作品" },
-  { href: "/dashboard/favorites", label: "我的收藏" },
-  { href: "/dashboard/history", label: "瀏覽記錄" },
-  { href: "/dashboard/following", label: "我關注的作者" },
-  { href: "/dashboard/comments", label: "我的留言" },
-  { href: "/notifications", label: "通知" },
-  { href: "/dashboard/verify", label: "實名認證" },
-  { href: "/dashboard/profile", label: "個人設定" },
+  { href: "/dashboard/stats", labelKey: "menu.stats" },
+  { href: "/dashboard", labelKey: "menu.works" },
+  { href: "/dashboard/favorites", labelKey: "menu.favorites" },
+  { href: "/dashboard/history", labelKey: "menu.history" },
+  { href: "/dashboard/following", labelKey: "menu.following" },
+  { href: "/dashboard/comments", labelKey: "menu.comments" },
+  { href: "/notifications", labelKey: "menu.notifications" },
+  { href: "/dashboard/verify", labelKey: "menu.verify" },
+  { href: "/dashboard/profile", labelKey: "menu.profile" },
 ];
 
 export function UserMenu({
@@ -33,6 +34,7 @@ export function UserMenu({
   isAdmin,
 }: UserMenuProps) {
   const [open, setOpen] = useState(false);
+  const t = useT();
   const wrapRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -98,7 +100,7 @@ export function UserMenu({
                 onClick={() => setOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
             {isAdmin && (
@@ -107,7 +109,7 @@ export function UserMenu({
                 onClick={() => setOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-brand-600 transition hover:bg-slate-50"
               >
-                稽核後臺
+                {t("menu.admin")}
               </Link>
             )}
           </nav>
@@ -118,7 +120,7 @@ export function UserMenu({
               onClick={handleLogout}
               className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
             >
-              退出登入
+              {t("menu.logout")}
             </button>
           </div>
         </div>
