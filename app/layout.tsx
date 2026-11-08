@@ -29,19 +29,50 @@ export default async function RootLayout({
   }
 
   let role: string | null = null;
+  let username: string | null = null;
+  let avatarUrl: string | null = null;
+  let followerCount = 0;
+  let followingCount = 0;
+
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    role = profile?.role ?? null;
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role, username, avatar_url")
+        .eq("id", user.id)
+        .single();
+      role = profile?.role ?? null;
+      username = profile?.username ?? null;
+      avatarUrl = profile?.avatar_url ?? null;
+
+      const [{ count: followers }, { count: following }] = await Promise.all([
+        supabase
+          .from("follows")
+          .select("id", { count: "exact", head: true })
+          .eq("following_id", user.id),
+        supabase
+          .from("follows")
+          .select("id", { count: "exact", head: true })
+          .eq("follower_id", user.id),
+      ]);
+      followerCount = followers ?? 0;
+      followingCount = following ?? 0;
+    } catch {
+      // 档案/关注数据获取失败时不影响页面渲染
+    }
   }
 
   return (
     <html lang="zh-CN">
       <body className="flex min-h-screen flex-col">
-        <Nav user={user} role={role} />
+        <Nav
+          user={user}
+          role={role}
+          username={username}
+          avatarUrl={avatarUrl}
+          followerCount={followerCount}
+          followingCount={followingCount}
+        />
         <main className="flex-1 pb-16">{children}</main>
         <Footer />
         <BottomNav />

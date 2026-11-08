@@ -7,6 +7,7 @@ import {
   getIsFollowing,
   getMyRating,
   getWorkComments,
+  recordView,
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -44,6 +45,11 @@ export default async function WorkDetailPage({
   const isFollowingAuthor = await getIsFollowing(work.author_id, user?.id ?? null);
   const myRating = await getMyRating(id, user?.id ?? null);
   const comments = await getWorkComments(id);
+
+  // 登录用户写入浏览记录（表未创建时静默忽略，不影响阅读）
+  if (user) {
+    await recordView(user.id, id);
+  }
 
   // 未通过审核的作品：仅作者和管理员可见
   let isAdmin = false;

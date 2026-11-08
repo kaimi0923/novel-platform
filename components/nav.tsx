@@ -1,13 +1,24 @@
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
-import { LogoutButton } from "@/components/logout-button";
+import { UserMenu } from "@/components/user-menu";
 
 interface NavProps {
   user: User | null;
   role: string | null;
+  username?: string | null;
+  avatarUrl?: string | null;
+  followerCount?: number;
+  followingCount?: number;
 }
 
-export function Nav({ user, role }: NavProps) {
+export function Nav({
+  user,
+  role,
+  username = null,
+  avatarUrl = null,
+  followerCount = 0,
+  followingCount = 0,
+}: NavProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
@@ -52,15 +63,13 @@ export function Nav({ user, role }: NavProps) {
 
         <div className="flex items-center gap-3">
           {user ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium text-slate-700 transition hover:text-brand-600"
-              >
-                我的作品
-              </Link>
-              <LogoutButton />
-            </>
+            <UserMenu
+              username={username}
+              avatarUrl={avatarUrl}
+              followerCount={followerCount}
+              followingCount={followingCount}
+              isAdmin={role === "admin"}
+            />
           ) : (
             <>
               <Link

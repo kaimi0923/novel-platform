@@ -465,3 +465,128 @@ export async function getAdminMembers(): Promise<AdminMember[]> {
     };
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* 个人中心：数据分析 / 浏览记录                                        */
+/* ------------------------------------------------------------------ */
+
+export interface MyStats {
+  workCount: number;
+  approvedCount: number;
+  pendingCount: number;
+  rejectedCount: number;
+  totalViews: number;
+  totalFavorites: number;
+  totalChapters: number;
+  followerCount: number;
+  followingCount: number;
+  works: Work[];
+}
+
+/** 我的数据分析（个人作品与粉丝统计） */
+export async function getMyStats(userId: string): Promise<MyStats> {
+  const supabase = await createClient();
+
+  let works: Work[] = [];
+  try {
+    works = await getMyWorks(userId);
+  } catch {
+    works = [];
+  }
+
+  let followerCount = 0;
+  let followingCount = 0;
+  try {
+    const [{ count: followers }, { count: following }] = await Promise.all([
+      supabase
+        .from("follows")
+        .select("id", { count: "exact", head: true })
+        .eq("following_id", userId),
+      supabase
+        .from("follows")
+        .select("id", { count: "exact", head: true })
+        .eq("follower_id", userId),
+    ]);
+    followerCount = followers ?? 0;
+    followingCount = following ?? 0;
+  } catch {
+    // 忽略关注数获取失败
+  }
+
+  return {
+    workCount: works.length,
+    approvedCount: works.filter((w) => w.status === "approved").length,
+    pendingCount: works.filter((w) => w.status === "pending").length,
+    rejectedCount: works.filter((w) => w.status === "rejected").length,
+    totalViews: works.reduce((s, w) => s + Number(w.view_count ?? 0), 0),
+    totalFavorites: works.reduce((s, w) => s + Number(w.favorite_count ?? 0), 0),
+    totalChapters: works.reduce((s, w) => s + Number(w.chapter_count ?? 0), 0),
+    followerCount,
+    followingCount,
+    works: [...works].sort(
+      (a, b) => Number(b.view_count ?? 0) - Number(a.view_count ?? 0)
+    ),
+  };
+}
+
+/** 记录一次作品浏览（表不存在或失败时静默忽略） */
+export async function recordView(userId: string, workId: string) {
+  try {
+    const supabase = await createClient();
+    await supabase.from("view_history").upsert(
+      {
+        user_id: userId,
+        work_id: workId,
+        viewed_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,work_id" }
+    );
+  } catch {
+    // 浏览记录表可能尚未创建，不影响正常阅读
+  }
+}
+
+export type HistoryWork = Work & { viewed_at: string };
+
+/** 我的浏览记录（最近浏览的作品） */
+export async function getMyHistory(
+  userId: string,
+  limit = 30
+): Promise<HistoryWork[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("view_history")
+      .select("work_id, viewed_at")
+      .eq("user_id", userId)
+      .order("viewed_at", { ascending: false })
+      .limit(limit);
+    if (error) return [];
+
+    const rows = data ?? [];
+    if (rows.length === 0) return [];
+
+    const workIds = rows.map((r) => r.work_id as string);
+    const { data: works } = await supabase
+      .from("works")
+      .select(
+        "*, author:profiles!works_author_id_fkey(username, avatar_url), chapters(count), favorites(count), episodes(count)"
+      )
+      .in("id", workIds);
+
+    const workMap = new Map(
+      (works ?? []).map((w) => [(w as WorkRow).id, normalizeWork(w as WorkRow)])
+    );
+
+    return rows
+      .map((r) => {
+        const work = workMap.get(r.work_id as string);
+        if (!work) return null;
+        return { ...work, viewed_at: r.viewed_at as string };
+      })
+      .filter((w): w is HistoryWork => w !== null);
+  } catch {
+    return [];
+  }
+}
+

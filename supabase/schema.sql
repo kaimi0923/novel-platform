@@ -588,3 +588,36 @@ create policy "drama_videos_update" on storage.objects
 drop policy if exists "drama_videos_delete" on storage.objects;
 create policy "drama_videos_delete" on storage.objects
   for delete using (bucket_id = 'drama-videos' and auth.uid() = owner);
+
+-- ---------- 20. 个人浏览记录 ----------
+create table if not exists public.view_history (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  work_id uuid not null references public.works(id) on delete cascade,
+  viewed_at timestamptz not null default now(),
+  unique (user_id, work_id)
+);
+
+create index if not exists view_history_user_time_idx
+  on public.view_history (user_id, viewed_at desc);
+
+alter table public.view_history enable row level security;
+
+drop policy if exists "view_history_select" on public.view_history;
+create policy "view_history_select" on public.view_history
+  for select using (auth.uid() = user_id);
+
+drop policy if exists "view_history_insert" on public.view_history;
+create policy "view_history_insert" on public.view_history
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "view_history_update" on public.view_history;
+create policy "view_history_update" on public.view_history
+  for update using (auth.uid() = user_id);
+
+drop policy if exists "view_history_delete" on public.view_history;
+create policy "view_history_delete" on public.view_history
+  for delete using (auth.uid() = user_id);
+
+grant select, insert, update, delete on public.view_history to anon, authenticated;
+
