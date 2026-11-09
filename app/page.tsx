@@ -36,13 +36,16 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 首頁頭圖（使用者原始 logo，僅調整顯示大小，不改圖內容） */}
-      <section className="bg-white">
-        <Link href="/works" className="flex items-center justify-center">
+      {/* 首頁頭圖：黃底波普漫畫橫幅（4277×980 比例，全寬顯示） */}
+      <section className="bg-[#F4AC0E]">
+        <Link href="/works" className="block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/banner-logo.png"
-            alt="鬼點子 - 好故事的發源地"
-            className="block h-auto w-full max-w-[560px] object-contain"
+            src="/hero-banner.jpg"
+            alt="鬼點子 · 漫畫 小說 短視頻 · 各類創作者"
+            width={2400}
+            height={549}
+            className="block h-auto w-full"
           />
         </Link>
       </section>
