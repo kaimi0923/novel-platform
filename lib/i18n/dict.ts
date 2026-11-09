@@ -159,6 +159,19 @@ export const DICT: Record<string, Entry> = {
   "cat.短篇": { "zh-TW": "短篇", "zh-CN": "短篇", en: "Short story", ja: "短編" },
   "cat.其他": { "zh-TW": "其他", "zh-CN": "其他", en: "Other", ja: "その他" },
 
+  // ---------- 分類卡片副標題 ----------
+  "catDesc.都市": { "zh-TW": "都市生活・職場人生", "zh-CN": "都市生活·职场人生", en: "City life & workplace", ja: "都市生活・職場ドラマ" },
+  "catDesc.言情": { "zh-TW": "甜蜜愛戀・浪漫故事", "zh-CN": "甜蜜爱恋·浪漫故事", en: "Sweet love & romance", ja: "甘い恋・ロマンス" },
+  "catDesc.玄幻": { "zh-TW": "奇幻世界・修真相道", "zh-CN": "奇幻世界·修真问道", en: "Fantasy worlds & cultivation", ja: "ファンタジー・修仙" },
+  "catDesc.仙俠": { "zh-TW": "快意江湖・仙風道骨", "zh-CN": "快意江湖·仙风道骨", en: "Jianghu heroes & immortals", ja: "江湖・仙人の世界" },
+  "catDesc.懸疑": { "zh-TW": "推理探案・真相揭秘", "zh-CN": "推理探案·真相揭秘", en: "Detective & mystery", ja: "推理・謎解き" },
+  "catDesc.科幻": { "zh-TW": "未來世界・時空冒險", "zh-CN": "未来世界·时空冒险", en: "Future worlds & time travel", ja: "未来・タイムトラベル" },
+  "catDesc.歷史": { "zh-TW": "歷史風雲・古代傳奇", "zh-CN": "历史风云·古代传奇", en: "Historical sagas", ja: "歴史・古代ロマン" },
+  "catDesc.校園": { "zh-TW": "青春校園・校園日常", "zh-CN": "青春校园·校园日常", en: "Youth & campus life", ja: "青春・キャンパス" },
+  "catDesc.遊戲": { "zh-TW": "遊戲世界・虛擬冒險", "zh-CN": "游戏世界·虚拟冒险", en: "Games & virtual worlds", ja: "ゲーム・仮想世界" },
+  "catDesc.短篇": { "zh-TW": "短小精悍・精彩故事", "zh-CN": "短小精悍·精彩故事", en: "Short & punchy stories", ja: "短編・読み切りの物語" },
+  "catDesc.其他": { "zh-TW": "更多分類・敬請期待", "zh-CN": "更多分类·敬请期待", en: "More categories coming", ja: "その他のカテゴリ" },
+
   // ---------- 型別 ----------
   "type.novel": { "zh-TW": "小說", "zh-CN": "小说", en: "Novel", ja: "小説" },
   "type.art": { "zh-TW": "插畫", "zh-CN": "插画", en: "Illustration", ja: "イラスト" },

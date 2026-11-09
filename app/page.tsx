@@ -7,19 +7,19 @@ import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-// 每個分類的配色與圖示
-const CATEGORY_STYLES: Record<string, { bg: string; text: string; icon: string }> = {
-  都市: { bg: "bg-blue-50", text: "text-blue-700", icon: "🏙️" },
-  言情: { bg: "bg-pink-50", text: "text-pink-700", icon: "💕" },
-  玄幻: { bg: "bg-violet-50", text: "text-violet-700", icon: "✨" },
-  仙俠: { bg: "bg-sky-50", text: "text-sky-700", icon: "⛰️" },
-  懸疑: { bg: "bg-indigo-50", text: "text-indigo-700", icon: "🔍" },
-  科幻: { bg: "bg-cyan-50", text: "text-cyan-700", icon: "🚀" },
-  歷史: { bg: "bg-amber-50", text: "text-amber-700", icon: "🏯" },
-  校園: { bg: "bg-green-50", text: "text-green-700", icon: "🏫" },
-  遊戲: { bg: "bg-orange-50", text: "text-orange-700", icon: "🎮" },
-  短篇: { bg: "bg-yellow-50", text: "text-yellow-700", icon: "📝" },
-  其他: { bg: "bg-slate-100", text: "text-slate-600", icon: "📚" },
+// 每個分類的卡片配色、圖示與文字色（3D 圖示存於 public/cat-icons）
+const CATEGORY_STYLES: Record<string, { grad: string; text: string; icon: string }> = {
+  都市: { grad: "from-sky-100 via-blue-50 to-white", text: "text-[#1e4d91]", icon: "/cat-icons/urban.png" },
+  言情: { grad: "from-pink-100 via-rose-50 to-white", text: "text-[#c2255c]", icon: "/cat-icons/romance.png" },
+  玄幻: { grad: "from-violet-100 via-purple-50 to-white", text: "text-[#6741d9]", icon: "/cat-icons/fantasy.png" },
+  仙俠: { grad: "from-sky-100 via-cyan-50 to-white", text: "text-[#1971c2]", icon: "/cat-icons/xianxia.png" },
+  懸疑: { grad: "from-indigo-100 via-violet-50 to-white", text: "text-[#3b5bdb]", icon: "/cat-icons/mystery.png" },
+  科幻: { grad: "from-cyan-100 via-sky-50 to-white", text: "text-[#0c8599]", icon: "/cat-icons/scifi.png" },
+  歷史: { grad: "from-amber-100 via-yellow-50 to-white", text: "text-[#996a12]", icon: "/cat-icons/history.png" },
+  校園: { grad: "from-emerald-100 via-green-50 to-white", text: "text-[#2b8a3e]", icon: "/cat-icons/campus.png" },
+  遊戲: { grad: "from-orange-100 via-amber-50 to-white", text: "text-[#d9480f]", icon: "/cat-icons/game.png" },
+  短篇: { grad: "from-yellow-100 via-amber-50 to-white", text: "text-[#a16207]", icon: "/cat-icons/short.png" },
+  其他: { grad: "from-slate-100 via-slate-50 to-white", text: "text-[#495057]", icon: "/cat-icons/other.png" },
 };
 
 // 首頁熱門標籤（精選，點選進入書庫按標籤篩選）
@@ -115,9 +115,13 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* 分類導航（彩色卡片） */}
+      {/* 分類導航（3D 圖示彩色卡片） */}
       <section className="mx-auto max-w-6xl px-4 py-10">
-        <h2 className="mb-5 text-xl font-semibold text-slate-900">{t("home.categories")}</h2>
+        <h2 className="mb-5 flex items-center gap-2 text-xl font-bold text-slate-900">
+          <span className="h-5 w-1.5 rounded-full bg-brand-500" />
+          {t("home.categories")}
+          <span className="text-base leading-none">✨</span>
+        </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {CATEGORIES.map((c) => {
             const s = CATEGORY_STYLES[c] ?? CATEGORY_STYLES["其他"];
@@ -125,10 +129,27 @@ export default async function HomePage() {
               <Link
                 key={c}
                 href={`/works?category=${encodeURIComponent(c)}`}
-                className={`flex items-center gap-3 rounded-xl ${s.bg} px-4 py-4 transition hover:opacity-80 hover:shadow-md active:scale-[0.98]`}
+                className={`group relative flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br ${s.grad} px-3.5 py-3.5 shadow-[0_10px_26px_-18px_rgba(15,23,42,0.5)] ring-1 ring-white/70 transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-16px_rgba(15,23,42,0.45)] active:scale-[0.98]`}
               >
-                <span className="text-2xl">{s.icon}</span>
-                <span className={`text-sm font-semibold ${s.text}`}>{t(`cat.${c}`)}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.icon}
+                  alt=""
+                  className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_6px_rgba(15,23,42,0.15)] sm:h-14 sm:w-14"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className={`text-[15px] font-bold leading-tight ${s.text}`}>
+                    {t(`cat.${c}`)}
+                  </p>
+                  <p className="mt-1 truncate text-[11px] leading-tight text-slate-500">
+                    {t(`catDesc.${c}`)}
+                  </p>
+                </div>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/75 text-slate-400 shadow-sm ring-1 ring-white transition group-hover:bg-white group-hover:text-brand-600">
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
               </Link>
             );
           })}
