@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { SocialLogin } from "@/components/social-login";
 import { useT } from "@/lib/i18n/client";
 
 function LoginForm() {
@@ -98,6 +99,15 @@ export default function LoginPage() {
         <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
           {t("auth.loginBrand")}
         </h1>
+
+        <SocialLogin next="/dashboard" />
+
+        <div className="my-5 flex items-center gap-3 text-[11px] text-slate-400">
+          <span className="h-px flex-1 bg-slate-200" />
+          {t("auth.orEmail")}
+          <span className="h-px flex-1 bg-slate-200" />
+        </div>
+
         <Suspense fallback={<p className="text-center text-sm text-slate-400">{t("common.loading")}</p>}>
           <LoginForm />
         </Suspense>

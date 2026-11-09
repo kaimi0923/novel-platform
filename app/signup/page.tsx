@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { SocialLogin } from "@/components/social-login";
 
 export default function SignupPage() {
   const t = useT();
@@ -59,6 +60,14 @@ export default function SignupPage() {
         <h1 className="mb-6 text-center text-xl font-bold text-slate-900">
           {t("auth.signupBrand")}
         </h1>
+
+        <SocialLogin next="/dashboard" />
+
+        <div className="my-5 flex items-center gap-3 text-[11px] text-slate-400">
+          <span className="h-px flex-1 bg-slate-200" />
+          {t("auth.orEmail")}
+          <span className="h-px flex-1 bg-slate-200" />
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
