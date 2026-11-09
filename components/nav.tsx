@@ -30,7 +30,7 @@ export async function Nav({
           <Link href="/" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/brand-logo-nav.png"
+              src="/brand-logo-nav-clear.png"
               alt="鬼點子"
               className="h-11 w-auto"
             />
