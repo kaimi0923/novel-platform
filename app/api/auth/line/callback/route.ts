@@ -123,13 +123,27 @@ export async function GET(request: Request) {
         .maybeSingle();
 
       const wanted = (lineUser.displayName ?? "").trim().slice(0, 24);
-      if (profile && !profile.username && wanted) patch.username = wanted;
+
+      // 系統自動給的 line_xxxx 暱稱，換成 LINE 上的顯示名稱
+      if (profile && wanted && (!profile.username || profile.username.startsWith("line_"))) {
+        patch.username = wanted;
+      }
       if (profile && !profile.avatar_url && lineUser.pictureUrl) {
         patch.avatar_url = lineUser.pictureUrl;
       }
 
       if (Object.keys(patch).length > 0) {
-        await supabase.from("profiles").update(patch).eq("id", user.id);
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update(patch)
+          .eq("id", user.id);
+
+        // 顯示名稱被別人用走時，補上尾碼再試一次
+        if (updateError && patch.username) {
+          const suffix = lineUser.userId.slice(-4).toLowerCase();
+          patch.username = `${wanted.slice(0, 18)}_${suffix}`;
+          await supabase.from("profiles").update(patch).eq("id", user.id);
+        }
       }
     }
   } catch {
