@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useT } from "@/lib/i18n/client";
 
-type ProviderKey = "google" | "facebook" | "apple" | "custom:line";
+type ProviderKey = "google" | "facebook" | "apple" | "line";
 
 interface Provider {
   key: ProviderKey;
@@ -45,7 +45,7 @@ const PROVIDERS: Provider[] = [
     ),
   },
   {
-    key: "custom:line",
+    key: "line",
     label: "LINE",
     button: "bg-[#06C755] text-white hover:bg-[#05b34c]",
     icon: (
@@ -64,6 +64,13 @@ export function SocialLogin({ next = "/dashboard" }: { next?: string }) {
   async function signIn(key: ProviderKey) {
     setErr(null);
     setBusy(key);
+
+    // LINE 走站內自建 OAuth（Supabase 的自訂供應商在回呼時取不到 provider id）
+    if (key === "line") {
+      window.location.href = `/api/auth/line?next=${encodeURIComponent(next)}`;
+      return;
+    }
+
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: key as never,
