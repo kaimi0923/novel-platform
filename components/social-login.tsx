@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useT } from "@/lib/i18n/client";
 
-type ProviderKey = "google" | "facebook" | "apple" | "line";
+type ProviderKey = "google" | "facebook" | "line" | "email";
 
 interface Provider {
   key: ProviderKey;
@@ -35,12 +35,21 @@ const PROVIDERS: Provider[] = [
     ),
   },
   {
-    key: "apple",
-    label: "Apple",
-    button: "bg-black text-white hover:bg-[#1d1d1f]",
+    key: "email",
+    label: "Email",
+    button: "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0" fill="#ffffff" aria-hidden>
-        <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09z" />
+      <svg
+        viewBox="0 0 24 24"
+        className="h-[18px] w-[18px] shrink-0"
+        fill="none"
+        stroke="#475569"
+        strokeWidth="2"
+        strokeLinecap="round"
+        aria-hidden
+      >
+        <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+        <path d="m3.4 7.2 8.6 6.1 8.6-6.1" />
       </svg>
     ),
   },
@@ -63,6 +72,17 @@ export function SocialLogin({ next = "/dashboard" }: { next?: string }) {
 
   async function signIn(key: ProviderKey) {
     setErr(null);
+
+    // 電子郵件：不打 API，直接把焦點帶到下面的信箱欄位
+    if (key === "email") {
+      const input = document.querySelector<HTMLInputElement>('input[type="email"]');
+      if (input) {
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+        input.focus({ preventScroll: true });
+      }
+      return;
+    }
+
     setBusy(key);
 
     // LINE 走站內自建 OAuth（Supabase 的自訂供應商在回呼時取不到 provider id）
@@ -101,7 +121,7 @@ export function SocialLogin({ next = "/dashboard" }: { next?: string }) {
             className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-semibold shadow-sm transition duration-150 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 ${p.button}`}
           >
             {p.icon}
-            <span>{busy === p.key ? t("auth.oauthConnecting") : p.label}</span>
+            <span>{busy === p.key ? t("auth.oauthConnecting") : p.key === "email" ? t("auth.email") : p.label}</span>
           </button>
         ))}
       </div>
