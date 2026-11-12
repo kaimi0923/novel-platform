@@ -9,6 +9,7 @@ import {
   getWorkComments,
   recordView,
 } from "@/lib/supabase/queries";
+import { AI_USAGE_LABEL } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FollowButton } from "@/components/follow-button";
@@ -168,6 +169,24 @@ export default async function WorkDetailPage({
                 {work.description ?? "作者還沒有寫簡介。"}
               </p>
 
+              {work.author_note && (
+                <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                  <p className="text-xs font-medium text-slate-500">作者的話</p>
+                  <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+                    {work.author_note}
+                  </p>
+                </div>
+              )}
+
+              {work.ai_usage && (
+                <p className="mt-3 text-xs text-slate-500">
+                  製作方式：
+                  <span className="ml-1 rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">
+                    {AI_USAGE_LABEL[work.ai_usage] ?? work.ai_usage}
+                  </span>
+                </p>
+              )}
+
               {work.tags && work.tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {work.tags.map((tag) => (
@@ -289,6 +308,24 @@ export default async function WorkDetailPage({
               <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
                 {work.description ?? "作者還沒有寫簡介。"}
               </p>
+
+              {work.author_note && (
+                <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                  <p className="text-xs font-medium text-slate-500">作者的話</p>
+                  <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+                    {work.author_note}
+                  </p>
+                </div>
+              )}
+
+              {work.ai_usage && (
+                <p className="mt-3 text-xs text-slate-500">
+                  製作方式：
+                  <span className="ml-1 rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">
+                    {AI_USAGE_LABEL[work.ai_usage] ?? work.ai_usage}
+                  </span>
+                </p>
+              )}
 
               {work.tags && work.tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">

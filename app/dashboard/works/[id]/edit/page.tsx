@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES, CONTENT_RATINGS, SIMPLE_CONTENT_RATINGS } from "@/lib/constants";
+import { CATEGORIES, CONTENT_RATINGS, SIMPLE_CONTENT_RATINGS, AI_USAGE_OPTIONS } from "@/lib/constants";
 import { Work } from "@/lib/types";
 import { TagPicker } from "@/components/tag-picker";
 import VerifyGate from "@/components/verify-gate";
@@ -27,6 +27,9 @@ export default function EditWorkPage() {
   const [rating, setRating] = useState<string>("general");
   const [adultDeclared, setAdultDeclared] = useState(false);
   const [declaredAt, setDeclaredAt] = useState<string | null>(null);
+  const [aiUsage, setAiUsage] = useState<string>("");
+  const [authorNote, setAuthorNote] = useState("");
+  const [workStatus, setWorkStatus] = useState<string>("pending");
   const [error, setError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,6 +55,9 @@ export default function EditWorkPage() {
           setRating(work.content_rating ?? "general");
           setDeclaredAt(work.adult_declared_at ?? null);
           setAdultDeclared(!!work.adult_declared_at);
+          setAiUsage(work.ai_usage ?? "");
+          setAuthorNote(work.author_note ?? "");
+          setWorkStatus(work.status ?? "pending");
         }
         setLoading(false);
       });
@@ -86,6 +92,10 @@ export default function EditWorkPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!aiUsage) {
+      setError("請先選擇「作品製作方式」（AI 製作情形為必填）");
+      return;
+    }
     if (rating === "restricted" && !adultDeclared) {
       setError("儲存限制級作品前，請先勾選成人內容合規聲明");
       return;
@@ -124,6 +134,8 @@ export default function EditWorkPage() {
       .update({
         title: title.trim(),
         description: description.trim() || null,
+        author_note: authorNote.trim() || null,
+        ai_usage: aiUsage,
         category,
         cover_url: finalCover,
         tags,
@@ -277,6 +289,54 @@ export default function EditWorkPage() {
             onChange={(e) => setDescription(e.target.value)}
             className="input-base resize-none"
           />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作者的話 <span className="font-normal text-slate-400">（選填）</span>
+          </label>
+          <textarea
+            rows={3}
+            maxLength={300}
+            value={authorNote}
+            onChange={(e) => setAuthorNote(e.target.value)}
+            placeholder="想對讀者說的話，例如創作緣起、連載安排…（300 字以內）"
+            className="input-base resize-none"
+          />
+          <p className="mt-1.5 text-xs text-slate-400">
+            會顯示在作品頁的「作者的話」區塊。
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作品製作方式 <span className="text-rose-500">*</span>
+          </label>
+          <select
+            value={aiUsage}
+            onChange={(e) => setAiUsage(e.target.value)}
+            className="input-base"
+          >
+            <option value="">請選擇（必填）</option>
+            {AI_USAGE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}｜{o.desc}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            上架狀態 <span className="font-normal text-slate-400">（由平台審核決定，不可自行修改）</span>
+          </label>
+          <p className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
+            {workStatus === "approved"
+              ? "已上架"
+              : workStatus === "rejected"
+                ? "已下架（未通過審核）"
+                : "待審核"}
+          </p>
         </div>
 
         <div>

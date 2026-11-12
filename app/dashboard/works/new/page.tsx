@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES, CONTENT_RATINGS, SIMPLE_CONTENT_RATINGS } from "@/lib/constants";
+import { CATEGORIES, CONTENT_RATINGS, SIMPLE_CONTENT_RATINGS, AI_USAGE_OPTIONS } from "@/lib/constants";
 import { TagPicker } from "@/components/tag-picker";
 import VerifyGate from "@/components/verify-gate";
 
@@ -18,6 +18,8 @@ export default function NewWorkPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [rating, setRating] = useState<string>("general");
+  const [aiUsage, setAiUsage] = useState<string>("");
+  const [authorNote, setAuthorNote] = useState("");
   const [adultDeclared, setAdultDeclared] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,10 @@ export default function NewWorkPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!aiUsage) {
+      setError("請先選擇「作品製作方式」（AI 製作情形為必填）");
+      return;
+    }
     if (rating === "restricted" && !adultDeclared) {
       setError("發布限制級作品前，請先勾選成人內容合規聲明");
       return;
@@ -92,6 +98,8 @@ export default function NewWorkPage() {
       author_id: user.id,
       title: title.trim(),
       description: description.trim() || null,
+      author_note: authorNote.trim() || null,
+      ai_usage: aiUsage,
       category,
       cover_url: finalCover,
       tags,
@@ -253,6 +261,44 @@ export default function NewWorkPage() {
             placeholder="簡單介紹一下你的故事（500 字以內）"
             className="input-base resize-none"
           />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作者的話 <span className="font-normal text-slate-400">（選填）</span>
+          </label>
+          <textarea
+            rows={3}
+            maxLength={300}
+            value={authorNote}
+            onChange={(e) => setAuthorNote(e.target.value)}
+            placeholder="想對讀者說的話，例如創作緣起、連載安排…（300 字以內）"
+            className="input-base resize-none"
+          />
+          <p className="mt-1.5 text-xs text-slate-400">
+            會顯示在作品頁的「作者的話」區塊，讀者可見。
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            作品製作方式 <span className="text-rose-500">*</span>
+          </label>
+          <select
+            value={aiUsage}
+            onChange={(e) => setAiUsage(e.target.value)}
+            className="input-base"
+          >
+            <option value="">請選擇（必填）</option>
+            {AI_USAGE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}｜{o.desc}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1.5 text-xs text-slate-400">
+            依平台規範，作品是否使用 AI 製作需向讀者揭露，選項會顯示在作品頁。
+          </p>
         </div>
 
         <div>

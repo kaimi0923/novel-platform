@@ -44,6 +44,8 @@ create table if not exists public.works (
   reviewed_by uuid references public.profiles(id) on delete set null,
   reviewed_at timestamptz,
   adult_declared_at timestamptz,
+  author_note text,
+  ai_usage text check (ai_usage in ('none', 'assist', 'generated'))
   view_count bigint not null default 0,
   tags text[] not null default '{}',
   created_at timestamptz not null default now(),
@@ -761,3 +763,10 @@ alter table public.profiles
 update public.profiles
   set id_type = 'cn_id'
   where id_type is null and id_number is not null;
+
+
+-- ============================================================
+-- 增量：作品「作者的話」與「AI 製作方式」（既有庫直接執行以下三行）
+-- ============================================================
+alter table public.works add column if not exists author_note text;
+alter table public.works add column if not exists ai_usage text;

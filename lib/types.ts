@@ -50,6 +50,8 @@ export interface Work {
   content_rating?: string;
   /** 成人內容合規聲明勾選時間（僅限制級作品有值） */
   adult_declared_at?: string | null;
+  author_note?: string | null;
+  ai_usage?: string | null;
   created_at: string;
   updated_at: string;
   // 作品標籤（四大類中挑選）

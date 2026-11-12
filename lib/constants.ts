@@ -85,6 +85,19 @@ export const RATING_LABEL: Record<string, string> = Object.fromEntries(
   CONTENT_RATINGS.map((r) => [r.value, r.label])
 );
 
+/** 作品製作方式（發布時必選） */
+export const AI_USAGE_OPTIONS = [
+  { value: "none", label: "無 AI 參與", desc: "全部由作者本人創作" },
+  { value: "assist", label: "AI 輔助", desc: "AI 協助潤飾、翻譯或配圖，主體仍為人工創作" },
+  { value: "generated", label: "AI 生成", desc: "主要內容由 AI 產出後經作者整理" },
+] as const;
+
+export const AI_USAGE_LABEL: Record<string, string> = {
+  none: "無 AI 參與",
+  assist: "AI 輔助",
+  generated: "AI 生成",
+};
+
 export const RATING_BADGE: Record<string, string> = {
   general: "bg-emerald-100 text-emerald-700",
   protected: "bg-sky-100 text-sky-700",
