@@ -68,6 +68,11 @@ export async function WorkCard({ work, index = 0 }: { work: Work; index?: number
             <span className="rounded bg-brand-50 px-1.5 py-0.5 text-xs text-brand-700">
               {t(`cat.${work.category}`)}
             </span>
+            {work.content_rating === "restricted" && (
+              <span className="rounded bg-rose-600 px-1.5 py-0.5 text-[11px] font-semibold text-white">
+                18+
+              </span>
+            )}
             <span className="text-xs text-slate-400">
               {t("card.chapterCount", { n: work.chapter_count ?? 0 })}
             </span>

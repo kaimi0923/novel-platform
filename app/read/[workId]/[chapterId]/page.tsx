@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getChapterWithContext } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
+import { AgeGate } from "@/components/age-gate";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,12 @@ export default async function ReadPage({
     .filter(({ idx }) => !usedImageIndexes.has(idx));
 
   return (
+    <AgeGate
+      workId={work.id}
+      rating={work.content_rating}
+      backHref={`/works/${work.id}`}
+      backLabel="回到作品頁"
+    >
     <div className="mx-auto max-w-3xl px-4 py-8">
       {/* 頂部導航 */}
       <div className="mb-6 flex items-center justify-between text-sm">
@@ -163,5 +170,6 @@ export default async function ReadPage({
         本章節由作者原創投稿，未經授權禁止轉載
       </p>
     </div>
+    </AgeGate>
   );
 }

@@ -121,7 +121,7 @@ export default function EditWorkPage() {
         tags,
         type: workType,
         is_completed: isCompleted,
-        content_rating: workType === "drama" ? rating : "general",
+        content_rating: rating,
       })
       .eq("id", workId);
 
@@ -175,24 +175,25 @@ export default function EditWorkPage() {
               </button>
             ))}
           </div>
-          {workType === "drama" && (
-            <div className="mt-4">
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                內容分級
-              </label>
-              <select
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-                className="input-base"
-              >
-                {CONTENT_RATINGS.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}｜{r.desc}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="mt-4">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              內容分級
+            </label>
+            <select
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              className="input-base"
+            >
+              {CONTENT_RATINGS.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}｜{r.desc}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-xs text-slate-400">
+              選「限制級」時，未滿 18 歲者會先被擋在年齡確認頁。
+            </p>
+          </div>
         </div>
 
         <div>

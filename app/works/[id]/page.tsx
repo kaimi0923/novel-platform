@@ -14,6 +14,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { FollowButton } from "@/components/follow-button";
 import { RateWork } from "@/components/rate-work";
 import { CommentSection } from "@/components/comment-section";
+import { AgeGate } from "@/components/age-gate";
 
 export const dynamic = "force-dynamic";
 
@@ -87,7 +88,16 @@ export default async function WorkDetailPage({
           ? "短劇"
           : "小說";
 
+  const backHref =
+    work.type === "art" ? "/art" : work.type === "comic" ? "/comic" : work.type === "drama" ? "/drama" : "/works";
+
   return (
+    <AgeGate
+      workId={work.id}
+      rating={work.content_rating}
+      backHref={backHref}
+      backLabel="離開此頁"
+    >
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         {isVisual ? (
@@ -408,5 +418,6 @@ export default async function WorkDetailPage({
         canManage={canManage}
       />
     </div>
+    </AgeGate>
   );
 }
