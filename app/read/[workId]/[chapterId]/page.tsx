@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getChapterWithContext } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { AgeGate } from "@/components/age-gate";
+import { ReportDialog } from "@/components/report-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -169,6 +170,9 @@ export default async function ReadPage({
       <p className="mt-8 text-center text-xs text-slate-400">
         本章節由作者原創投稿，未經授權禁止轉載
       </p>
+      <div className="mt-6 flex justify-center">
+        <ReportDialog workId={work.id} workTitle={work.title} />
+      </div>
     </div>
     </AgeGate>
   );

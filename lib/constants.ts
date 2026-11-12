@@ -90,6 +90,8 @@ export const RATING_BADGE: Record<string, string> = {
 
 // 檢舉原因選項
 export const REPORT_REASONS = [
+  "內容涉及未成年人性影像或性剝削",
+  "內容涉及性器官特寫、性暴力或性虐待",
   "內容涉及色情或猥褻",
   "內容有害兒童及少年身心健康",
   "涉及暴力、自傷或犯罪教學",

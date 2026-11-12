@@ -216,6 +216,16 @@ export default function EditWorkPage() {
                     我確認本作品不含性器官裸露、性行為特寫、性暴力或性虐待等硬蕊內容，
                     不含任何未滿 18 歲人物之性相關內容，且所用人物影像均已取得合法授權。
                     若違反，平台有權直接下架並停權，相關法律責任由我自行承擔。
+                    我已閱讀並同意
+                    <a
+                      href="/creator-agreement"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mx-1 font-medium underline"
+                    >
+                      《成人內容創作規範》
+                    </a>
+                    。
                   </span>
                 </label>
               </div>

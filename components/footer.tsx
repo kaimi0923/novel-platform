@@ -23,6 +23,9 @@ export async function Footer() {
             <Link href="/copyright" className="hover:text-brand-600">
               {t("footer.copyright")}
             </Link>
+            <Link href="/creator-agreement" className="hover:text-brand-600">
+              成人內容規範
+            </Link>
           </div>
           <p>{t("footer.ratingNote")}</p>
         </div>

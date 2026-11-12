@@ -97,7 +97,7 @@ export default async function AdminReportsPage() {
                   })}
                 </p>
               </div>
-              <AdminReportActions id={r.id} status={r.status} />
+              <AdminReportActions id={r.id} workId={r.work_id} status={r.status} />
             </div>
 
             <p className="mt-2 text-sm text-slate-700">原因：{r.reason}</p>

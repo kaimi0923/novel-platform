@@ -15,6 +15,7 @@ import { FollowButton } from "@/components/follow-button";
 import { RateWork } from "@/components/rate-work";
 import { CommentSection } from "@/components/comment-section";
 import { AgeGate } from "@/components/age-gate";
+import { ReportDialog } from "@/components/report-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -417,6 +418,11 @@ export default async function WorkDetailPage({
         loggedIn={!!user}
         canManage={canManage}
       />
+
+      {/* 舉報入口 */}
+      <div className="mt-8 flex justify-center">
+        <ReportDialog workId={work.id} workTitle={work.title} />
+      </div>
     </div>
     </AgeGate>
   );

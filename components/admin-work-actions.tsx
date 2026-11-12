@@ -21,9 +21,17 @@ export function AdminWorkActions({
     setLoading(true);
     setError(null);
     const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("works")
-      .update({ status: "approved", reject_reason: null })
+      .update({
+        status: "approved",
+        reject_reason: null,
+        reviewed_by: user?.id ?? null,
+        reviewed_at: new Date().toISOString(),
+      })
       .eq("id", workId);
     if (error) setError(error.message);
     router.refresh();
@@ -38,9 +46,17 @@ export function AdminWorkActions({
     setLoading(true);
     setError(null);
     const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("works")
-      .update({ status: "rejected", reject_reason: rejectReason.trim() })
+      .update({
+        status: "rejected",
+        reject_reason: rejectReason.trim(),
+        reviewed_by: user?.id ?? null,
+        reviewed_at: new Date().toISOString(),
+      })
       .eq("id", workId);
     if (error) setError(error.message);
     router.refresh();

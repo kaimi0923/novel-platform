@@ -41,6 +41,9 @@ create table if not exists public.works (
   status text not null default 'pending'
     check (status in ('pending', 'approved', 'rejected')),
   reject_reason text,
+  reviewed_by uuid references public.profiles(id) on delete set null,
+  reviewed_at timestamptz,
+  adult_declared_at timestamptz,
   view_count bigint not null default 0,
   tags text[] not null default '{}',
   created_at timestamptz not null default now(),
@@ -650,6 +653,9 @@ create table if not exists public.content_reports (
   detail text,
   status text not null default 'pending'
     check (status in ('pending', 'resolved', 'dismissed')),
+  handled_by uuid references public.profiles(id) on delete set null,
+  handled_at timestamptz,
+  action_note text,
   created_at timestamptz not null default now()
 );
 
