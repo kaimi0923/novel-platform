@@ -48,8 +48,8 @@ export default function NewEpisodePage() {
       setError("請選擇影片檔案（mp4 / mov）");
       return;
     }
-    if (f.size > 50 * 1024 * 1024) {
-      setError("影片超過 50MB，請壓縮或剪短到 1-3 分鐘再上傳");
+    if (f.size > 1024 * 1024 * 1024) {
+      setError("影片超過 1GB，請先壓縮後再上傳");
       return;
     }
     setError(null);
@@ -75,22 +75,38 @@ export default function NewEpisodePage() {
         : 1;
 
     try {
-      const ext = file.name.split(".").pop() || "mp4";
-      const path = `drama/${workId}/${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("drama-videos")
-        .upload(path, file, { upsert: false, contentType: file.type });
-      if (upErr) throw new Error(upErr.message);
+      const res = await fetch("/api/r2/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workId,
+          fileName: file.name,
+          contentType: file.type || "video/mp4",
+        }),
+      });
+      if (!res.ok) {
+        const info = await res.json().catch(() => ({}));
+        throw new Error(info.error || "取得上傳授權失敗");
+      }
+      const { uploadUrl, publicUrl } = (await res.json()) as {
+        uploadUrl: string;
+        publicUrl: string;
+      };
 
-      const { data: pub } = supabase.storage
-        .from("drama-videos")
-        .getPublicUrl(path);
+      const put = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "video/mp4" },
+        body: file,
+      });
+      if (!put.ok) {
+        throw new Error(`影片上傳失敗（HTTP ${put.status}）`);
+      }
 
       const { error: insErr } = await supabase.from("episodes").insert({
         work_id: workId,
         episode_order: nextOrder,
         title: title.trim() || `第 ${nextOrder} 集`,
-        video_url: pub.publicUrl,
+        video_url: publicUrl,
         cover_url: work?.cover_url ?? null,
         duration,
       });
