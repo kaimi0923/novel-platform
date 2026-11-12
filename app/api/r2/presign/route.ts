@@ -14,7 +14,7 @@ const R2_SECRET_ACCESS_KEY =
 const R2_BUCKET = process.env.R2_BUCKET ?? "drama-videos";
 const R2_PUBLIC_BASE = (
   process.env.R2_PUBLIC_BASE ??
-  "https://pub-badf9516e729428daead5062ca228a4d.r2.dev"
+  "https://cdn.mywhimsy.work"
 ).replace(/\/$/, "");
 
 const s3 = new S3Client({
