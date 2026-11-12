@@ -120,3 +120,8 @@ create policy "payout_requests_update_admin" on public.payout_requests for updat
       where p.id = auth.uid() and p.role = 'admin'
     )
   );
+
+-- 5) 表權限（Supabase 專案若未自動 grant，缺這段前端會讀不到；RLS 仍會限制可見資料）
+grant select, insert, update, delete on public.orders to anon, authenticated, service_role;
+grant select, insert, update, delete on public.chapter_purchases to anon, authenticated, service_role;
+grant select, insert, update, delete on public.payout_requests to anon, authenticated, service_role;
