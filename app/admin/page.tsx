@@ -109,6 +109,9 @@ export default async function AdminPage() {
           <Link href="/admin/reports" className="text-sm text-slate-500 transition hover:text-brand-600">
             檢舉處理
           </Link>
+          <Link href="/admin/appeals" className="text-sm text-slate-500 transition hover:text-brand-600">
+            申訴處理
+          </Link>
           <Link
             href="/admin/members"
             className="text-sm font-medium text-brand-600 transition hover:text-brand-700"

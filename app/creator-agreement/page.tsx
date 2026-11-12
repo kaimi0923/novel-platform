@@ -86,11 +86,9 @@ export default function CreatorAgreementPage() {
         <section>
           <h2 className="mb-2 text-base font-semibold text-slate-900">六、申訴</h2>
           <p>
-            若你認為作品被誤判下架，可寄信至{" "}
-            <a href="mailto:support@mywhimsy.work" className="text-brand-600 underline">
-              support@mywhimsy.work
-            </a>
-            提出申訴，信中請附作品連結與說明。本平臺會在 7 個工作日內回覆。
+            若你認為作品被誤判下架，請到「作者中心」找到該作品，點選作品下方的
+            「提出申訴」按鈕，填寫你認為未違規的理由後送出。本平臺會在 7 個工作日內
+            重新檢視，並於後臺回覆結果：申訴成立者恢復上架，維持下架者亦會註明原因。
           </p>
         </section>
 

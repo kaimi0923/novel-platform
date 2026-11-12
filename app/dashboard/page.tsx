@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getMyWorks } from "@/lib/supabase/queries";
 import { STATUS_LABEL, STATUS_COLOR } from "@/lib/constants";
 import { redirect } from "next/navigation";
+import { AppealDialog } from "@/components/appeal-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -190,10 +191,13 @@ export default async function DashboardPage() {
                   >
                     {work.title}
                   </Link>
-                  {work.status === "rejected" && work.reject_reason && (
-                    <p className="mt-1.5 rounded-lg bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
-                      駁回原因：{work.reject_reason}
-                    </p>
+                  {work.status === "rejected" && (
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2 rounded-lg bg-rose-50 px-3 py-1.5">
+                      {work.reject_reason && (
+                        <p className="text-xs text-rose-700">駁回原因：{work.reject_reason}</p>
+                      )}
+                      <AppealDialog workId={work.id} workTitle={work.title} />
+                    </div>
                   )}
                 </div>
               </div>

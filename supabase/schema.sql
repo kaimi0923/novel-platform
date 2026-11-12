@@ -703,6 +703,52 @@ create policy "content_reports_delete_admin" on public.content_reports
 grant select, insert, update, delete on public.content_reports to anon, authenticated;
 
 -- ============================================================
+-- 作者申訴（作品被下架後由作者提出，管理員審核）
+-- ============================================================
+create table if not exists public.work_appeals (
+  id uuid primary key default gen_random_uuid(),
+  work_id uuid not null references public.works(id) on delete cascade,
+  author_id uuid references public.profiles(id) on delete set null,
+  reason text not null,
+  status text not null default 'pending'
+    check (status in ('pending', 'approved', 'rejected')),
+  created_at timestamptz not null default now(),
+  handled_by uuid references public.profiles(id) on delete set null,
+  handled_at timestamptz,
+  note text
+);
+
+create index if not exists work_appeals_status_idx
+  on public.work_appeals (status, created_at desc);
+
+alter table public.work_appeals enable row level security;
+
+drop policy if exists "appeals_insert_own" on public.work_appeals;
+create policy "appeals_insert_own" on public.work_appeals
+  for insert with check (auth.uid() = author_id);
+
+drop policy if exists "appeals_select" on public.work_appeals;
+create policy "appeals_select" on public.work_appeals
+  for select using (
+    auth.uid() = author_id
+    or exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+drop policy if exists "appeals_update_admin" on public.work_appeals;
+create policy "appeals_update_admin" on public.work_appeals
+  for update using (
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+grant select, insert, update on public.work_appeals to anon, authenticated;
+
+-- ============================================================
 -- 22. 實名認證證件類型（台灣證件為主）
 --    tw_id 國民身分證 / health_card 健保卡 / passport 護照
 --    arc 居留證 / cn_id 大陸身分證或居住證
