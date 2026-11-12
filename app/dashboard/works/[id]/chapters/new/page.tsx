@@ -13,6 +13,8 @@ export default function NewChapterPage() {
 
   const [work, setWork] = useState<Work | null>(null);
   const [title, setTitle] = useState("");
+  const [isPaid, setIsPaid] = useState(false);
+  const [price, setPrice] = useState("30");
   const [content, setContent] = useState("");
   // 章節插圖：本地待上傳檔案 + 預覽地址
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -148,6 +150,7 @@ export default function NewChapterPage() {
       content: finalContent,
       chapter_order: nextOrder,
       images: uploadedImages,
+      price: isPaid ? Math.max(1, parseInt(price, 10) || 0) : 0,
     });
 
     if (error) {
@@ -326,6 +329,40 @@ export default function NewChapterPage() {
                 共 {imageFiles.length} 張 · 點「插入正文」把標記放進正文（或自己寫 [插圖1] [插圖2]…），儲存後圖片會顯示在對應位置
               </p>
             </>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              checked={isPaid}
+              onChange={(e) => setIsPaid(e.target.checked)}
+            />
+            設為付費章節
+          </label>
+          {isPaid ? (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-xs text-slate-500">售價</span>
+              <input
+                type="number"
+                min={1}
+                max={300}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="input-base !w-28 !py-1.5 text-sm"
+              />
+              <span className="text-xs text-slate-500">元（新台幣，1–300）</span>
+            </div>
+          ) : (
+            <p className="mt-1.5 text-xs text-slate-400">
+              免費章節所有讀者都能直接閱讀
+            </p>
+          )}
+          {isPaid && (
+            <p className="mt-2 text-xs text-amber-600">
+              讀者可看到前兩段預覽；付款解鎖作者可得 70%
+            </p>
           )}
         </div>
 

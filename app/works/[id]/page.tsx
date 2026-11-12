@@ -10,6 +10,7 @@ import {
   recordView,
 } from "@/lib/supabase/queries";
 import { AI_USAGE_LABEL } from "@/lib/constants";
+import { TipButton } from "@/components/tip-button";
 import { createClient } from "@/lib/supabase/server";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FollowButton } from "@/components/follow-button";
@@ -187,6 +188,15 @@ export default async function WorkDetailPage({
                 </p>
               )}
 
+              <div className="mt-4">
+                <TipButton
+                  workId={work.id}
+                  workTitle={work.title}
+                  loggedIn={!!user}
+                  isAuthor={user?.id === work.author_id}
+                />
+              </div>
+
               {work.tags && work.tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {work.tags.map((tag) => (
@@ -326,6 +336,15 @@ export default async function WorkDetailPage({
                   </span>
                 </p>
               )}
+
+              <div className="mt-4">
+                <TipButton
+                  workId={work.id}
+                  workTitle={work.title}
+                  loggedIn={!!user}
+                  isAuthor={user?.id === work.author_id}
+                />
+              </div>
 
               {work.tags && work.tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">

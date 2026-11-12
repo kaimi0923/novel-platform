@@ -91,6 +91,8 @@ export interface Chapter {
   chapter_order: number;
   /** 章節插圖（圖片 URL 列表，可選） */
   images?: string[];
+  /** 章節售價（0 = 免費） */
+  price?: number;
   created_at: string;
 }
 

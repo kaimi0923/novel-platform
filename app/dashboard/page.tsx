@@ -131,6 +131,9 @@ export default async function DashboardPage() {
           <Link href="/dashboard/comments" className="btn-secondary">
             留言管理
           </Link>
+          <Link href="/dashboard/earnings" className="btn-secondary">
+            收益中心
+          </Link>
           <Link href="/dashboard/works/new" className="btn-primary">
             ＋ 釋出新作品
           </Link>

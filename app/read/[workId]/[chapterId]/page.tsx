@@ -4,6 +4,7 @@ import { getChapterWithContext } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { AgeGate } from "@/components/age-gate";
 import { ReportDialog } from "@/components/report-dialog";
+import { BuyChapter } from "@/components/buy-chapter";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,34 @@ export default async function ReadPage({
   // 作品瀏覽數 +1（已透過稽核才計數）
   if (work.status === "approved") {
     await supabase.rpc("increment_view_count", { work_id: workId });
+  }
+
+  // 付費章節：作者 / 管理員 / 已購買者才可看全文
+  const chapterPrice = Number((chapter as { price?: number }).price ?? 0);
+  const isOwner = user?.id === work.author_id;
+  let unlocked = chapterPrice <= 0 || isOwner;
+  let isAdmin = false;
+
+  if (chapterPrice > 0 && !unlocked) {
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      isAdmin = profile?.role === "admin";
+      if (isAdmin) {
+        unlocked = true;
+      } else {
+        const { data: purchase } = await supabase
+          .from("chapter_purchases")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("chapter_id", chapter.id)
+          .maybeSingle();
+        unlocked = !!purchase;
+      }
+    }
   }
 
   const idx = chapters.findIndex((c) => c.id === chapter.id);
@@ -121,23 +150,45 @@ export default async function ReadPage({
           </div>
         )}
 
-        <div className="prose-novel">
-          {body}
-          {/* 正文中未被引用的插圖（相容舊章節，排在末尾） */}
-          {leftoverImages.length > 0 && (
-            <div className="mt-8 space-y-4">
-              {leftoverImages.map(({ url, idx }) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={`leftover-${idx}`}
-                  src={url}
-                  alt={`${chapter.title}插圖${idx}`}
-                  className="mx-auto w-full max-w-xl rounded-lg object-contain"
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        {unlocked ? (
+          <div className="prose-novel">
+            {body}
+            {/* 正文中未被引用的插圖（相容舊章節，排在末尾） */}
+            {leftoverImages.length > 0 && (
+              <div className="mt-8 space-y-4">
+                {leftoverImages.map(({ url, idx }) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={`leftover-${idx}`}
+                    src={url}
+                    alt={`${chapter.title}插圖${idx}`}
+                    className="mx-auto w-full max-w-xl rounded-lg object-contain"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {paragraphs.slice(0, 2).map((p, i) => (
+              <p key={i} className="text-slate-700">
+                {p}
+              </p>
+            ))}
+            {paragraphs.length > 2 && (
+              <p className="text-sm italic text-slate-400">
+                以下內容已隱藏，購買後可閱讀全文…
+              </p>
+            )}
+            <BuyChapter
+              chapterId={chapter.id}
+              title={chapter.title}
+              price={chapterPrice}
+              loggedIn={!!user}
+              workId={work.id}
+            />
+          </div>
+        )}
 
         {/* 章節切換 */}
         <nav className="mt-10 flex items-center justify-between border-t border-slate-100 pt-6">
