@@ -76,6 +76,11 @@ export const CONTENT_RATINGS = [
 
 export type ContentRating = (typeof CONTENT_RATINGS)[number]["value"];
 
+/** 小說／漫畫／插畫只需「普遍級 / 限制級」兩檔；短劇仍用完整五級 */
+export const SIMPLE_CONTENT_RATINGS = CONTENT_RATINGS.filter(
+  (r) => r.value === "general" || r.value === "restricted"
+);
+
 export const RATING_LABEL: Record<string, string> = Object.fromEntries(
   CONTENT_RATINGS.map((r) => [r.value, r.label])
 );

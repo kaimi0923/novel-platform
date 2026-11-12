@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES, CONTENT_RATINGS } from "@/lib/constants";
+import { CATEGORIES, CONTENT_RATINGS, SIMPLE_CONTENT_RATINGS } from "@/lib/constants";
 import { TagPicker } from "@/components/tag-picker";
 import VerifyGate from "@/components/verify-gate";
 
@@ -163,14 +163,16 @@ export default function NewWorkPage() {
               onChange={(e) => setRating(e.target.value)}
               className="input-base"
             >
-              {CONTENT_RATINGS.map((r) => (
+              {(workType === "drama" ? CONTENT_RATINGS : SIMPLE_CONTENT_RATINGS).map((r) => (
                 <option key={r.value} value={r.value}>
                   {r.label}｜{r.desc}
                 </option>
               ))}
             </select>
             <p className="mt-1.5 text-xs text-slate-400">
-              依台灣《電腦網路內容分級處理辦法》，分級會顯示在作品頁與播放頁；選「限制級」時，未滿 18 歲者會先被擋在年齡確認頁。
+              {workType === "drama"
+                ? "短劇依《電腦網路內容分級處理辦法》分五級；選「限制級」時，未滿 18 歲者會先被年齡確認頁擋下。"
+                : "小說／漫畫／插畫只需分「普遍級」與「限制級」；選限制級時，未滿 18 歲者會被擋在年齡確認頁，並需勾選下方合規聲明。"}
             </p>
             {rating === "restricted" && (
               <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50/70 p-3">

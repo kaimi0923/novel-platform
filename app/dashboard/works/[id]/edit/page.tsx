@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { CATEGORIES, CONTENT_RATINGS } from "@/lib/constants";
+import { CATEGORIES, CONTENT_RATINGS, SIMPLE_CONTENT_RATINGS } from "@/lib/constants";
 import { Work } from "@/lib/types";
 import { TagPicker } from "@/components/tag-picker";
 import VerifyGate from "@/components/verify-gate";
@@ -194,14 +194,16 @@ export default function EditWorkPage() {
               onChange={(e) => setRating(e.target.value)}
               className="input-base"
             >
-              {CONTENT_RATINGS.map((r) => (
+              {(workType === "drama" ? CONTENT_RATINGS : SIMPLE_CONTENT_RATINGS).map((r) => (
                 <option key={r.value} value={r.value}>
                   {r.label}｜{r.desc}
                 </option>
               ))}
             </select>
             <p className="mt-1.5 text-xs text-slate-400">
-              選「限制級」時，未滿 18 歲者會先被擋在年齡確認頁。
+              {workType === "drama"
+                ? "選「限制級」時，未滿 18 歲者會先被擋在年齡確認頁。"
+                : "小說／漫畫／插畫只需分普遍級與限制級；選限制級時，未滿 18 歲者會被擋在年齡確認頁。"}
             </p>
             {rating === "restricted" && (
               <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50/70 p-3">
