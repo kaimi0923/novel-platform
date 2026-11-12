@@ -27,6 +27,7 @@ export default function ProfilePage() {
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
+  const [birthday, setBirthday] = useState("");
   // 待上傳的新檔案（選了但還沒儲存）
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [newCover, setNewCover] = useState<File | null>(null);
@@ -61,6 +62,7 @@ export default function ProfilePage() {
         setContactEmail(p.contact_email ?? "");
         setContactPhone(p.contact_phone ?? "");
         setShippingAddress(p.shipping_address ?? "");
+        setBirthday((p as Profile & { birthday?: string | null }).birthday ?? "");
       }
       setLoading(false);
     })();
@@ -153,6 +155,7 @@ export default function ProfilePage() {
           contact_email: contactEmail.trim() || null,
           contact_phone: contactPhone.trim() || null,
           shipping_address: shippingAddress.trim() || null,
+          birthday: birthday || null,
         })
         .eq("id", user.id);
       if (error) throw new Error(error.message);
@@ -262,6 +265,22 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* 生日（限制級內容年齡確認用，不對外顯示） */}
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            生日 <span className="font-normal text-slate-400">（僅用於年齡確認，不會公開）</span>
+          </label>
+          <input
+            type="date"
+            value={birthday}
+            onChange={(e) => setBirthday(e.target.value)}
+            className="input-base"
+          />
+          <p className="mt-1.5 text-xs text-slate-400">
+            瀏覽限制級（18+）作品時，系統會依此判斷是否年滿 18 歲。
+          </p>
         </div>
 
         {/* 暱稱 */}

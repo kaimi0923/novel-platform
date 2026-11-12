@@ -25,6 +25,8 @@ export default function EditWorkPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [rating, setRating] = useState<string>("general");
+  const [adultDeclared, setAdultDeclared] = useState(false);
+  const [declaredAt, setDeclaredAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,6 +50,8 @@ export default function EditWorkPage() {
           setTags(work.tags ?? []);
           setIsCompleted(!!work.is_completed);
           setRating(work.content_rating ?? "general");
+          setDeclaredAt(work.adult_declared_at ?? null);
+          setAdultDeclared(!!work.adult_declared_at);
         }
         setLoading(false);
       });
@@ -82,6 +86,10 @@ export default function EditWorkPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (rating === "restricted" && !adultDeclared) {
+      setError("儲存限制級作品前，請先勾選成人內容合規聲明");
+      return;
+    }
     setError(null);
     setSaving(true);
 
@@ -122,6 +130,8 @@ export default function EditWorkPage() {
         type: workType,
         is_completed: isCompleted,
         content_rating: rating,
+        adult_declared_at:
+          rating === "restricted" ? (declaredAt ?? new Date().toISOString()) : null,
       })
       .eq("id", workId);
 
@@ -193,6 +203,23 @@ export default function EditWorkPage() {
             <p className="mt-1.5 text-xs text-slate-400">
               選「限制級」時，未滿 18 歲者會先被擋在年齡確認頁。
             </p>
+            {rating === "restricted" && (
+              <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50/70 p-3">
+                <label className="flex items-start gap-2 text-xs leading-relaxed text-rose-800">
+                  <input
+                    type="checkbox"
+                    checked={adultDeclared}
+                    onChange={(e) => setAdultDeclared(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-rose-600"
+                  />
+                  <span>
+                    我確認本作品不含性器官裸露、性行為特寫、性暴力或性虐待等硬蕊內容，
+                    不含任何未滿 18 歲人物之性相關內容，且所用人物影像均已取得合法授權。
+                    若違反，平台有權直接下架並停權，相關法律責任由我自行承擔。
+                  </span>
+                </label>
+              </div>
+            )}
           </div>
         </div>
 

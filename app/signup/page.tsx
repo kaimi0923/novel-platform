@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [birthday, setBirthday] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,9 @@ export default function SignupPage() {
 
     // 若專案關閉了{t("auth.email")}確認，註冊即登入，直接進入作者中心
     if (data.session) {
+      if (birthday && data.user) {
+        await supabase.from("profiles").update({ birthday }).eq("id", data.user.id);
+      }
       router.push("/dashboard");
       router.refresh();
       return;
@@ -109,6 +113,21 @@ export default function SignupPage() {
               placeholder={t("auth.passwordMin")}
               className="input-base"
             />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              生日 <span className="font-normal text-slate-400">（選填）</span>
+            </label>
+            <input
+              type="date"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
+              className="input-base"
+            />
+            <p className="mt-1.5 text-xs text-slate-400">
+              只看限制級（18+）作品時需要年滿 18 歲，屆時會請你補填。
+            </p>
           </div>
 
           {error && (

@@ -21,6 +21,8 @@ export interface Profile {
   contact_email?: string | null;
   contact_phone?: string | null;
   shipping_address?: string | null;
+  /** 生日（YYYY-MM-DD），僅用於限制級內容的年齡確認，不對外顯示 */
+  birthday?: string | null;
   created_at: string;
 }
 
@@ -44,8 +46,10 @@ export interface Work {
   rating_average?: number;
   /** 打分人數 */
   rating_count?: number;
-  /** 內容分級（短劇）：general 普遍 / protected 保護 / pg12 輔12 / pg15 輔15 / restricted 限制 */
+  /** 內容分級（全類型）：general 普遍 / protected 保護 / pg12 輔12 / pg15 輔15 / restricted 限制 */
   content_rating?: string;
+  /** 成人內容合規聲明勾選時間（僅限制級作品有值） */
+  adult_declared_at?: string | null;
   created_at: string;
   updated_at: string;
   // 作品標籤（四大類中挑選）
